@@ -345,56 +345,50 @@ function computeMatches(answers) {
       }
     }
 
-    /* ── 슬롯별 점수 적립 ── */
+    /* ── 슬롯별 점수 적립 (차등 적립 — 통과=만점이 아니라 '적합도'에 비례) ──
+       전국/범용/다목적 정책은 통과해도 부분점수만 → 매칭도가 분산되고
+       내 조건에 '딱 맞는' 정책일수록 높은 점수를 받는다. */
     let earned = 0;   // 획득 점수
     let pool   = 0;   // 가용 총점
 
-    // 1) goal (40점) + 목적 특화 보너스 (0~8점)
-    //    사업의 goals가 적을수록 해당 목적에 특화된 사업
-    //    goals=1 → +8, goals=2 → +5, goals=3 → +2, 4+ → 0
+    // 1) goal (40점) — 목적 특화도에 비례. 목적을 적게 가진(=특화된) 사업일수록 높게.
+    //    goals 1개=40, 2=34, 3=28, 4=22, 5+=20 (모든 목적을 단 범용은 낮음)
     if (goal) {
-      pool += 48;
-      earned += 40;
-      const goalSpec = [0, 8, 5, 2, 0, 0][Math.min(p.goals.length, 5)];
-      earned += goalSpec;
+      pool += 40;
+      earned += [40, 40, 34, 28, 22, 20][Math.min(p.goals.length, 5)];
     }
 
-    // 2) stage (30점)
-    if (stage) { pool += 30; earned += 30; }   // 하드필터 통과 = 충족
+    // 2) stage (16점) — 단계 충족(이진적)
+    if (stage) { pool += 16; earned += 16; }
 
-    // 3) region (15점)
+    // 3) region (22점) — 지역 정밀도에 비례.
+    //    내 지역명이 실제로 확인된 공고=22, 지역 호환(광역 일치)=16, 전국 공통=11
     if (region && region !== "any") {
-      pool += 15; earned += 15;                // 하드필터 통과 = 충족
-      if (rmode === "strict" && _matchMeta && _matchMeta.region && _matchMeta.region.alias !== _matchMeta.region.label) {
-        pool += 8;
-        if (regionSpecificHit(p, _matchMeta.region)) earned += 8;
-      }
+      pool += 22;
+      earned += isSpecificRegional ? 22 : (isRegional ? 16 : (isNational ? 11 : 11));
     }
 
-    // 4) industry (16점, 변별 비중↑)
-    //    업종을 명시했으면 업종 적합도가 핵심 변별. 특화>범용>불일치 격차를 키운다.
-    //    특정 업종 특화 일치 → 16점 (최우선)
-    //    업종 무관(전업종) → 8점 (적합하나 특화보다 낮게: 범용 정책이 특화를 밀어내지 않도록)
-    //    특정 업종 불일치 → 0점 (변별)
-    //    ※ industryAll 정책은 모든 업종 태그를 달고 있으므로 allInd를 먼저 판정해야
-    //      '진짜 업종 특화'와 '범용'이 구분됨.
+    // 4) industry (22점) — 업종 적합도. 특화 일치=22, 전업종(범용)=11 (타업종은 이미 하드제외)
     if (industry) {
-      pool += 16;
-      // pIsAllInd(하드필터에서 계산) 재사용. 타업종 전용은 이미 하드필터에서 제외됨.
-      if (pIsAllInd) {
-        earned += 8;                           // 업종 무관 = 적합하나 특화보다 낮게
-      } else if (p.tags.includes(industry)) {
-        earned += 16;                          // 특정 업종 특화 정확 일치 = 최우선
-      }
+      pool += 22;
+      if (!pIsAllInd && p.tags.includes(industry)) earned += 22;
+      else earned += 11;
     }
 
-    // 5) 데이터 품질 보너스 (0~4점, 항상 가용)
-    pool += 4;
-    earned += Math.round(Math.max(0, ((p.match || 50) - 50) / 50 * 4));
+    // 5) 실행 적합도 (0~12점, 항상 가용) — 지금 신청 가능한 '살아있는' 공고 우대
+    pool += 12;
+    earned += (p.eligible === "able" ? 5 : (p.eligible ? 2 : 0));            // 신청 가능성
+    earned += (p.dday != null && p.dday >= 0 && p.dday <= 14 ? 4             // 마감 임박(곧 마감, 지금 행동)
+              : p.dday != null && p.dday > 14 && p.dday <= 45 ? 2
+              : p.dday == null ? 2 : 0);                                     // 상시 접수 = 중립 가점
+    earned += (window.amountVerified && window.amountVerified(p) ? 3 : 0);   // 금액 검증
 
-    /* ── 비율 점수 (4~99) ──
-       pool엔 항상 데이터품질 4점이 포함되므로 pool>=4 (무답변도 4점). */
-    const pscore = Math.max(4, Math.min(99, Math.round((earned / pool) * 95 + 4)));
+    // 6) 데이터 품질 (0~6점, 항상 가용)
+    pool += 6;
+    earned += Math.round(Math.max(0, ((p.match || 50) - 50) / 50 * 6));
+
+    /* ── 비율 점수 (4~99). pool엔 항상 실행적합도12+데이터6=18이 포함. ── */
+    const pscore = Math.max(4, Math.min(99, Math.round((earned / pool) * 99)));
     const regionOrder = rmode === "national_first"
       ? (isNational ? 3 : (isSpecificRegional ? 2.5 : 2))
       : (rmode === "strict" ? 1 : (rmode === "national_only" ? 3 : (rmode === "none" && isNational ? 1 : 0)));

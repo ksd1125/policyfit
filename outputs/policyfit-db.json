@@ -61,7 +61,8 @@
     "amountPerApplicantValue": 5000000,
     "amountSource": "explicit_llm",
     "industryAll": true,
-    "classSource": "llm"
+    "classSource": "llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000109049",
@@ -303,7 +304,8 @@
     "amountPerApplicantValue": null,
     "amountSource": "none_llm",
     "industryAll": false,
-    "classSource": "llm"
+    "classSource": "llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000116487",
@@ -4145,7 +4147,8 @@
     "amountPerApplicantValue": 500000000,
     "amountSource": "explicit_llm",
     "industryAll": false,
-    "classSource": "llm"
+    "classSource": "llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000117308",
@@ -10052,7 +10055,8 @@
     "amountPerApplicantValue": null,
     "amountSource": "none_llm",
     "industryAll": false,
-    "classSource": "llm"
+    "classSource": "llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000117833",
@@ -13118,7 +13122,8 @@
     "amountPerApplicantValue": null,
     "amountSource": "none_llm",
     "industryAll": false,
-    "classSource": "llm"
+    "classSource": "llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000118229",
@@ -14919,7 +14924,8 @@
     "amountPerApplicantValue": null,
     "amountSource": "none_llm",
     "industryAll": false,
-    "classSource": "llm"
+    "classSource": "llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000118858",
@@ -15044,7 +15050,8 @@
     "amountPerApplicantValue": null,
     "amountSource": "none_llm",
     "industryAll": false,
-    "classSource": "llm"
+    "classSource": "llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000118879",
@@ -15832,7 +15839,8 @@
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
     "amountSource": "none_llm",
-    "industryAll": false
+    "industryAll": false,
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000119038",
@@ -21842,7 +21850,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000120233",
@@ -23905,7 +23914,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000120603",
@@ -26883,7 +26893,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "total_only_llm"
+    "amountSource": "total_only_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000121175",
@@ -31531,7 +31542,8 @@
     "amountTargetCountValue": 5,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000121753",
@@ -32853,7 +32865,8 @@
     "amountTargetCountValue": 70,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000121852",
@@ -40721,7 +40734,8 @@
     "amountTargetCountValue": 3,
     "amountPerApplicant": "최대 1,000만원",
     "amountPerApplicantValue": 10000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122332",
@@ -41663,7 +41677,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": "기업당 최대 300만원",
     "amountPerApplicantValue": 3000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122363",
@@ -43806,7 +43821,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122438",
@@ -43988,7 +44004,8 @@
     "amountTargetCountValue": 5,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122450",
@@ -46508,7 +46525,8 @@
     "amountTargetCountValue": 5,
     "amountPerApplicant": "1개 기업당 최대 1,200만원",
     "amountPerApplicantValue": 12000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122542",
@@ -46814,7 +46832,8 @@
     "amountTargetCountValue": 5,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122556",
@@ -49623,7 +49642,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": "ESG 등급 고도화 공동컨설팅 기업당 600만원(부가세 제외)",
     "amountPerApplicantValue": 6000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122656",

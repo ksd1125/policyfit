@@ -857,7 +857,10 @@ function App() {
     fetch("../policyfit-db.json?v=" + Date.now())
       .then(r => r.json())
       .then(data => {
-        window.POLICIES = data.map(p => ({ ...p, dday: computeDday(p.endDate) }));
+        // 소상공인 무관(연구기관·중후장대 산업 등, LLM 판정)으로 표시된 공고는 전 화면에서 제외
+        window.POLICIES = data
+          .filter(p => p.smallBizRelevant !== false)
+          .map(p => ({ ...p, dday: computeDday(p.endDate) }));
         setRoute("home");
       })
       .catch(err => {

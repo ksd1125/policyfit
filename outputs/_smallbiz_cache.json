@@ -1,0 +1,82 @@
+{
+  "PBLN_000000000103611": {
+    "applicable": false,
+    "reason": "방산 클러스터 기업 전용"
+  },
+  "PBLN_000000000116045": {
+    "applicable": false,
+    "reason": "에너지 규제자유특구 사업자"
+  },
+  "PBLN_000000000117303": {
+    "applicable": false,
+    "reason": "조선 협력사 전용"
+  },
+  "PBLN_000000000117811": {
+    "applicable": false,
+    "reason": "선박 규제자유특구 사업자"
+  },
+  "PBLN_000000000118226": {
+    "applicable": false,
+    "reason": "방위산업진흥회 회원사 전용"
+  },
+  "PBLN_000000000118806": {
+    "applicable": false,
+    "reason": "우주·항공·방산 제조기업 전용"
+  },
+  "PBLN_000000000118875": {
+    "applicable": false,
+    "reason": "원자력 에너지산업 전용"
+  },
+  "PBLN_000000000119026": {
+    "applicable": false,
+    "reason": "기업부설연구소 전용"
+  },
+  "PBLN_000000000120215": {
+    "applicable": false,
+    "reason": "자동차·석유화학·철강 탄소배출 업종"
+  },
+  "PBLN_000000000120591": {
+    "applicable": false,
+    "reason": "조선·해양플랜트 전용"
+  },
+  "PBLN_000000000121168": {
+    "applicable": false,
+    "reason": "친환경선박 건조사 전용"
+  },
+  "PBLN_000000000121751": {
+    "applicable": false,
+    "reason": "반도체 설계기업 전용"
+  },
+  "PBLN_000000000121841": {
+    "applicable": false,
+    "reason": "전략산업(바이오·반도체·로봇) 전용"
+  },
+  "PBLN_000000000122360": {
+    "applicable": false,
+    "reason": "수리조선 기업 전용"
+  },
+  "PBLN_000000000122449": {
+    "applicable": false,
+    "reason": "석유화학 연관 기업 전용"
+  },
+  "PBLN_000000000122538": {
+    "applicable": false,
+    "reason": "석유화학 연관 기업 전용"
+  },
+  "PBLN_000000000122554": {
+    "applicable": false,
+    "reason": "석유화학 연관 기업 전용"
+  },
+  "PBLN_000000000122653": {
+    "applicable": false,
+    "reason": "석유화학 연관 기업 전용"
+  },
+  "PBLN_000000000122330": {
+    "applicable": false,
+    "reason": "딥테크(반도체·AI·바이오) 전용"
+  },
+  "PBLN_000000000122437": {
+    "applicable": false,
+    "reason": "주력산업(우주항공·바이오·반도체) 창업"
+  }
+}
