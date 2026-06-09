@@ -440,20 +440,26 @@ function PolicyResultSection({ section, onOpenPolicy }) {
   );
 }
 
-function Results({ answers, onOpenPolicy, onRedo, onDiagnose }) {
+function Results({ answers, query, onOpenPolicy, onRedo, onDiagnose }) {
   const conds = Object.entries(answers || {}).filter(([k, v]) => CONDLABEL[k] && v);
   const hasConditions = conds.length > 0;
   const matchNote = buildMatchingNote(answers);
   const [sort, setSort] = useState(hasConditions ? "match" : "dday");
 
   let list = hasConditions ? computeMatches(answers) : [...POLICIES];
+  // 자유질의면 어휘 관련도(2-gram)를 결합해 _final 부여 — '카페' 같은 질의가 랭킹에 반영됨
+  const lexical = !!(query && query.trim() && hasConditions);
+  if (lexical) list = hybridRank(list, query);
   const empty = hasConditions && list.length === 0;
   // goal을 답했을 때만 "조건 완화" 추천 (goal 미응답 시 임의 결과 방지)
   const relaxed = answers.goal
     ? computeMatches({ goal: answers.goal }).filter(p => !list.find(x => x.id === p.id)).slice(0, 4)
     : [];
 
-  if (sort === "match" && hasConditions) list = [...list].sort(comparePolicyMatches);
+  // 자유질의: 관련도(_final) 우선 정렬. 구조화 진단: 기존 매칭 정렬.
+  if (sort === "match" && hasConditions) list = lexical
+    ? [...list].sort((a, b) => (b._final || 0) - (a._final || 0))
+    : [...list].sort(comparePolicyMatches);
   if (sort === "dday") list = [...list].sort((a, b) => (a.dday ?? 9999) - (b.dday ?? 9999));
   if (sort === "amount") list = [...list].sort((a, b) => (b.amountValue ?? 0) - (a.amountValue ?? 0));
   const sections = groupPolicyResults(list, answers);
@@ -816,6 +822,7 @@ function App() {
   const [route, setRoute] = useState("loading");
   const [ctx, setCtx] = useState({ userType: null, seed: "" });
   const [answers, setAnswers] = useState(null);
+  const [queryText, setQueryText] = useState("");  // 자유질의 원문 — Results 어휘 리랭크용
   const [openP, setOpenP] = useState(null);
 
   const mode = route === "staff" ? "staff" : route === "planner" ? "planner" : "user";
@@ -830,10 +837,12 @@ function App() {
     const text = seed || "";
     const prefill = parseSeed(text);
     if (text.trim() && hasPolicyLookupIntent(text) && hasUsablePolicyConditions(prefill)) {
+      setQueryText(text);
       setAnswers(prefill);
       go("results");
       return;
     }
+    setQueryText("");
     setCtx({ userType: null, seed: text, prefill, questions: null });
     go("diagnose");
   }
@@ -891,10 +900,10 @@ function App() {
         </button>)}</div>
       </div></header>
 
-      {route === "home" && <Home onStart={startDiagnose} onPickType={pickType} onOpenPolicy={setOpenP} onBrowse={() => { setAnswers({}); go("results"); }} />}
+      {route === "home" && <Home onStart={startDiagnose} onPickType={pickType} onOpenPolicy={setOpenP} onBrowse={() => { setQueryText(""); setAnswers({}); go("results"); }} />}
       {route === "diagnose" && <Diagnose key={JSON.stringify(ctx)} userType={ctx.userType} seed={ctx.seed} prefill={ctx.prefill} questions={ctx.questions}
-        onComplete={a => { setAnswers(a); go("results"); }} onBack={() => go("home")} />}
-      {route === "results" && answers && <Results answers={answers} onOpenPolicy={setOpenP} onRedo={() => go("diagnose")} onDiagnose={() => startDiagnose("")} />}
+        onComplete={a => { setQueryText(""); setAnswers(a); go("results"); }} onBack={() => go("home")} />}
+      {route === "results" && answers && <Results answers={answers} query={queryText} onOpenPolicy={setOpenP} onRedo={() => go("diagnose")} onDiagnose={() => startDiagnose("")} />}
       {route === "staff" && <StaffMode onOpenPolicy={setOpenP} />}
       {route === "planner" && <Planner onOpenPolicy={setOpenP} />}
 

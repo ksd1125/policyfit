@@ -360,19 +360,22 @@ function computeMatches(answers) {
       }
     }
 
-    // 4) industry (12점, 소프트)
-    //    업종 무관 사업(industryAll/전업종 태그) → 10점 (모든 업종에 적합)
-    //    특정 업종 일치 → 12점 (딱 맞음, 약간 우대)
+    // 4) industry (16점, 변별 비중↑)
+    //    업종을 명시했으면 업종 적합도가 핵심 변별. 특화>범용>불일치 격차를 키운다.
+    //    특정 업종 특화 일치 → 16점 (최우선)
+    //    업종 무관(전업종) → 8점 (적합하나 특화보다 낮게: 범용 정책이 특화를 밀어내지 않도록)
     //    특정 업종 불일치 → 0점 (변별)
+    //    ※ industryAll 정책은 모든 업종 태그를 달고 있으므로 allInd를 먼저 판정해야
+    //      '진짜 업종 특화'와 '범용'이 구분됨.
     if (industry) {
-      pool += 12;
+      pool += 16;
       // industryAll 명시 필드(LLM 분류) 우선. 없는 레거시 레코드만 태그 수 휴리스틱.
       const allInd = p.industryAll === true
         || (p.industryAll === undefined && p.tags && p.tags.length >= 6);
       if (allInd) {
-        earned += 10;                          // 업종 무관 = 누구나 적합
+        earned += 8;                           // 업종 무관 = 적합하나 특화보다 낮게
       } else if (p.tags.includes(industry)) {
-        earned += 12;                          // 특정 업종 정확 일치
+        earned += 16;                          // 특정 업종 특화 정확 일치 = 최우선
       }
       // 특정 업종인데 불일치 → 0점 (변별력)
     }
