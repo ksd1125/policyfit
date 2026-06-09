@@ -20616,7 +20616,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": "거래 금액의 20%(공급가액 기준)",
     "amountPerApplicantValue": null,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000120058",
@@ -29301,7 +29302,8 @@
     "amountTargetCountValue": 3,
     "amountPerApplicant": "컨소시엄당 4년간 정부출연금 140억원내외",
     "amountPerApplicantValue": 14000000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000121501",
@@ -31843,7 +31845,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000121777",
@@ -32669,7 +32672,8 @@
     "amountTargetCountValue": 8,
     "amountPerApplicant": "약 2,250만원 (총액÷대상수)",
     "amountPerApplicantValue": 22500000,
-    "amountSource": "calculated_llm"
+    "amountSource": "calculated_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000121821",
@@ -36428,7 +36432,8 @@
     "amountTargetCountValue": 7,
     "amountPerApplicant": "기업당 500만원",
     "amountPerApplicantValue": 5000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122142",
@@ -41422,7 +41427,8 @@
     "amountTargetCountValue": 11,
     "amountPerApplicant": "프로그램별 최대 300만원~1,000만원",
     "amountPerApplicantValue": 10000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122354",
@@ -41739,7 +41745,8 @@
     "amountTargetCountValue": 8,
     "amountPerApplicant": "기업당 정부지원금 최대 2,000만원",
     "amountPerApplicantValue": 20000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122364",
@@ -43444,7 +43451,8 @@
     "amountTargetCountValue": 30,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122429",
@@ -48391,7 +48399,8 @@
     "amountTargetCountValue": 4,
     "amountPerApplicant": "기업당 1,000만원 내외",
     "amountPerApplicantValue": 10000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122593",
@@ -48511,7 +48520,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": "기업당 15억원(방송·수출용 콘텐츠는 최대 50억원)",
     "amountPerApplicantValue": 5000000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122596",
@@ -48571,7 +48581,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": "기업당 보증한도 10억원",
     "amountPerApplicantValue": 1000000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122599",
@@ -48689,7 +48700,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": "최대 10억원",
     "amountPerApplicantValue": 1000000000,
-    "amountSource": "explicit_llm"
+    "amountSource": "explicit_llm",
+    "smallBizRelevant": false
   },
   {
     "id": "PBLN_000000000122602",

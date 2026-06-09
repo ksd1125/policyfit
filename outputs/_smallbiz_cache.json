@@ -78,5 +78,53 @@
   "PBLN_000000000122437": {
     "applicable": false,
     "reason": "주력산업(우주항공·바이오·반도체) 창업"
+  },
+  "PBLN_000000000120056": {
+    "applicable": false,
+    "reason": "영상 콘텐츠 제작사 전용"
+  },
+  "PBLN_000000000121769": {
+    "applicable": false,
+    "reason": "영화 제작사 전용"
+  },
+  "PBLN_000000000122137": {
+    "applicable": false,
+    "reason": "문화콘텐츠 창업기업 전용"
+  },
+  "PBLN_000000000122428": {
+    "applicable": false,
+    "reason": "콘텐츠기업(방송·게임·음악) 전용"
+  },
+  "PBLN_000000000122594": {
+    "applicable": false,
+    "reason": "콘텐츠 제작·배급사 전용"
+  },
+  "PBLN_000000000122596": {
+    "applicable": false,
+    "reason": "콘텐츠IP 활용기업 전용"
+  },
+  "PBLN_000000000122601": {
+    "applicable": false,
+    "reason": "문화콘텐츠기업 전용"
+  },
+  "PBLN_000000000121499": {
+    "applicable": false,
+    "reason": "스마트그린산단 지정산단 전용"
+  },
+  "PBLN_000000000121819": {
+    "applicable": false,
+    "reason": "자유무역지역 입주기업 전용"
+  },
+  "PBLN_000000000122350": {
+    "applicable": false,
+    "reason": "자유무역지역 입주기업 전용"
+  },
+  "PBLN_000000000122363": {
+    "applicable": false,
+    "reason": "스마트그린산단 입주 전용"
+  },
+  "PBLN_000000000122590": {
+    "applicable": false,
+    "reason": "문화산업단지 입주 전용"
   }
 }
