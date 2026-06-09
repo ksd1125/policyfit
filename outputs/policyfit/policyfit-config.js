@@ -297,7 +297,7 @@ function regionMatchMode(answers) {
   if (region === "any" && explicitNational) return "national_only";
   if (!region || region === "any") return "none";
   if (_regionMode) return _regionMode;
-  return (industry || goal) ? "national_first" : "strict";
+  return (industry || goal) ? "region_first" : "strict";
 }
 
 function comparePolicyMatches(a, b) {
@@ -389,10 +389,11 @@ function computeMatches(answers) {
 
     /* ── 비율 점수 (4~99). pool엔 항상 실행적합도12+데이터6=18이 포함. ── */
     const pscore = Math.max(4, Math.min(99, Math.round((earned / pool) * 99)));
-    const regionOrder = rmode === "national_first"
-      ? (isNational ? 3 : (isSpecificRegional ? 2.5 : 2))
+    // region_first: 내 지역 공고를 먼저(지역명 확인=4 > 지역=3.5), 전국은 그 다음(2)
+    const regionOrder = rmode === "region_first"
+      ? (isSpecificRegional ? 4 : (isRegional ? 3.5 : (isNational ? 2 : 1)))
       : (rmode === "strict" ? 1 : (rmode === "national_only" ? 3 : (rmode === "none" && isNational ? 1 : 0)));
-    const regionClass = rmode === "national_first"
+    const regionClass = rmode === "region_first"
       ? (isNational ? "national" : "regional")
       : (rmode === "strict" ? "regional-only" : (rmode === "national_only" ? "national-only" : (rmode === "none" ? (isNational ? "national" : "regional") : "none")));
 
@@ -583,9 +584,33 @@ function matchIndustry(text) {
   return null;
 }
 
+/* 시군구 별칭의 '구/시/군' 절삭 bare 형태를 자동 생성(예: 종로구→종로, 마포구→마포).
+   사용자가 '종로', '마포'처럼 접미사 없이 말해도 매칭되게 한다.
+   안전장치: ① 2글자 이상만 ② 도시/도 이름과 충돌 금지 ③ 서로 다른 표준으로 모호하면 제외. */
+let _bareAliasEntries = null;
+function buildBareAliasEntries() {
+  const groupNames = new Set();
+  for (const names of Object.values(REGION_MATCH_TABLE.groups)) names.forEach(n => groupNames.add(n));
+  const bareToStd = {};
+  for (const [alias, standard] of Object.entries(REGION_MATCH_TABLE.aliases)) {
+    const m = alias.match(/^(.+?)(구|시|군)$/);
+    if (!m) continue;
+    const bare = m[1].trim();
+    if (bare.length < 2) continue;                 // '중구'→'중' 등 1글자 제외
+    if (groupNames.has(bare)) continue;            // '광주시'→'광주'(광역시 충돌) 제외
+    if (REGION_MATCH_TABLE.aliases[bare]) continue; // 이미 별칭 존재
+    (bareToStd[bare] = bareToStd[bare] || new Set()).add(standard);
+  }
+  // 서로 다른 표준으로 모호한 bare는 제외(예: '강서'=서울/부산)
+  _bareAliasEntries = Object.entries(bareToStd)
+    .filter(([, set]) => set.size === 1)
+    .map(([bare, set]) => [bare, [...set][0]]);
+}
+
 function matchRegion(text) {
   const t = (text || "").toLowerCase();
-  const aliasEntries = Object.entries(REGION_MATCH_TABLE.aliases)
+  if (!_bareAliasEntries) buildBareAliasEntries();
+  const aliasEntries = [...Object.entries(REGION_MATCH_TABLE.aliases), ..._bareAliasEntries]
     .sort((a, b) => b[0].length - a[0].length);
   for (const [alias, standard] of aliasEntries) {
     if (!t.includes(alias.toLowerCase())) continue;
@@ -615,7 +640,7 @@ function buildMatchingNote(answers) {
   if (meta && meta.industry) parts.push(`업종 '${meta.industry.alias}'${josa(meta.industry.alias, "은", "는")} '${meta.industry.standard}' 기준으로 ${meta.industry.label}${josa(meta.industry.label, "으로", "로")}`);
   if (meta && meta.region) parts.push(`지역 '${meta.region.alias}'${josa(meta.region.alias, "은", "는")} '${meta.region.standard}' 기준으로 ${meta.region.label}${josa(meta.region.label, "으로", "로")}`);
   const prefix = parts.length ? `${parts.join(", ")} 해석해 매칭했습니다.` : "";
-  if (mode === "national_first") return `${prefix} 전국 공통 공고를 먼저, 그 다음 해당 지역 공고를 보여드립니다.`.trim();
+  if (mode === "region_first") return `${prefix} 내 지역 공고를 먼저, 그 다음 전국 공통 공고를 보여드립니다.`.trim();
   if (mode === "strict") return `${prefix} 지역 제한 질문으로 보고 해당 지역 공고만 보여드립니다.`.trim();
   if (mode === "national_only") return `${prefix} 전국 단위 공고만 보여드립니다.`.trim();
   return prefix;

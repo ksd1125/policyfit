@@ -369,21 +369,21 @@ function groupPolicyResults(list, answers) {
   const mode = regionMatchMode(answers);
   const meta = answers && answers._matchMeta;
   const regionName = meta && meta.region ? meta.region.standard : CONDLABEL.region[answers.region];
-  if (mode === "national_first") {
+  if (mode === "region_first") {
     const national = list.filter(p => p._regionClass === "national");
     const regional = list.filter(p => p._regionClass === "regional");
     return [
+      regional.length && {
+        key: "regional",
+        title: `${regionName || "내 지역"} 공고`,
+        desc: "입력한 지역과 실제로 연결되는 공고를 먼저 보여드립니다.",
+        items: regional,
+      },
       national.length && {
         key: "national",
         title: "전국 공통 추천",
-        desc: "지역 제한 없이 먼저 확인할 수 있는 전국 단위 공고입니다.",
+        desc: "지역 제한 없이 누구나 신청할 수 있는 전국 단위 공고입니다.",
         items: national,
-      },
-      regional.length && {
-        key: "regional",
-        title: `${regionName || "해당 지역"} 공고`,
-        desc: "입력한 지역과 실제로 연결되는 공고만 이어서 보여드립니다.",
-        items: regional,
       },
     ].filter(Boolean);
   }
