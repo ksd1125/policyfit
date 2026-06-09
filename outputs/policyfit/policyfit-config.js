@@ -311,12 +311,23 @@ function computeMatches(answers) {
   const { industry, stage, goal, region, _matchMeta } = answers || {};
   const rmode = regionMatchMode(answers);
 
+  const INDUSTRY_GROUPS = ["food", "retail", "service", "online", "maker"];
+
   return POLICIES.map(p => {
     /* ── 하드 필터 (불일치 = 즉시 제외) ── */
     if (goal && !p.goals.includes(goal))   return { ...p, pscore: 0 };
     if (stage && !p.stages.includes(stage)) return { ...p, pscore: 0 };
     if (!specialTargetAllowed(p, answers)) return { ...p, pscore: 0 };
     if (!lifecycleAllowed(p, answers)) return { ...p, pscore: 0 };
+    // 업종 하드필터: 사용자가 업종을 지정했고, 정책이 '특정 타업종 전용'이면 제외.
+    //  - 범용(전업종) 정책은 통과(누구에게나 적용)
+    //  - 업종 태그가 아예 없는 정책도 통과(모호 → 보수적으로 유지)
+    //  - 명확한 업종 태그가 있는데 내 업종이 없으면 = 타업종 전용 → 제외
+    const pIsAllInd = p.industryAll === true || (p.industryAll === undefined && p.tags && p.tags.length >= 6);
+    if (industry && !pIsAllInd) {
+      const pIndTags = (p.tags || []).filter(t => INDUSTRY_GROUPS.includes(t));
+      if (pIndTags.length > 0 && !pIndTags.includes(industry)) return { ...p, pscore: 0 };
+    }
     const rs = p.regions || ["any"];
     const hintedRegions = policyRegionHints(p);
     const isPseudoNational = rs.includes("any") && hintedRegions.length > 0;
@@ -369,15 +380,12 @@ function computeMatches(answers) {
     //      '진짜 업종 특화'와 '범용'이 구분됨.
     if (industry) {
       pool += 16;
-      // industryAll 명시 필드(LLM 분류) 우선. 없는 레거시 레코드만 태그 수 휴리스틱.
-      const allInd = p.industryAll === true
-        || (p.industryAll === undefined && p.tags && p.tags.length >= 6);
-      if (allInd) {
+      // pIsAllInd(하드필터에서 계산) 재사용. 타업종 전용은 이미 하드필터에서 제외됨.
+      if (pIsAllInd) {
         earned += 8;                           // 업종 무관 = 적합하나 특화보다 낮게
       } else if (p.tags.includes(industry)) {
         earned += 16;                          // 특정 업종 특화 정확 일치 = 최우선
       }
-      // 특정 업종인데 불일치 → 0점 (변별력)
     }
 
     // 5) 데이터 품질 보너스 (0~4점, 항상 가용)
