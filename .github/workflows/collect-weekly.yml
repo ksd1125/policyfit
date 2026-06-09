@@ -1,0 +1,89 @@
+name: 주간 공고 자동수집 (rule-based)
+
+# 매주 월요일 00:00 UTC(한국 월 09:00) BizInfo API 폴링 → 신규 공고만 룰베이스 수집·머지.
+# 고품질 LLM 보강은 로컬 Codex 작업(캐시 커밋)으로 별도 유지 — CI는 환각 없는 룰 기준선만.
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect-weekly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Node 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 시크릿 주입 (.env.local)
+        run: printf 'BIZINFO_API_KEY=%s\n' "${{ secrets.BIZINFO_API_KEY }}" > .env.local
+
+      - name: 신규 공고 수집·머지 (룰베이스)
+        run: python scripts/watch-new-notices.py --no-llm --per-cat 20
+
+      - name: 룰베이스 정제 (단위·분류·데이터)
+        run: |
+          python scripts/normalize-amount-units.py
+          python scripts/fix-classification-rules.py
+          python scripts/fix-data-issues.py
+
+      - name: 오류 게이트 (금액 sanity)
+        run: python scripts/audit-amounts.py
+
+      - name: 캐시버스트 (DB 변경 시 ?v 갱신)
+        run: |
+          if ! git diff --quiet -- outputs/policyfit-db.json; then
+            STAMP=$(date +%Y%m%d%H%M)
+            sed -i -E "s/\?v=[0-9]+/?v=${STAMP}/g" outputs/policyfit/index.html
+            echo "캐시버스트 → v=${STAMP}"
+          else
+            echo "policyfit-db.json 변경 없음 — 캐시버스트 생략"
+          fi
+
+      - name: 변경분 커밋·푸시
+        run: |
+          rm -f .env.local
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add outputs/policyfit-db.json \
+                  outputs/_watched_ids.json \
+                  outputs/policyfit/index.html \
+                  outputs/_amount_struct_cache.json \
+                  outputs/_classify_cache.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "주간 자동수집: 신규 공고 머지 ($(date +%Y-%m-%d))"
+            git push
+            echo "푸시 완료 → GitHub Pages 자동 재배포"
+          fi
+
+      - name: 실패 시 이슈 생성
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `주간 수집 실패 (${new Date().toISOString().slice(0,10)})`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body: `워크플로 실행 [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})에서 수집/검증이 실패했습니다.\n\n- 금액 sanity 게이트(audit-amounts) 또는 수집 단계 확인 필요\n- 데이터 회귀(금액 역전·이상치) 가능성 점검`,
+              labels: ["자동수집", "오류"]
+            });
