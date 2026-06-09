@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PolicyFit 매칭 전수 검증</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;margin:0;background:#f6f7fb;color:#111827}
+main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:28px;margin:0 0 8px} h2{font-size:18px;margin:26px 0 10px} h2 span{color:#2563eb}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.metric{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px}.metric b{display:block;font-size:24px}.metric span{color:#6b7280;font-size:13px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}
+th,td{padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top;font-size:13px}
+th{background:#f9fafb;color:#374151}.bad td:first-child{border-left:4px solid #dc2626}.ok td:first-child{border-left:4px solid #059669}
+section{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin:12px 0} li{margin:6px 0} small{color:#6b7280}
+code{background:#eef2ff;padding:1px 5px;border-radius:5px}
+</style>
+</head>
+<body><main>
+<h1>PolicyFit 매칭 전수 검증</h1>
+<p>생성: 2026-06-08T06:26:40.833Z / DB: <code>policyfit-db.json</code></p>
+<div class="summary">
+  <div class="metric"><b>799</b><span>전체 공고</span></div>
+  <div class="metric"><b>0</b><span>지역 질의 교차오염</span></div>
+  <div class="metric"><b>0</b><span>시나리오 실패</span></div>
+  <div class="metric"><b>96</b><span>지역명 포함 any 공고</span></div>
+</div>
+<h2>지역 제한 질의 검증</h2>
+<table><thead><tr><th>지역</th><th>모드</th><th>결과 수</th><th>다른 지역 섞임</th><th>상위 5건</th></tr></thead><tbody>
+    <tr class="ok">
+      <td>서울</td>
+      <td>strict</td>
+      <td>25</td>
+      <td>0</td>
+      <td>[서울] 서초구 2026년 시중은행 협력자금 대출이자 지원 계획 공고<br>[서울] 서초구 2026년 중소기업육성기금 융자지원 계획 공고<br>[서울] 2026년 새 길 여는 폐업지원 사업 모집 공고<br>[서울] 2026년 노동환경개선컨설팅 사업 대상 모집 공고<br>[서울ㆍ경기ㆍ인천ㆍ강원] 2026년 중소기업 AI 훈련 참여기업 모집 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>인천</td>
+      <td>strict</td>
+      <td>35</td>
+      <td>0</td>
+      <td>[인천] 지역 중소기업 금융지원 강화를 위한 금융기관(NH농협은행) 협업 특별 경영안정자금 추가 지원 공고<br>[인천] 부평구 2026년 중소기업(소상공인) 운전자금(이차보전금) 융자계획 공고<br>[인천] 중구 2026년 소상공인 (특례)협약보증 지원 사업 공고<br>[인천] 중구 2026년 소상공인 특례보증 지원 사업 공고<br>[인천] 2026년 중소기업육성자금 지원계획 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>경기</td>
+      <td>strict</td>
+      <td>76</td>
+      <td>0</td>
+      <td>[경기] 부천시 2026년 중소기업특례보증 지원 계획 공고<br>[경기] 부천시 2026년 특례보증 지원 계획 공고<br>[경기] 성남시 2026년 중소기업 특례보증 지원계획 공고<br>[경기] 성남시 2026년 중소기업육성자금 이차보전금 지원계획 공고<br>[경기] 김포시 2026년 우수제품 판매전 E-커머스 입점기업 모집 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>부산</td>
+      <td>strict</td>
+      <td>30</td>
+      <td>0</td>
+      <td>[부산] 6차 부산특구(암모니아 친환경에너지) 2차년도 안착화지원사업 통합 공고<br>[부산] 사상구 2026년 소상공인 보증료 지원사업 대상자 모집 공고<br>[부산] 2026년 식품진흥기금 융자사업 계획 공고<br>[부산] 2026년 전문연구기관 지원 참여기업 모집 공고<br>[부산] 2026년 디지털커머스 전문기관 구축ㆍ운영라이브커머스 운영 지원 모집 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>대구</td>
+      <td>strict</td>
+      <td>23</td>
+      <td>0</td>
+      <td>[대구] 달성군 2026년 소상공인 경영안정자금 지원사업 공고<br>[대구] 2026년 동구 소상공인 경영안정자금 지원사업 공고<br>[대구] 2026년 중소기업경영안정자금  지원계획 변경 공고(이자지원)<br>[대구] 북구 2026년 상반기 소상공인 경영안정자금 지원사업 공고<br>[대구] 2026년 찾아가는 노무서비스 지원(방문) 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>대전</td>
+      <td>strict</td>
+      <td>22</td>
+      <td>0</td>
+      <td>[대전] 서구 2026년 소상공인 경영안정자금 지원사업 공고<br>[대전] 소상공인 경영위기극복 특례보증 지원 공고<br>[대전] 2026년 1차 소상공인 초저금리 특별자금 지원 계획 공고<br>[대전] 2026년 상반기 중소기업 창업 및 경쟁력강화사업자금 지원 공고<br>[대전] 2026년 상반기 중소기업 경영안정자금 지원 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>광주</td>
+      <td>strict</td>
+      <td>35</td>
+      <td>0</td>
+      <td>[광주] 2025년 지역기업 투자유치 역량강화를 위한 IR 참가기업 모집 공고<br>[광주] 인공지능 유치기업 보조금 지원사업 모집 공고<br>[광주] 2026년 상반기 중점산업 창업 중소기업 육성 금융지원 공고<br>[광주] 2026년 상반기 일반경영안정자금 지원 공고<br>[광주] 2026년 중소유통업구조개선자금 지원계획 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>울산</td>
+      <td>strict</td>
+      <td>19</td>
+      <td>0</td>
+      <td>[울산] 2026년 식품진흥기금 융자사업 시행 공고<br>[울산] 2026년 이전ㆍ창업기업(기술강소기업) 특별보조금 지원사업 공고<br>[울산] 2026년 1차 통상변화 대응 중소기업 육성자금 지원계획 변경 공고<br>[울산] 2026년 2차 소상공인 경영안정자금 긴급 융자 지원계획 공고<br>[울산] 2026년 소상공인 재기지원자금 긴급 융자 지원계획 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>세종</td>
+      <td>strict</td>
+      <td>13</td>
+      <td>0</td>
+      <td>[세종] 2기 Invest On 투자 역량강화 프로그램 보육기업 모집 공고<br>[세종] 2026년 수출보증보험료 지원 사업 참가기업 모집 공고<br>[대전] 2026년 수출보증보험료 지원사업 참가기업 모집 공고<br>[대전ㆍ충청ㆍ세종] 2026년 중소기업 AI훈련확산센터 참여기업 모집 공고<br>[세종] 2026년 기술닥터제 지원사업 참여기업 모집 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>강원</td>
+      <td>strict</td>
+      <td>39</td>
+      <td>0</td>
+      <td>[강원] 춘천시 2026년 중소기업 신용보증수수료 지원 사업 공고<br>[강원] 춘천시 2026년 창업지원자금(중소기업동행지원) 지원계획 공고<br>[강원] 춘천시 2026년 중소기업 특례보증 지원계획 공고<br>[강원] 원주시 2026년 상반기 중소기업육성자금 지원 계획 공고<br>[강원] 태백시 2026년 소상공인 특례보증ㆍ이차보전 지원 계획 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>충북</td>
+      <td>strict</td>
+      <td>29</td>
+      <td>0</td>
+      <td>[충북] 2026년 소상공인 육성자금 지원계획 공고<br>[충북] 청주시 2026년 중소기업육성자금 융자(이차보전) 지원계획 공고<br>[충북] 괴산군 2026년 중소기업육성자금 이차보전금 지원 선정계획 공고<br>[충북] 괴산군 2026년 저신용 소상공인 대출이자 지원사업 공고<br>[충북] 단양군 2026년 소상공인 융자금 이차보전 지원사업 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>충남</td>
+      <td>strict</td>
+      <td>29</td>
+      <td>0</td>
+      <td>[충남] 2026년 식품진흥기금 시설개선자금 융자계획 공고<br>[충남] 태안군 2026년 소상공인 특례보증 신청 공고<br>[충남] 2026년 보증기업 위기극복 패키지 지원사업 모집 공고<br>[충남] 아산시 2026년 해외마케팅 지원사업 참가기업 모집 공고<br>[충남] 아산시 2026년 음식점 위생등급제 컨설팅 참여업소 모집 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>전북</td>
+      <td>strict</td>
+      <td>36</td>
+      <td>0</td>
+      <td>[전북] 남원시 2026년 중소기업육성기금 지원계획 공고<br>[전북] 무주군 2026년 소상공인 특례보증 및 이차보전금 지원 사업 공고<br>[전북] 진안군 2026년 상공업 육성자금 대출 지원사업 공고<br>[전북] 전주시 2026년 상반기 중소기업육성자금 지원계획 수정 공고<br>[전북] 2026년 식품진흥기금 융자지원 사업 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>전남</td>
+      <td>strict</td>
+      <td>36</td>
+      <td>0</td>
+      <td>[전남] 2026년 중소기업 육성자금(벤처기업 육성자금) 지원계획 공고<br>[전남] 2026년 중소기업 육성자금(중소유통업 구조개선자금) 지원계획 공고<br>[전남] 2026년 중소기업 육성자금(중소기업 경영안정자금) 지원계획 공고<br>[전남] 2026년 중소기업 육성자금(건설업 (특별)경영안정자금) 지원계획 공고<br>[전남] 강진군 2026년 소상공인 창업 임대료 지원사업 모집 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>경북</td>
+      <td>strict</td>
+      <td>71</td>
+      <td>0</td>
+      <td>[경북] 구미 방산혁신클러스터 방산 헬프데스크-지역소재기업 경영ㆍ기술지원 모집 공고<br>[경북] 2026년 소상공인육성자금(경북버팀금융) 이차보전 지원 계획 공고<br>[경북] 2026년 산불피해기업 재해시설자금 이차보전 지원 계획 공고<br>[경북] 2026년 창업 및 경쟁력강화 사업자금 지원 계획 공고<br>[경북] 의성군 2026년 중소기업 운전자금 지원 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>경남</td>
+      <td>strict</td>
+      <td>47</td>
+      <td>0</td>
+      <td>[경남] 창원시 2025년 중소기업육성자금 긴급 융자 지원사업 재공고<br>[경남] 창원시 2026년 중소기업 육성자금 융자지원 계획 공고<br>[경남] 사천시 2026년 상반기 소상공인 육성자금 지원 공고<br>[경남] 김해시 2026년 상반기 중소기업육성자금 지원 계획 공고<br>[경남] 산청군 인구감소지역 소재 중소기업 특례보증 금융지원 신청 공고</td>
+    </tr>
+    <tr class="ok">
+      <td>제주</td>
+      <td>strict</td>
+      <td>10</td>
+      <td>0</td>
+      <td>[제주] 2026년 식품진흥기금 융자지원 계획 공고<br>[제주] 2026년 중소기업육성자금 융자지원계획 변경 공고<br>[제주] 소상공인ㆍ자영업자 재기지원사업 희망업체 모집 공고<br>[제주] 2026년 소상공인 IP 창출지원 IP 창출 종합패키지(브랜드ㆍ디자인 융합) 사업 공고<br>[제주] 2026년 소상공인 고용보험료 지원 사업 공고</td>
+    </tr></tbody></table>
+<h2>대표 시나리오 검증</h2>
+<table><thead><tr><th>ID</th><th>질의</th><th>모드</th><th>결과 수</th><th>전국/지역</th><th>판정</th></tr></thead><tbody>
+    <tr class="ok">
+      <td>banseok_cafe</td>
+      <td>반석동 카페 운영하는데 관련 정책 알려줘</td>
+      <td>national_first</td>
+      <td>159</td>
+      <td>137/22</td>
+      <td>PASS</td>
+    </tr>
+    <tr class="ok">
+      <td>daejeon_only</td>
+      <td>대전 지역 공고 전체 알려줘</td>
+      <td>strict</td>
+      <td>22</td>
+      <td>0/22</td>
+      <td>PASS</td>
+    </tr>
+    <tr class="ok">
+      <td>dunsan_food_startup</td>
+      <td>둔산동에서 창업 준비중이야. 음식점</td>
+      <td>national_first</td>
+      <td>33</td>
+      <td>29/4</td>
+      <td>PASS</td>
+    </tr>
+    <tr class="ok">
+      <td>gwangju_cafe_fund</td>
+      <td>광주 카페 운영자금 알려줘</td>
+      <td>national_first</td>
+      <td>131</td>
+      <td>103/28</td>
+      <td>PASS</td>
+    </tr>
+    <tr class="ok">
+      <td>marketing_only</td>
+      <td>마케팅 지원 알려줘</td>
+      <td>none</td>
+      <td>252</td>
+      <td>56/196</td>
+      <td>PASS</td>
+    </tr>
+    <tr class="ok">
+      <td>national_marketing</td>
+      <td>전국 마케팅 지원 알려줘</td>
+      <td>national_only</td>
+      <td>56</td>
+      <td>56/0</td>
+      <td>PASS</td>
+    </tr></tbody></table>
+<h2>DB 패턴 이슈</h2>
+
+    <section>
+      <h2>anyWithSpecificRegion <span>96건</span></h2>
+      <ol><li><b>PBLN_000000000117028</b> 2026년 완도군 단체관광객 유치 여행사 인센티브 지원계획 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117260</b> 2026년 밀양시 단체관광객 유치 인센티브 지원 계획 공고 <small>gyeongnam</small></li><li><b>PBLN_000000000117308</b> 2026년 양산시 단체관광객 유치 인센티브 지원 계획 공고 <small>gyeongnam</small></li><li><b>PBLN_000000000117332</b> 2026년 청송군 단체관광객 유치 인센티브 지원계획 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117334</b> 2026년 청도군 단체관광객 유치 인센티브 지원사업 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117336</b> 2026년 고령군 국내ㆍ외 단체 관광객 유치 여행사(기관) 인센티브 지원 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117343</b> 2026년 울진군 단체관광객 유치여행사 인센티브 지원계획 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117350</b> 2026년 장성군 단체관광객 유치 여행사 인센티브 운영계획 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117474</b> 2026년 군산시 국내ㆍ외 단체관광객 유치 여행사 인센티브 지원사업 공고 <small>jeonbuk</small></li><li><b>PBLN_000000000117481</b> 전북바이오융합교육센터 재직자 교육 훈련생ㆍ기업 모집 공고(국가인적자원개발컨소시엄) <small>jeonbuk</small></li><li><b>PBLN_000000000117491</b> 2026년 완주군 단체관광객 유치 인센티브 지원사업 공고 <small>jeonbuk</small></li><li><b>PBLN_000000000117505</b> 2026년 남원시 국내외 관광객 유치  인센티브 지원 사업 공고 <small>jeonbuk</small></li><li><b>PBLN_000000000117523</b> 2026년 공주시 단체관광객 유치 여행사 인센티브 지원사업 공고 <small>chungnam</small></li><li><b>PBLN_000000000117559</b> 2026년 단양군 단체관광객 유치 인센티브 지원계획 공고 <small>chungbuk</small></li><li><b>PBLN_000000000117569</b> 2026년 전주시 숙박관광객 유치 인센티브 지급 계획 공고 <small>jeonbuk</small></li><li><b>PBLN_000000000117575</b> 2026년 괴산군 단체관광객 유치 여행사 인센티브 지원계획 공고 <small>chungbuk</small></li><li><b>PBLN_000000000117604</b> 2026년 원주시 단체관광객 유치 여행사 인센티브 지원 공고 <small>gangwon</small></li><li><b>PBLN_000000000117606</b> 2026년 강릉시 단체관광객 유치 인센티브 지원계획 공고 <small>gangwon</small></li><li><b>PBLN_000000000117620</b> 2026년 삼척시 단체관광객 유치 여행사 인센티브 지원계획 공고 <small>gangwon</small></li><li><b>PBLN_000000000117631</b> 2026년 정선군 단체관광객 유치 여행사 인센티브 지원 계획 공고 <small>gangwon</small></li><li><b>PBLN_000000000117643</b> 2026년 예산군 로케이션 인센티브 제작지원 사업 공고 <small>chungnam</small></li><li><b>PBLN_000000000117648</b> 2026년 화천군 국내ㆍ외 단체 관광객 인센티브 지원계획 공고 <small>gangwon</small></li><li><b>PBLN_000000000117650</b> 2026년 양구군 단체관광객 유치 인센티브 지원 계획 공고 <small>gangwon</small></li><li><b>PBLN_000000000117770</b> 2026년 전라남도 외래관광객 유치 여행사 대상 인센티브 지원 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117893</b> 대구광역시 내국인 단체 관광객 유치 인센티브 지원 공고 <small>daegu</small></li><li><b>PBLN_000000000117958</b> 2026년 세종특별자치시 단체관광객 유치 여행사 인센티브 지원사업 계획 공고 <small>sejong</small></li><li><b>PBLN_000000000117971</b> 2026년 울산 북구 단체관광객 유치 인센티브 지원 공고 <small>ulsan</small></li><li><b>PBLN_000000000117984</b> 2026년 제주창조경제혁신센터 창업-BuS 프로그램(W-JOIN) 참여기업 모집 공고 <small>jeju</small></li><li><b>PBLN_000000000118025</b> 2026년 이동 생체역학 성능평가 지원사업 참가 희망 모집 공고 <small>busan</small></li><li><b>PBLN_000000000118032</b> 2026년 전북특별자치도 관광객 유치 여행사 보상금 지급 공고 <small>jeonbuk</small></li></ol>
+    </section>
+    <section>
+      <h2>specificRegionWithoutDeclaredGroup <span>1건</span></h2>
+      <ol><li><b>PBLN_000000000120162</b> [대전ㆍ충청ㆍ세종] 2026년 중소기업 AI훈련확산센터 참여기업 모집 공고 <small>daejeon,sejong</small></li></ol>
+    </section>
+    <section>
+      <h2>specialTargetPolicies <span>115건</span></h2>
+      <ol><li><b>PBLN_000000000117028</b> 2026년 완도군 단체관광객 유치 여행사 인센티브 지원계획 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117066</b> 장애인고용개선장려금 사업 공고 <small></small></li><li><b>PBLN_000000000117067</b> [세종] 2026년 사회적경제 조직 금융(이차보전) 지원계획 공고 <small>sejong</small></li><li><b>PBLN_000000000117068</b> [경북] 청년하우스 주거 지원 사업 전세대출이자ㆍ월세 지원 모집 공고(금호 이웃사촌마을 조성사업) <small>gyeongbuk</small></li><li><b>PBLN_000000000117095</b> [충남] 2026년 사회적경제기금 융자지원 계획 공고 <small>chungnam</small></li><li><b>PBLN_000000000117109</b> [경기] 2026년 사회적경제조직 특별융자 사업 공고 <small>gyeonggi</small></li><li><b>PBLN_000000000117127</b> 2026년 관광진흥개발기금 신용보증부 운영자금 특별융자 지원 지침 공고 <small></small></li><li><b>PBLN_000000000117130</b> 2026년 상반기 관광진흥개발기금 이차보전 지원 지침 공고 <small></small></li><li><b>PBLN_000000000117135</b> [전남] 2026년 중소기업 육성자금(창업 및 경쟁력강화자금) 지원계획 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117149</b> [전남] 2026년 중소기업 육성자금(사회적경제 (특별)경영안정자금) 지원계획 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117150</b> [인천] 서구 2026년 청년기업 인증 신청 공고 <small>incheon</small></li><li><b>PBLN_000000000117158</b> [경북] 2026년 벤처기업 육성자금 운용계획 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117260</b> 2026년 밀양시 단체관광객 유치 인센티브 지원 계획 공고 <small>gyeongnam</small></li><li><b>PBLN_000000000117276</b> [경남] 김해시 2026년 사회적경제기업 금융지원 사업 계획 공고 <small>gyeongnam</small></li><li><b>PBLN_000000000117291</b> 2026년 한국식품산업클러스터진흥원 기업지원시설ㆍ장비 활용 지원사업 공고 <small></small></li><li><b>PBLN_000000000117308</b> 2026년 양산시 단체관광객 유치 인센티브 지원 계획 공고 <small>gyeongnam</small></li><li><b>PBLN_000000000117319</b> [경북] 의성군 2026년 중소기업 고용보조금 지원사업 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117332</b> 2026년 청송군 단체관광객 유치 인센티브 지원계획 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117334</b> 2026년 청도군 단체관광객 유치 인센티브 지원사업 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117336</b> 2026년 고령군 국내ㆍ외 단체 관광객 유치 여행사(기관) 인센티브 지원 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117337</b> [전남] 여수시 2026년 중소기업발전자금 지원계획 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117343</b> 2026년 울진군 단체관광객 유치여행사 인센티브 지원계획 공고 <small>gyeongbuk</small></li><li><b>PBLN_000000000117350</b> 2026년 장성군 단체관광객 유치 여행사 인센티브 운영계획 공고 <small>jeonnam</small></li><li><b>PBLN_000000000117474</b> 2026년 군산시 국내ㆍ외 단체관광객 유치 여행사 인센티브 지원사업 공고 <small>jeonbuk</small></li><li><b>PBLN_000000000117491</b> 2026년 완주군 단체관광객 유치 인센티브 지원사업 공고 <small>jeonbuk</small></li><li><b>PBLN_000000000117505</b> 2026년 남원시 국내외 관광객 유치  인센티브 지원 사업 공고 <small>jeonbuk</small></li><li><b>PBLN_000000000117523</b> 2026년 공주시 단체관광객 유치 여행사 인센티브 지원사업 공고 <small>chungnam</small></li><li><b>PBLN_000000000117528</b> [서울] 2026년 중소기업육성기금 사회적경제계정 사회적경제기업 융자지원 계획 공고 <small>seoul</small></li><li><b>PBLN_000000000117559</b> 2026년 단양군 단체관광객 유치 인센티브 지원계획 공고 <small>chungbuk</small></li><li><b>PBLN_000000000117569</b> 2026년 전주시 숙박관광객 유치 인센티브 지급 계획 공고 <small>jeonbuk</small></li></ol>
+    </section>
+    <section>
+      <h2>missingClassification <span>1건</span></h2>
+      <ol><li><b>PBLN_000000000117068</b> [경북] 청년하우스 주거 지원 사업 전세대출이자ㆍ월세 지원 모집 공고(금호 이웃사촌마을 조성사업) <small>gyeongbuk</small></li></ol>
+    </section>
+</main></body></html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정책핏 — 목적문 수정 도구</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",-apple-system,sans-serif;background:#f7f8fb;color:#111;line-height:1.6}
+.app{max-width:1100px;margin:0 auto;padding:20px}
+h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.sub{color:#6b7280;font-size:13px;margin-bottom:16px}
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.toolbar select,.toolbar input{height:36px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px;font:inherit;font-size:13px}
+.toolbar input{flex:1;min-width:200px}
+.toolbar button{height:36px;padding:0 16px;border:none;border-radius:10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.btn-primary{background:#3182F6;color:#fff}
+.btn-line{background:#fff;border:1px solid #e5e7eb;color:#374151}
+.btn-warn{background:#DC2626;color:#fff}
+.stats{display:flex;gap:16px;margin-bottom:16px;font-size:13px;color:#6b7280}
+.stats b{color:#111}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin-bottom:10px;transition:border-color .15s}
+.card:hover{border-color:#3182F6}
+.card-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}
+.card-idx{width:40px;height:24px;border-radius:6px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#6b7280;flex-shrink:0}
+.card-title{font-size:14px;font-weight:700;flex:1;line-height:1.35}
+.card-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(49,130,246,.08);color:#3182F6;flex-shrink:0}
+.card-purpose{position:relative;margin-bottom:8px}
+.card-purpose textarea{width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;line-height:1.5;resize:vertical;min-height:60px;transition:border-color .15s}
+.card-purpose textarea:focus{outline:none;border-color:#3182F6}
+.card-purpose textarea.modified{border-color:#059669;background:#f0fdf4}
+.card-meta{display:flex;gap:12px;font-size:12px;color:#6b7280;flex-wrap:wrap}
+.card-meta span{display:flex;align-items:center;gap:4px}
+.badge{padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.badge-ok{background:#ecfdf5;color:#059669}
+.badge-warn{background:#fef3c7;color:#d97706}
+.badge-err{background:#fef2f2;color:#dc2626}
+.save-bar{position:sticky;bottom:0;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border-top:1px solid #e5e7eb;padding:12px 0;display:none;text-align:center}
+.save-bar.show{display:block}
+.page-nav{display:flex;gap:8px;justify-content:center;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>목적문 수정 도구</h1>
+  <p class="sub">목적문을 검토하고 수정하세요. 수정 후 "수정사항 저장"을 누르면 JSON 파일로 다운로드됩니다.</p>
+
+  <div class="toolbar">
+    <select id="filterType">
+      <option value="all">전체</option>
+      <option value="short">짧은 목적 (&lt;40자)</option>
+      <option value="formal">관공서 문체 잔존</option>
+      <option value="modified">수정됨</option>
+    </select>
+    <select id="filterCat">
+      <option value="">카테고리 전체</option>
+    </select>
+    <input id="search" placeholder="제목·목적 검색...">
+    <button class="btn-primary" onclick="saveChanges()">수정사항 저장 (JSON 다운로드)</button>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div id="list"></div>
+  <div class="page-nav" id="pageNav"></div>
+</div>
+
+<script>
+let DATA = [];
+let MODIFIED = {};  // id → 수정된 purpose
+const PAGE_SIZE = 30;
+let currentPage = 0;
+
+async function init() {
+  const res = await fetch('../policyfit-db.json?v=' + Date.now());
+  DATA = await res.json();
+
+  // 카테고리 필터 채우기
+  const cats = [...new Set(DATA.map(d => d.category))].sort();
+  const sel = document.getElementById('filterCat');
+  cats.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+
+  document.getElementById('filterType').onchange = () => { currentPage = 0; render(); };
+  document.getElementById('filterCat').onchange = () => { currentPage = 0; render(); };
+  document.getElementById('search').oninput = () => { currentPage = 0; render(); };
+
+  render();
+}
+
+function getFiltered() {
+  const type = document.getElementById('filterType').value;
+  const cat = document.getElementById('filterCat').value;
+  const q = document.getElementById('search').value.toLowerCase();
+
+  return DATA.map((d, i) => ({ ...d, _idx: i })).filter(d => {
+    const p = MODIFIED[d.id] || d.purpose;
+    if (cat && d.category !== cat) return false;
+    if (q && !d.title.toLowerCase().includes(q) && !p.toLowerCase().includes(q)) return false;
+    if (type === 'short' && p.length >= 40) return false;
+    if (type === 'formal' && !/합니다|입니다|같이|도모|하오니/.test(p)) return false;
+    if (type === 'modified' && !MODIFIED[d.id]) return false;
+    return true;
+  });
+}
+
+function classify(p) {
+  if (p.length < 25) return ['err', '짧음'];
+  if (/합니다|입니다/.test(p)) return ['warn', '합니다체'];
+  if (/같이|도모/.test(p)) return ['warn', '관공서'];
+  if (p.length < 40) return ['warn', '간결'];
+  return ['ok', '정상'];
+}
+
+// HTML 이스케이프 — 공고 텍스트에 <,>,",& 유입 시 마크업 깨짐/주입 방지
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function render() {
+  const filtered = getFiltered();
+  const total = filtered.length;
+  const modCount = Object.keys(MODIFIED).length;
+
+  document.getElementById('stats').innerHTML =
+    `표시: <b>${total}건</b> / 전체 ${DATA.length}건 · 수정됨: <b>${modCount}건</b>`;
+
+  const start = currentPage * PAGE_SIZE;
+  const page = filtered.slice(start, start + PAGE_SIZE);
+
+  const html = page.map(d => {
+    const p = MODIFIED[d.id] || d.purpose;
+    const [cls, label] = classify(p);
+    const isModified = !!MODIFIED[d.id];
+    const laws = (d.legalBasis || []).join(', ');
+
+    return `<div class="card">
+      <div class="card-head">
+        <span class="card-idx">${d._idx}</span>
+        <span class="card-title">${esc(d.title)}</span>
+        <span class="card-cat">${esc(d.category)}</span>
+        <span class="badge badge-${cls}">${esc(label)}</span>
+      </div>
+      <div class="card-purpose">
+        <textarea id="ta_${d.id}" class="${isModified ? 'modified' : ''}"
+          oninput="onEdit('${d.id}', this)">${esc(p)}</textarea>
+      </div>
+      <div class="card-meta">
+        <span>대상: ${esc(d.targetShort || '-')}</span>
+        <span>금액: ${esc(d.amountLabel || '-')}</span>
+        <span>기관: ${esc(d.org)}</span>
+        ${laws ? `<span>법령: ${esc(laws)}</span>` : ''}
+        ${d.benefits ? `<span title="${esc(d.benefits.slice(0,100))}">내용: ${esc(d.benefits.slice(0,50))}...</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('list').innerHTML = html;
+
+  // 페이지네이션
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  let nav = '';
+  if (totalPages > 1) {
+    if (currentPage > 0) nav += `<button class="btn-line" onclick="goPage(${currentPage-1})">이전</button>`;
+    nav += `<span style="font-size:13px;color:#6b7280;padding:0 8px">${currentPage+1} / ${totalPages}</span>`;
+    if (currentPage < totalPages - 1) nav += `<button class="btn-line" onclick="goPage(${currentPage+1})">다음</button>`;
+  }
+  document.getElementById('pageNav').innerHTML = nav;
+}
+
+function goPage(n) { currentPage = n; render(); window.scrollTo({top: 0}); }
+
+function onEdit(id, textarea) {
+  const original = DATA.find(d => d.id === id)?.purpose || '';
+  if (textarea.value !== original) {
+    MODIFIED[id] = textarea.value;
+    textarea.classList.add('modified');
+  } else {
+    delete MODIFIED[id];
+    textarea.classList.remove('modified');
+  }
+  document.getElementById('stats').innerHTML =
+    document.getElementById('stats').innerHTML.replace(/수정됨: <b>\d+건<\/b>/, `수정됨: <b>${Object.keys(MODIFIED).length}건</b>`);
+}
+
+function saveChanges() {
+  if (Object.keys(MODIFIED).length === 0) {
+    alert('수정된 항목이 없습니다.');
+    return;
+  }
+
+  // 수정사항을 원본 데이터에 적용
+  const output = DATA.map(d => {
+    if (MODIFIED[d.id]) {
+      return { ...d, purpose: MODIFIED[d.id] };
+    }
+    return d;
+  });
+
+  // JSON 다운로드
+  const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'policyfit-db.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  alert(`${Object.keys(MODIFIED).length}건 수정된 policyfit-db.json을 다운로드했습니다.\noutputs/ 폴더에 덮어쓰면 적용됩니다.`);
+}
+
+init();
+</script>
+</body>
+</html>

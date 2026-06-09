@@ -1,0 +1,772 @@
+{
+  "runId": "20260601-224706",
+  "html_total": 795,
+  "html_success": 795,
+  "html_fail": 0,
+  "attach_total": 1636,
+  "attach_success": 1450,
+  "attach_fail": 186,
+  "by_extension": {
+    ".pdf": 503,
+    ".zip": 57,
+    ".png": 47,
+    ".hwp": 814,
+    ".jpg": 40,
+    ".xlsx": 18,
+    ".pptx": 2,
+    ".hwpx": 154,
+    ".docx": 1
+  },
+  "by_extension_success": {
+    ".pdf": 486,
+    ".hwp": 811,
+    ".hwpx": 152,
+    ".docx": 1
+  },
+  "failures": [
+    {
+      "id": "PBLN_000000000109049/01__첨부자료.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000109049/print__250425_의료기기산업 종합지원센터 상시 상담 프로그램 안내.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000109367/01__첨부파일.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000117260/01__QR코드(2026년 밀양시 단체관광객 유치 인센티브 사전신청).jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117297/print__2026년 상반기 무료 직무발명제도 컨설팅 신청 안내.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117330/print__2026년 직무발명제도 규정 도입 여부 확인 신청 안내.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117599/print__2026 미국 현지 변호사 및 관세사와 온라인 상담.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117632/01__청부파일.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000117643/01__신청양식 2026 예산 로케이션 인센티브 제작지원 사업.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000117696/01__(수정) 상품기술서v3.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000117696/print__동반성장몰.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117697/print__동반성장몰(K전략품목ㆍ시범구매ㆍ상생협력 한정).png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117698/01__기업명_상품기술서_지역상생협력관 코칭상담.pptx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000117698/print__지역상생협력관 지역 상품 발굴 코칭·상담 사업.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117739/01__2026 제출서류 양식_붙임파일.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000117791/print__희망인천 특례보증 안내.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117809/02__02.업종코드-11차+한국표준산업분류+연계표.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000117833/print__국가신약개발사업 2026년 CDMO 사전상담 프로그램 1차 모집 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117889/print__소상공인 고용보험료 지원 사업.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117939/print__2026 국내·외 관광객 유치 환영행사 지원 알림.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117984/01__[제주센터]_2026_창업BuS_홍보포스터_2 (2).jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000117985/print__26년도 할인지원사업 모집공고 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000118229/02__[붙임 2] 멘토링 모집 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000118285/01__붙임+2.+제출서류(양식)+각+1부.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000118296/print__일구삼구-포스터-002.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000118556/01__판판대로 공고문.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000118556/print__판판대로_사업.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000118729/01__창업 BuS 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000118778/01__260223 테마별 체험처 리스트 현황.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000118858/print__「경남 수도권 투자유치 거점센터 데모데이. 멘토링 데이」 참기기업 모집 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119047/02__붙임3.전문가POOL(공개용).xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000119051/print__2026년 StartupD 창업 BuS 참가자 사전 모집 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119131/print__중소기업 승계자문 프로그램.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119170/print__(포스터)강원창조경제_창업버스.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119184/01__회계-세무-서비스-웹포스터_최종.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119316/01__첨부파일.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000119332/print__2026년 하남시 사회적경제기업 역량 강화 교육 컨설팅 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119373/print__붙임2._2026-신개념-포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119523/02__02.업종코드-11차 한국표준산업분류 연계표.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000119677/print__2026 일터혁신 상생컨설팅(세로형).pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000119762/print__[한국능률협회컨설팅] 26년 일터혁신 상생컨설팅 홍보 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119791/02__(별첨1)홍보지 시안.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000119791/03__(별첨2)배달특급로고 QR코드.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000119893/01__모집포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000119978/print__2026 OK FTA 컨설팅 지원사업 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120009/03__웹포스터-가족친화경영컨설팅.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120054/print__2026년도+중소유통업+시설투자+및+운전자금+융자지원계획+공고+(최종).hwp",
+      "error": "NOT_OLE_FILE"
+    },
+    {
+      "id": "PBLN_000000000120058/print__[2026년 일터혁신 상생컨설팅] 참여 기업 모집 안내.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000120159/02__홍보전단.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120162/02__홍보 붙임자료.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120164/01__(제출서류 서식) 2026년 중소기업제품전용판매장(면세장)_참여신청서식 3종.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120215/print__포스터_2026년 산업일자리전환 컨설팅_KSA.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000120250/03__웹포스터-가족친화경영컨설팅.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120329/01__가족친화인증제도_소개.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000120329/print__2026 직장문화 개선 컨설팅 참여 기업 모집.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120334/01__[붙임] 퍼스널케어 상품경쟁력강화 관련서식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120355/02__[붙임_1-4]_서식_사전상담확인서_서약서_및_확약서.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120414/01__첨부파일.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120444/01__과정별 공고문 및 제출서류 양식_수정.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120474/print__2026년 판판셀러 지원사업 온라인쇼핑몰 통합관리시스템 모집 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120573/01__(붙임3) 제56회 경기도 공예품대전 포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120608/02__컨설팅_001.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120620/02__붙임3. 2026년 SW IP(지식재산권) 평가보증 지원사업 신청서식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120681/01__신청양식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120715/print__중동사태 관련 2026년 광주광역시 소상공인 특례보증 리플릿.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120821/01__2026년 디지털커머스 전문기관(소담스퀘어강원) 소상공인 모집 공고.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120894/02__붙임 2. 테스트 환경 조사서.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120920/print__중소기업ai모집포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000120933/01__대야기계장비 소공인특화지원센터 자율사업 통합모집공고_세부사업서식.Zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000120981/01__첨부자료.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121014/print__2026년 제12회 중견기업인의 날 유공자 포상 공고.hwpx",
+      "error": "BAD_ZIP"
+    },
+    {
+      "id": "PBLN_000000000121034/01__2026년 해외 동반진출 K-브랜드 보호 전략 지원사업 기업 모집 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121034/02__붙임+자료.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121076/04__2026_경남투자청_투자유치_원스톱_패키지_포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121084/02__[붙임3] 2026 충북 공공데이터‧AI 활용 창업경진대회 포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121107/01__(붙임3) 권역별 SVI 활용사업 현황 및 향후 활용 계획.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121107/02__2026 SVI 참여기업 포스터 최종.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121180/01__[경남] 2026년 스마트공장 기초구축 지원사업 공고.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121191/print__2026년 산업 분야 온실가스 국제감축사업 공고문.hwpx",
+      "error": "BAD_ZIP"
+    },
+    {
+      "id": "PBLN_000000000121206/01__붙임2.지식재산 스타트업 경진대회 제출서류(양식).zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121206/02__붙임3. 2026 지식재산 스타트업 포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121207/01__[첨부3] 2026 지식재산 데이터 활용 창업 경진대회 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121288/01__2026년 라이브커머스 운영 지원 웹포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121320/02__(포스터)「2026년+산림+공공데이터·AI+활용+창업경진대회」_v2.0.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121390/01__2026년_김포시_사물인터넷(IoT)_측정기기_부착_지원사업_2차_공고_자료.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121477/print__2026 스타트업 월드컵 코리아-경산.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000121478/print__2026 소담스퀘어 전주 소상공인 지원 프로그램.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121488/01__2026년+전북특별자치도+공공데이터AI+활용+창업경진대회(포스터).jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121498/print__0422 농업용 면세유 지원(최종) (1).jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121501/01__2026년 비즈니스 경쟁력 강화지원 서식자료.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121611/01__2026년 EU CBAM 대응 기업지원 컨설팅 2차 모음.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121634/02__3.-2026년-창업-멘토링-모집공고-포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121676/01__마케팅 지원사업(충청남도 소재 기업) 참여기업 모집 공고.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121677/01__ESG 경영 컨설팅 지원사업 (충청남도 소재 기업) 참여기업 모집 공고.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121680/01__★양식교보생명_과제해결제안서요약필수★-1.pptx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121680/print__(★최종본) 2026년 교보생명 이노스테이지 프로그램 모집_포스터.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000121728/01__(포스터)2026년 IP나래 프로그램 하반기(2차) 지원기업 모집.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121753/01__26년 2차 혁신형 모집공고 포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121759/print__중소·중견 기업의 자발적 환경정보공개 지원사업 참여기업 모집 2차 공고.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000121762/print__2026 메인비즈 현장방문 맞춤 코칭.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000121767/03__2026년 IP나래프로그램 하반기(2차) 지원기업 모집 공고 포스터__.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121791/print__(1P)(포스터) 26년 KPC 중소중견기업 ESG 공급망실사.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121799/01__(업체명) 상품기술서.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121799/print__조선일보 연계 중소기업 홍보 판매지원.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121832/01__(별표) 업종코드-표준산업분류 연계표(홈택스).xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121863/01__[포스터] 2026년 IP나래프로그램 하반기(2차) 지원기업 모집 공고 포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000121901/02__[붙임2] 수행계획서 등 제출양식[서식1-7호].zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121901/03__[붙임4] NIPA 사업관리시스템 사용 매뉴얼.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121901/05__[붙임3] 2026 AI청년창업기업 공급기업 후보군(PooL).xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000121931/02__경영전략 컨설팅_소상공인 모집 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122027/01__붙임4. 2026년 C4IR Korea 멤버십 포스터(국문).png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122028/01__2026 에피스OI 웹포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122100/02__붙임  3. 2026년 JNGC 인디 게임 창업(예비창업자) 제작지원 사업비 산출내역서.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122100/03__붙임  4. 관련규정.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122104/print__홍보물(수정).png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122117/01__붙임2. 2026 공공데이터AI 활용 창업경진대회 포스터.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122125/01__26년비축 원자재 이용 강소기업 모집_수정.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122126/01__26년비축 원자재 이용 혁신수출기업 모집.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122130/01__2026 LBS 스타트업 챌린지.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122130/02__제출서류.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122146/01__(붙임) 별첨서식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122152/print__2026 제3-4차 투자유치설명회 ICT벤처 IR 참가기업 모집+.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122153/01__모집포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122162/01__별첨 1. 2026년 판로확대 지원 참여신청서 양식.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122165/01__2026 여성특화 액셀러레이팅 프로그램 참여자 모집 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122165/02__사업계획서_양식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122189/01__★2026년전북지역특화형양식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122204/02__금정구전시회박람회포스터(2차).jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122208/01__2026년 마케팅 구매상담회 참여기업 모집 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122221/02__키친인큐베이터 포스터_푸드위크 코리아.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122226/02__2026-1177_3. (서식4) 컨설팅 연계 대상 기업 목록.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122229/print__[세종창조경제혁신센터] 2026 창업-BuS in 세종 수요투자라운드(미니IR피칭) 신청 안내.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122233/01__2026년글로벌강소기업1_000+프로젝트-강소_강소+지역자율프로그램참여기업제출서식모음.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122254/01__(시장_상점가명) 소속 점포 리스트(서식).xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122254/02__라이더배송비 지원사업(밴드용)_ver.1.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122258/01__02. 작성양식(2026년 관계부처 합동 한류마케팅 참가기업 모집).zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122272/02__2026 전문기관 연계형 지원 사업 웹포스터_크기조절.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122277/01__2026년 U-SPACE 제품개발 통합지원 프로그램 참여기업 모집 공고_.Zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122308/02__[포스터] 2026년 지역가치 창업가 육성사업_홈페이지 pc용.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122308/03__[지원신청서] 2026년 지역 가치 창업가 육성.hwp",
+      "error": "NOT_OLE_FILE"
+    },
+    {
+      "id": "PBLN_000000000122327/print__2. [포스터] 2026년 경기도 31개 시군 일생활 균형 제도 도입 지원 컨설팅 포스터.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122330/01__(붙임2) 용인 DeepTech STARTUP Batch 2026 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122332/print__대구경북경제자유구역 기술 창업기업 맞춤형 멘토링 지원 포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122335/01__붙임2. 2026 예술산업 금융지원 시범사업(보증) 공모신청서 외.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122335/02__붙임3. [웹포스터] 2026 예술산업 금융지원 시범사업(보증).jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122375/02__연장) 2026 D-Link 4기 모집 포스터(~6월 5일).png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122386/01__(AI트랙_일반) 2026_포스코_사업참가신청서_기업명_대한상의.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122386/03__대한상공회의소-2026년 대중소 상생형(포스코) 스마트공장 구축 지원사업 모집공고 웹포스터_확정안_v1.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122389/01__대한상공회의소-2026년 대중소 상생형(포스코) 스마트공장 구축 지원사업 모집공고 웹포스터_확정안_v1.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122389/02__(AI트랙_일반) 2026_포스코_사업참가신청서_기업명_대한상의.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122398/02__비즈니스 밋업 피칭대회 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122399/03__112938_붙임5. 프로그램별 사업신청서 양식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122401/01__78월 전시회 포스터(홍보용).png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122401/02__소개자료.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122421/01__붙임2. (지역특화형) 사업계획서 및 제출서류 양식.zip.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122423/01__2026년 탄소중립설비 지원사업(2차) 공고문 및 신청양식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122432/01__붙임2. 신청서류(서식1 2 3 4).zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122433/02__3. 신청서 서식 모음(2026).zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122444/01__[붙임 1-3] 신청서류.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122444/02__2026 한국철도공사 상생형 창업·벤처기업 지원사업 포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122457/01__4. 신청서 양식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122466/01__[붙임2]전북특별자치도데이터활용기업맞춤형지원사업수요기업신청제반서류.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122467/01__(26유통)제출서류.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122482/print__2027년 친환경농자재(유기질비료·친환경상토) 신청 안내.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122492/01__첨부파일.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122496/01__중동상황대응_『심화컨설팅_지원사업』_참가_신청서_수행계획서_양식.hwp",
+      "error": "NOT_OLE_FILE"
+    },
+    {
+      "id": "PBLN_000000000122496/02__중동 컨설팅 포스터.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122509/02__소상공인경영전략컨설팅지원사업홍보포스터.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122514/01__붙임 1~4. 신청서식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122516/print__침해사고 예방을 위한 취약점 점검 무료 지원.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122517/print__2026년 1인 창조기업 지원센터 선택형 사업 공고.png",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122525/02__[붙임3]+2026년+창업기업+디지털마케팅+지원사업+모집+공고+포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122558/02__(참조)디자인기업전북디자인센터홈페이지가입필수사항.pdf",
+      "error": "EMPTY_PDF"
+    },
+    {
+      "id": "PBLN_000000000122561/print__서리풀 소상공인 창업 클리닉_포스터.jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122562/02__붙임2. 포스터_국문 .jpg",
+      "error": "OCR_NEEDED"
+    },
+    {
+      "id": "PBLN_000000000122565/01__2026년 수산물 온라인마케팅 지원사업 대상자 추가모집 공고_서식.Zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122566/02__소상공인확인서 발급방법[23 중기부공고].zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122566/03__참고문서(매출액_소상공인확인방법_지원제외업종).zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122576/01__붙임파일.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122596/01__2026년 6월 콘텐츠IP보증 공고.Zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122599/01__붙임2.2026년SW강소기업도약패키지지원사업_제출양식.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122601/01__2026년 6월 문화콘텐츠기업보증 공고.Zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122602/02__붙임2. [참고자료]주업종확인서 발급 방법안내 등.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122604/02__첨부02_참여신청서_Open Innovation.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122604/03__첨부02_참여신청서_글로벌 IR.xlsx",
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    {
+      "id": "PBLN_000000000122648/01__영동군 2026년 2차 지방소멸 대응을 위한 와인산업 활성화 지원사업 수혜기업 모집 공고.Zip",
+      "error": "UNSUPPORTED_FORMAT"
+    }
+  ]
+}

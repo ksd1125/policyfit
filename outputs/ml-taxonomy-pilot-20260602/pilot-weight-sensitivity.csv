@@ -1,0 +1,13 @@
+﻿algorithm,k,weight_scheme,fit_mode,ari_vs_unweighted,weighted_silhouette
+gower_pam,8,unweighted,weighted_refit,1.0,0.151976
+gower_pam,8,inverse_sqrt_family,weighted_refit,0.868163,0.13957
+gower_pam,8,inverse_family,weighted_refit,0.868163,0.139557
+gower_hierarchical,5,unweighted,evaluation_only,1.0,0.165734
+gower_hierarchical,5,inverse_sqrt_family,evaluation_only,1.0,0.163765
+gower_hierarchical,5,inverse_family,evaluation_only,1.0,0.162893
+structured_kmeans,5,unweighted,weighted_refit,1.0,0.139338
+structured_kmeans,5,inverse_sqrt_family,weighted_refit,0.809518,0.136708
+structured_kmeans,5,inverse_family,weighted_refit,0.709708,0.134451
+text_tfidf_svd_kmeans,12,unweighted,weighted_refit,1.0,0.161819
+text_tfidf_svd_kmeans,12,inverse_sqrt_family,weighted_refit,0.599036,0.153981
+text_tfidf_svd_kmeans,12,inverse_family,weighted_refit,0.610723,0.15254

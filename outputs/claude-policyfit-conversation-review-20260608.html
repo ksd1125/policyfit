@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="date" content="2026-06-08">
+<title>정책핏 대화형 서비스 검토 및 Claude 전달안</title>
+<style>
+  :root{
+    --blue:#3182F6;--ink:#191F28;--muted:#6B7684;--line:#E5E8EB;--bg:#F7F8FA;
+    --green:#0A8F62;--amber:#B76B00;--red:#D92D20;--card:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Segoe UI",sans-serif;line-height:1.62}
+  main{max-width:1080px;margin:0 auto;padding:34px 24px 70px}
+  header{background:linear-gradient(180deg,#fff,rgba(255,255,255,.72));border:1px solid var(--line);border-radius:18px;padding:28px 30px;margin-bottom:22px}
+  h1{font-size:28px;line-height:1.25;margin:0 0 10px}
+  h2{font-size:20px;margin:34px 0 12px;border-left:4px solid var(--blue);padding-left:10px}
+  h3{font-size:16px;margin:18px 0 8px}
+  p{margin:6px 0;color:#333D4B}
+  .meta{color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h3{margin-top:0}
+  .tag{display:inline-flex;align-items:center;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:700;background:#EAF2FE;color:var(--blue);margin-right:4px}
+  .tag.green{background:#E8F7F0;color:var(--green)}
+  .tag.amber{background:#FFF4DF;color:var(--amber)}
+  .tag.red{background:#FDECEC;color:var(--red)}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13.5px}
+  th,td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:#F2F4F6;font-weight:700}
+  tr:last-child td{border-bottom:0}
+  code{background:#F2F4F6;border-radius:5px;padding:2px 5px;font-size:12px}
+  .flow{display:grid;grid-template-columns:1fr 34px 1fr;gap:8px;align-items:center}
+  .arrow{text-align:center;color:var(--muted);font-weight:700}
+  .issue{display:flex;gap:10px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px;margin:8px 0}
+  .sev{flex:0 0 62px;text-align:center;border-radius:8px;font-size:12px;font-weight:800;padding:4px 0;height:26px}
+  .sev.high{background:#FDECEC;color:var(--red)}
+  .sev.medium{background:#FFF4DF;color:var(--amber)}
+  .sev.low{background:#E8F7F0;color:var(--green)}
+  .task{counter-increment:item;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;margin:10px 0}
+  .task h3:before{content:counter(item) ". ";color:var(--blue)}
+  ol.tasks{counter-reset:item;list-style:none;padding:0;margin:0}
+  ul{margin:8px 0 0 20px;padding:0}
+  .note{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px}
+  @media(max-width:760px){.grid,.flow{grid-template-columns:1fr}.arrow{display:none}main{padding:18px 14px}header{padding:20px}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="meta">2026-06-08 · Claude 작업 전달용</p>
+    <h1>정책핏 대화형 서비스 검토 및 개선 전달안</h1>
+    <p>목표는 정책핏이 단순 검색 포털이 아니라, 사용자의 말에서 조건을 해석하고 다음 질문으로 좁혀가는 대화형 진단 서비스처럼 느껴지게 하는 것입니다.</p>
+    <p class="meta">대상: <code>outputs/policyfit/index.html</code>, <code>policyfit-config.js</code>, <code>policyfit-app.jsx</code>, <code>policyfit-db.json</code></p>
+  </header>
+
+  <h2>핵심 판단 규칙</h2>
+  <div class="grid">
+    <div class="card">
+      <h3><span class="tag">national_first</span>지역 + 업종/목적</h3>
+      <p>전국 공통 공고를 먼저 보여주고, 그 다음 해당 지역 공고를 보여줍니다.</p>
+      <p class="meta">예: 반석동 카페 운영자금, 청주 카페 운영자금</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag green">strict</span>지역만 제한</h3>
+      <p>전국 공통 공고를 제외하고 해당 지역 공고만 보여줍니다.</p>
+      <p class="meta">예: 대전 지역 공고 전체 알려줘</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag amber">national_only</span>전국 명시</h3>
+      <p>regions:any인 전국 단위 공고만 보여줍니다.</p>
+      <p class="meta">예: 전국 온라인 쇼핑몰 마케팅 지원</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag">broad_then_ask_region</span>목적만 있음</h3>
+      <p>전체 기준으로 먼저 추천하고, 지역을 묻는 꼬리 질문을 붙입니다.</p>
+      <p class="meta">예: 마케팅 지원 알려줘</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag">broad_then_ask_region</span>업종 + 목적</h3>
+      <p>전체 기준으로 추천하고, 사업장 지역을 물어 다음 턴에서 좁힙니다.</p>
+      <p class="meta">예: 카페 마케팅 지원 알려줘</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag red">주의</span>지역 오탐</h3>
+      <p><code>대전 지역</code>을 <code>전 지역</code>으로 오탐하지 않도록 전국 판정은 지역명 판정 뒤에 실행해야 합니다.</p>
+    </div>
+  </div>
+
+  <h2>대화형 서비스로 느껴지게 하는 흐름</h2>
+  <div class="flow">
+    <div class="card">
+      <h3>사용자</h3>
+      <p><code>마케팅 지원 알려줘</code></p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="card">
+      <h3>정책핏</h3>
+      <p>마케팅·판로 지원 공고를 전체 기준으로 먼저 찾아봤어요. 지역을 아직 말씀하지 않으셔서 전국 공통 공고와 지역별 공고를 함께 보여드릴게요.</p>
+      <p><b>꼬리 질문:</b> 사업장이 어느 지역인가요?</p>
+    </div>
+  </div>
+  <div class="flow" style="margin-top:10px">
+    <div class="card">
+      <h3>사용자</h3>
+      <p><code>반석동 카페 운영하는데 관련 정책 알려줘</code></p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="card">
+      <h3>정책핏</h3>
+      <p>반석동은 대전광역시 유성구, 카페는 음식·외식 업종으로 해석했어요. 전국 공통 공고를 먼저, 그 다음 대전 지역 공고를 보여드릴게요.</p>
+      <p><b>꼬리 질문:</b> 운영자금, 시설개선, 마케팅 중 어떤 목적을 먼저 볼까요?</p>
+    </div>
+  </div>
+
+  <h2>발견된 문제와 권고</h2>
+  <div class="issue">
+    <span class="sev high">높음</span>
+    <div>
+      <b>전국/지역 의도 오탐</b>
+      <p><code>대전 지역 공고 전체</code>가 <code>전 지역</code> 키워드로 인해 전국으로 오탐될 수 있었습니다. 전국 판정은 명시적 전국 표현만 사용하고 지역명 판정 뒤에 실행해야 합니다.</p>
+    </div>
+  </div>
+  <div class="issue">
+    <span class="sev high">높음</span>
+    <div>
+      <b>전국 공고와 지역 공고가 한 리스트에 섞임</b>
+      <p>로직상 <code>_regionClass</code>가 붙어 있으므로 UI에서 <code>전국 공통 추천</code>과 <code>지역 공고</code> 섹션을 분리해야 합니다.</p>
+    </div>
+  </div>
+  <div class="issue">
+    <span class="sev high">높음</span>
+    <div>
+      <b>목적만 있는 질문의 대화감 부족</b>
+      <p><code>마케팅 지원 알려줘</code>는 검색 결과만 보여주지 말고 전체 추천 후 지역을 묻는 꼬리 질문으로 이어가야 합니다.</p>
+    </div>
+  </div>
+  <div class="issue">
+    <span class="sev high">높음</span>
+    <div>
+      <b>특수 대상 공고 오추천</b>
+      <p><code>둔산동 음식점 창업 준비</code>처럼 일반 조건만 말했는데 장애인·청년·여성·사회적경제 등 특수 대상 공고가 상단에 나오면 안 됩니다. 사용자가 직접 해당 조건을 말했을 때만 포함해야 합니다.</p>
+    </div>
+  </div>
+  <div class="issue">
+    <span class="sev high">높음</span>
+    <div>
+      <b>가짜 전국 공고</b>
+      <p><code>regions:any</code>여도 제목이나 기관에 울산·경북·광주 같은 지역명이 있으면 전국 공통 공고처럼 보여주면 안 됩니다. 전국 공통 섹션에서는 제외하거나 해당 지역 공고로 취급해야 합니다.</p>
+    </div>
+  </div>
+  <div class="issue">
+    <span class="sev medium">중간</span>
+    <div>
+      <b>시군구 정밀도 한계</b>
+      <p>현재 DB의 <code>regions</code>는 <code>seoul/gyeonggi/metro/local/any</code> 수준입니다. 시군구 정확도를 높이려면 <code>sido/sigungu</code> 필드를 추가해야 합니다.</p>
+    </div>
+  </div>
+  <div class="issue">
+    <span class="sev medium">중간</span>
+    <div>
+      <b>목적 세분화 부족</b>
+      <p>시설개선, 위생개선, 장비구입, 인테리어 같은 표현은 기존 goal로 충분히 세분화되지 않습니다. 보조 의도나 후속 질문으로 처리해야 합니다.</p>
+    </div>
+  </div>
+
+  <h2>Claude 구현 작업</h2>
+  <ol class="tasks">
+    <li class="task">
+      <h3>결과 UI 섹션 분리</h3>
+      <p><code>_regionClass</code>를 사용해 <code>전국 공통 추천</code>, <code>지역 공고</code>, <code>지역 전용 공고</code>, <code>전국 단위 공고</code>를 분리합니다.</p>
+      <ul>
+        <li><code>national_first</code>: national 섹션 먼저, regional 섹션 다음</li>
+        <li><code>strict</code>: regional-only만</li>
+        <li><code>national_only</code>: national-only만</li>
+      </ul>
+    </li>
+    <li class="task">
+      <h3>목적만/업종+목적 질문에 꼬리 질문 추가</h3>
+      <p>지역이 없는 경우 전체 기준 추천 후 <code>사업장이 어느 지역인가요?</code>를 묻습니다. 지역 quick chips를 함께 제공합니다.</p>
+    </li>
+    <li class="task">
+      <h3>회귀 테스트 추가</h3>
+      <p>전국/지역 의도 오탐을 막는 테스트를 추가합니다. 특히 <code>대전 지역</code>과 <code>전지역</code>은 반드시 구분해야 합니다.</p>
+    </li>
+    <li class="task">
+      <h3>특수 대상/가짜 전국 공고 테스트 추가</h3>
+      <p><code>둔산동 음식점 창업 준비</code>는 장애인 창업 공고를 상단에 노출하지 않아야 하고, <code>둔산동 장애인 창업 준비</code>처럼 직접 말한 경우에만 포함해야 합니다.</p>
+    </li>
+    <li class="task">
+      <h3>DB 지역 정밀도 보강</h3>
+      <p>공고의 제목, 기관, 대상 문구에서 <code>sido</code>, <code>sigungu</code> 후보를 추출해 지역 매칭 정밀도를 높입니다.</p>
+    </li>
+  </ol>
+
+  <h2>수용 테스트 10개</h2>
+  <table>
+    <thead><tr><th>입력</th><th>기대 모드</th><th>기대 동작</th></tr></thead>
+    <tbody>
+      <tr><td>반석동 카페 운영하는데 관련 정책 알려줘</td><td><code>national_first</code></td><td>전국 공통 → 대전/광역시 지역</td></tr>
+      <tr><td>대전 지역 공고 전체 알려줘</td><td><code>strict</code></td><td>대전 지역 공고만, 전국 제외</td></tr>
+      <tr><td>서울 강남 미용실 인건비 지원 있어?</td><td><code>national_first</code></td><td>전국 공통 → 서울 지역</td></tr>
+      <tr><td>서울 지역 공고 전체 알려줘</td><td><code>strict</code></td><td>서울 지역 공고만</td></tr>
+      <tr><td>청주 카페 운영자금 필요해</td><td><code>national_first</code></td><td>전국 공통 → 충북/청주 지역</td></tr>
+      <tr><td>부산 해운대 음식점 시설개선 지원</td><td><code>national_first</code></td><td>전국 공통 → 부산 지역</td></tr>
+      <tr><td>전국 온라인 쇼핑몰 마케팅 지원</td><td><code>national_only</code></td><td>전국 단위 공고만</td></tr>
+      <tr><td>목포 미용실 정책 알려줘</td><td><code>national_first</code></td><td>전국 공통 → 전남/목포 지역</td></tr>
+      <tr><td>경기 광주 편의점 자금 지원</td><td><code>national_first</code></td><td>전국 공통 → 경기/인천 지역</td></tr>
+      <tr><td>광주 음식점 운영자금 알려줘</td><td><code>national_first</code></td><td>전국 공통 → 광주광역시 지역</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <h2 style="margin-top:0">Claude에게 남기는 요약</h2>
+    <p>정책핏의 차별점은 검색 결과 수가 아니라 조건 해석과 다음 질문입니다. 지역명은 필터가 아니라 의도 신호입니다. 지역만 말하면 strict, 지역+업종/목적이면 national_first, 목적만 있으면 broad_then_ask_region으로 처리하세요.</p>
+    <p>가장 중요한 UI 개선은 결과 목록을 섹션화하는 것입니다. 사용자가 왜 전국 공고가 먼저 나오고 왜 지역 공고가 다음에 나오는지 이해할 수 있어야 합니다.</p>
+  </div>
+</main>
+</body>
+</html>

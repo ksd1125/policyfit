@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>기업마당 정책공고 데이터셋 진행 결과 및 향후 계획</title>
+  <style>
+    body { font-family: "Malgun Gothic", sans-serif; margin: 24px; color: #1f2937; line-height: 1.65; }
+    h1, h2, h3 { margin: 0 0 12px; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 22px; margin-top: 28px; }
+    h3 { font-size: 18px; margin-top: 20px; }
+    p { margin: 8px 0; }
+    ul { margin: 8px 0 8px 20px; }
+    li { margin: 4px 0; }
+    .card { background: #f8fafc; border: 1px solid #dbe4ee; border-radius: 10px; padding: 16px; margin: 16px 0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .metric { background: #eef6ff; border: 1px solid #cfe2ff; border-radius: 10px; padding: 14px; }
+    .metric strong { display: block; font-size: 22px; margin-bottom: 4px; }
+    code { background: #eef2f7; padding: 2px 5px; border-radius: 4px; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1>기업마당 정책공고 데이터셋 진행 결과 및 향후 계획</h1>
+  <p>현재 단계는 <strong>원문 확보와 구조 파악</strong> 단계입니다. 사용자 노출 화면을 확정하기 전에, 실제 공고 재료가 어떤 형태로 들어오는지 확인하는 데 집중했습니다.</p>
+
+  <h2>1. 이번 단계에서 완료한 일</h2>
+  <div class="card">
+    <ul>
+      <li>별도 프로젝트 <code>C:\Users\USER\codex-test\projects\bizinfo-policy-dataset</code> 생성</li>
+      <li>기업마당 API 수집기 구현 및 테스트 완료</li>
+      <li>상세 HTML, 본문출력파일, 첨부파일 전량 확보 완료</li>
+      <li>첨부 다운로드에 세션 쿠키가 필요하다는 점 확인 후 반영</li>
+      <li>778건 공고 기준 유형화 분석 수행</li>
+    </ul>
+  </div>
+
+  <h2>2. 현재 확보한 데이터</h2>
+  <div class="grid">
+    <div class="metric"><strong>778건</strong>공고 수</div>
+    <div class="metric"><strong>778건</strong>상세 HTML</div>
+    <div class="metric"><strong>1,592건</strong>첨부/출력파일</div>
+    <div class="metric"><strong>0건</strong>수집 실패</div>
+  </div>
+  <p>첨부 총 용량은 약 <code>852MB</code>입니다.</p>
+  <p>요청 기준 기간은 <code>2024-06-01 ~ 2026-06-01</code>이었지만, 실제 API 응답상 확보된 등록일 범위는 <code>2025-01-10 ~ 2026-05-29</code>였습니다.</p>
+
+  <h2>3. 파일 형식 분포</h2>
+  <div class="card">
+    <ul>
+      <li>HWP: 798</li>
+      <li>PDF: 486</li>
+      <li>HWPX: 144</li>
+      <li>ZIP: 56</li>
+      <li>PNG: 47</li>
+      <li>JPG: 40</li>
+      <li>XLSX: 18</li>
+    </ul>
+  </div>
+  <p>핵심 판단은 간단합니다. 실제 실무 정보는 <strong>HTML만으로 충분하지 않고 HWP/HWPX 첨부를 읽어야 한다</strong>는 점입니다.</p>
+
+  <h2>4. 유형화 검토 결과</h2>
+  <div class="card">
+    <h3>문서유형</h3>
+    <ul>
+      <li><code>hwp_core</code>: 403건</li>
+      <li><code>html_plus_print</code>: 274건</li>
+      <li><code>bundle_package</code>: 53건</li>
+      <li><code>pdf_core</code>: 30건</li>
+      <li><code>mixed_attachment</code>: 18건</li>
+    </ul>
+    <h3>지원유형</h3>
+    <ul>
+      <li><code>funding</code>: 268건</li>
+      <li><code>consulting</code>: 224건</li>
+      <li><code>commercialization</code>: 210건</li>
+      <li><code>facility</code>: 48건</li>
+      <li><code>education_event</code>: 25건</li>
+    </ul>
+    <h3>대상유형</h3>
+    <ul>
+      <li><code>sme</code>: 455건</li>
+      <li><code>small_business</code>: 180건</li>
+      <li><code>startup_venture</code>: 106건</li>
+    </ul>
+    <h3>접수유형</h3>
+    <ul>
+      <li><code>website</code>: 308건</li>
+      <li><code>mixed</code>: 187건</li>
+      <li><code>email</code>: 150건</li>
+      <li><code>visit</code>: 108건</li>
+    </ul>
+    <h3>기간유형</h3>
+    <ul>
+      <li><code>budget_exhausted</code>: 343건</li>
+      <li><code>date_range</code>: 324건</li>
+      <li><code>always_open</code>: 45건</li>
+    </ul>
+  </div>
+
+  <h2>5. 지금까지의 핵심 판단</h2>
+  <div class="card">
+    <ul>
+      <li>공고는 <code>메타데이터 + 상세 HTML + 본문출력파일 + 첨부 N개</code> 구조로 봐야 합니다.</li>
+      <li>파싱은 <strong>메타데이터 → HTML → 본문출력파일 → 첨부</strong> 순서가 적절합니다.</li>
+      <li>챗봇용 정규화는 단일 분류가 아니라 <strong>문서유형 + 지원유형 + 대상유형 + 접수유형 + 기간유형</strong> 다축 구조가 필요합니다.</li>
+    </ul>
+  </div>
+
+  <h2>6. 향후 계획안</h2>
+  <div class="card">
+    <h3>1단계. 원문 텍스트화</h3>
+    <p>PDF, HWP, HWPX를 MD 또는 텍스트로 변환하고 실패 유형을 분리합니다.</p>
+    <h3>2단계. 정규화 후보 필드 추출</h3>
+    <p>지원대상, 지원내용, 신청기간, 신청방법, 제출서류, 제외조건, 문의처, 유의사항을 우선 추출합니다.</p>
+    <h3>3단계. 챗봇용 스키마 확정</h3>
+    <p>답변용 필드와 출처 추적 필드, 신뢰도 플래그를 확정합니다.</p>
+    <h3>4단계. 샘플 질의 테스트</h3>
+    <p>자금, 판로, 창업, 보증 등 대표 질문으로 실제 답변 품질을 점검합니다.</p>
+  </div>
+
+  <h2>7. 다른 환경으로 넘길 때 필요한 핵심 파일</h2>
+  <div class="card">
+    <ul>
+      <li><code>outputs\20260601-progress-and-plan-summary.html</code></li>
+      <li><code>outputs\20260601-progress-and-plan-summary.md</code></li>
+      <li><code>outputs\notice-type-analysis-20260601-131729.html</code></li>
+      <li><code>raw\api\20260601-131729</code></li>
+      <li><code>raw\html\20260601-131729</code></li>
+      <li><code>raw\files\20260601-131729</code></li>
+    </ul>
+  </div>
+
+  <p>지금 단계는 <strong>정규화 전 재료 확보와 구조 파악 단계</strong>이며, 다음 작업자는 <strong>원문 변환 파이프라인</strong>부터 이어서 진행하면 됩니다.</p>
+</body>
+</html>

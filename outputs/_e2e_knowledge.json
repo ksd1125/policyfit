@@ -1,0 +1,171 @@
+[
+  {
+    "id": "PBLN_000000000122836",
+    "title": "[경기] 2026년 제조로봇ㆍAI융합 실증지원 사업 공고(제조로봇 도입지원 사업)",
+    "region": "경기",
+    "category": "금융",
+    "subcategory": "기술사업화/이전/지도",
+    "institution": "경기도",
+    "executor": "경기테크노파크",
+    "registeredAt": "2026-06-05 14:34:46",
+    "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000122836",
+    "support": {
+      "summary": "도내 중소ㆍ중견기업(본사 또는 공장등록)으로 제조로봇ㆍAI 융합 실증 수행이 가능한 도입/공급기업으로 구성된 컨소시엄 - (도입기업) 로봇ㆍAI 융합 제조공정 도입 및 운영 등 실증이 가능한 기업 - (공급기업) 로봇ㆍAI 융합 제조공정 설치 및 유지보수 등이 가능한 기업 - 지원분야 : 뿌리(기계, 금속ㆍ플라스틱, 자동차, 전기전자), 조선ㆍ항공, 섬유,",
+      "type": "기술사업화/이전/지도",
+      "purposes": [
+        "시설개보수"
+      ],
+      "amount": null,
+      "rate": null,
+      "duration": null
+    },
+    "eligibility": {
+      "target": "중소기업",
+      "conditions": [],
+      "exclusions": [],
+      "industryRestrictions": []
+    },
+    "application": {
+      "period": "2026-06-04 ~ 2026-06-30",
+      "periodType": "date_range",
+      "method": "온라인 접수 (경기테크노파크 사업관리시스템)",
+      "steps": [
+        "온라인 접수 (경기테크노파크 사업관리시스템)"
+      ],
+      "documents": [],
+      "onlineAvailable": true
+    },
+    "contact": {
+      "name": "경기테크노파크 제조로봇팀 031-505-9112, 9122, 9106",
+      "phone": "031-505-9112",
+      "email": null,
+      "website": null
+    },
+    "quality": {
+      "grade": "moderate",
+      "sources": [
+        "api",
+        "html",
+        "attachment"
+      ],
+      "attachmentCount": 1,
+      "contentLength": 3783,
+      "purposeConfidence": "medium"
+    }
+  },
+  {
+    "id": "PBLN_000000000122838",
+    "title": "[세종] 2026년 2차 지역주력산업육성(지역특화프로젝트 레전드50+2.0) 사업화지원 모집 공고(지능형 모빌리티 부품 및 기능성 바이오 소재 산업)",
+    "region": "세종",
+    "category": "금융",
+    "subcategory": "기술사업화/이전/지도",
+    "institution": "중소벤처기업부",
+    "executor": "세종테크노파크",
+    "registeredAt": "2026-06-05 14:39:39",
+    "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000122838",
+    "support": {
+      "summary": "세종지역 지역특화 프로젝트 2.0에 선정된 참여기업 -상의 지역중소기업(중소기업 또는 중소기업협동조합) - 사업장 소재지가 세종특별자치시 내 소재 / Pre R&D(R&D 기획, 기술이전, 기술지도, 장비지원, 인증지원, 특허지원), Post R&D(시제품제작, 제품고급화, 디자인, 시장조사, 마케팅, 컨설팅) 지원 - 기업당 최대 25백만원 이내에서 자유",
+      "type": "기술사업화/이전/지도",
+      "purposes": [
+        "마케팅비",
+        "사업화",
+        "컨설팅",
+        "디자인·브랜딩",
+        "인증취득"
+      ],
+      "amount": {
+        "max": "기업당 최대 25백만원",
+        "raw": "기업당 최대 25백만원"
+      },
+      "rate": null,
+      "duration": null
+    },
+    "eligibility": {
+      "target": "중소기업",
+      "conditions": [],
+      "exclusions": [],
+      "industryRestrictions": []
+    },
+    "application": {
+      "period": "2026-06-05 ~ 2026-06-12",
+      "periodType": "date_range",
+      "method": "온라인 접수(기업지원사업 관리시스템)",
+      "steps": [
+        "온라인 접수(기업지원사업 관리시스템)"
+      ],
+      "documents": [],
+      "onlineAvailable": true
+    },
+    "contact": {
+      "name": "(프로그램 및 신청ㆍ접수) 세종테크노파크 044-850-2144 / (SMTECH 회원가입) 중소기업 통합콜센터 국번없이 1357",
+      "phone": "044-850-2144",
+      "email": null,
+      "website": null
+    },
+    "quality": {
+      "grade": "detailed",
+      "sources": [
+        "api",
+        "html",
+        "attachment"
+      ],
+      "attachmentCount": 1,
+      "contentLength": 1747,
+      "purposeConfidence": "high"
+    }
+  },
+  {
+    "id": "PBLN_000000000122847",
+    "title": "[경북] 2026년 경북 가상융합산업혁신센터 통합 기업지원사업 참여기업 모집 재공고",
+    "region": "경북",
+    "category": "금융",
+    "subcategory": "기술사업화/이전/지도",
+    "institution": "경상북도",
+    "executor": "구미전자정보기술원",
+    "registeredAt": "2026-06-05 15:16:22",
+    "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000122847",
+    "support": {
+      "summary": "접수마감일 기준 본사 또는 지사의 소재지가 경북인 중소기업(법인 및 개인) / 가상융합관련 서비스 제작 및 고도화, 기업 맞춤형 교육 지원 - (필수) 지원기업은 지원금의 20%이상을 현금 출자, 경북 가상융합산업 혁신센터 보유 장비를 활용한 서비스 실증 필수 - (서비스 개발 및 실증지원) 제작ㆍ전환하기 위해 필요한 인건비 및 직접비 지원 ※ 자세한 지원",
+      "type": "기술사업화/이전/지도",
+      "purposes": [
+        "인건비",
+        "교육훈련"
+      ],
+      "amount": null,
+      "rate": null,
+      "duration": null
+    },
+    "eligibility": {
+      "target": "중소기업",
+      "conditions": [],
+      "exclusions": [],
+      "industryRestrictions": []
+    },
+    "application": {
+      "period": "2026-06-02 ~ 2026-06-19",
+      "periodType": "date_range",
+      "method": "이메일 접수(hjshin@geri.re.kr)",
+      "steps": [
+        "이메일 접수(hjshin@geri.re.kr)"
+      ],
+      "documents": [],
+      "onlineAvailable": true
+    },
+    "contact": {
+      "name": "구미전자정보기술원 054-460-9056, hjshin@geri.re.kr",
+      "phone": "054-460-9056",
+      "email": "hjshin@geri.re.kr",
+      "website": null
+    },
+    "quality": {
+      "grade": "moderate",
+      "sources": [
+        "api",
+        "html"
+      ],
+      "attachmentCount": 0,
+      "contentLength": 623,
+      "purposeConfidence": "high"
+    }
+  }
+]

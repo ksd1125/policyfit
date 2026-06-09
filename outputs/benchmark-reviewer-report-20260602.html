@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Taxonomy Benchmark — 리뷰어 검토 의견</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:#F5F2EC;color:#1A1916;line-height:1.75}
+.w{max-width:980px;margin:0 auto;padding:32px 24px 70px}
+h1{font-size:24px;font-weight:700;color:#2D4540;margin-bottom:4px}
+h2{font-size:18px;font-weight:600;color:#2D4540;margin:34px 0 12px;padding-bottom:6px;border-bottom:2px solid #E8E3D7}
+h3{font-size:15px;font-weight:600;margin:20px 0 8px;color:#3a4540}
+p,li{font-size:14px;margin-bottom:6px}
+ul,ol{padding-left:20px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px}
+th,td{border:1px solid #E8E3D7;padding:7px 9px;text-align:left;vertical-align:top}
+th{background:#E8F0ED;font-weight:600;color:#2D4540}
+.pass{color:#166534;font-weight:600}.fail{color:#a84b40;font-weight:600}.warn{color:#92400e;font-weight:600}
+.box{background:#fff;border:1px solid #E8E3D7;border-radius:12px;padding:18px 20px;margin:16px 0}
+.box-warn{border-left:4px solid #ca8a04;background:#fffdf8}
+.box-good{border-left:4px solid #16a34a;background:#f0fdf4}
+.box-critical{border-left:4px solid #dc2626;background:#fef2f2}
+.box-tech{border-left:4px solid #2563eb;background:#eff6ff}
+code{background:#f4f0e6;padding:2px 6px;border-radius:4px;font-size:12px}
+.ref{font-size:12px;color:#6F6B62;margin-top:4px}
+.tag{display:inline-block;padding:1px 7px;border-radius:99px;font-size:11px;font-weight:600;margin-right:4px}
+.t-crit{background:#fde2e1;color:#a84b40}.t-major{background:#fef3c7;color:#92400e}.t-minor{background:#e0ecf4;color:#2d5090}.t-tech{background:#dbeafe;color:#1e40af}
+</style>
+</head>
+<body>
+<div class="w">
+
+<h1>정책상품 ML Taxonomy Benchmark — 리뷰어 검토 의견</h1>
+<p style="color:#6F6B62">검토일: 2026-06-02 | 검토자: Claude (peer-review 관점) | 대상: <code>run-ml-taxonomy-benchmark.py</code> 및 산출물</p>
+
+<div class="box box-good">
+<strong>총평:</strong> 이전 검토(2026-06-02 1차)의 권고 5건이 충실히 반영되었습니다. 가중 스킴 3종 비교, Prediction Strength, V-measure, content_repeat 확장(목적 Jaccard + 코사인), 6개 표현공간 비교가 모두 구현되었습니다. <strong>방법론 설계는 동료 검토를 통과할 수준</strong>입니다. 다만 결과 해석에서 반드시 전면에 내세워야 할 핵심 발견과, AI 기술 측면의 보완 여지가 있습니다.
+</div>
+
+<h2>1. 가장 중요한 발견: 데이터에 강한 군집 구조가 없다</h2>
+
+<div class="box box-critical">
+<span class="tag t-crit">CRITICAL</span>
+<h3>C-1. 모든 알고리즘의 Silhouette이 0.12–0.17 — 구조 부재 신호</h3>
+<p>6개 알고리즘 × k=4–16 전체에서 Silhouette 최댓값이 <strong>0.174</strong>(text_tfidf k=15)에 불과합니다. Kaufman & Rousseeuw(1990)의 해석 기준에서 <strong>Silhouette &lt; 0.25는 "유의미한 구조가 발견되지 않음(no substantial structure)"</strong>에 해당합니다.</p>
+<p>이것은 특정 알고리즘의 문제가 아니라 <strong>데이터 자체가 자연스러운 분리 경계를 갖지 않는다</strong>는 신호입니다. Prediction Strength도 이를 뒷받침합니다: 최고값이 LCA의 평균 0.583 / 최소 0.320으로, Tibshirani & Walther(2005)의 권장 기준(0.8–0.9)에 한참 못 미칩니다.</p>
+<p><strong>리뷰어 요구:</strong> 보고서 첫 문단에 "선택된 taxonomy 후보는 약한(weak) 구조이며, 절대적 군집 분리도는 낮다"를 명시해야 합니다. 현재 보고서는 알고리즘 간 <em>상대</em> 비교에 집중하느라 <em>절대</em> 구조 강도가 낮다는 사실을 충분히 전면화하지 않았습니다. 이를 누락하면 "taxonomy가 데이터에서 뚜렷이 나타났다"는 과대 해석으로 읽힐 위험이 있습니다.</p>
+<p class="ref">Kaufman, L., & Rousseeuw, P. J. (1990). Finding Groups in Data. Wiley. — Silhouette 0.71–1.0 강함, 0.51–0.70 합리적, 0.26–0.50 약함, ≤0.25 구조 없음.</p>
+</div>
+
+<h2>2. 보완이 필요한 문제</h2>
+
+<div class="box box-warn">
+<span class="tag t-major">MAJOR</span>
+<h3>B-1. LCA의 안정성(Jaccard 0.98)이 비정상적으로 높다 — 이산화 인공물 의심</h3>
+<p>LCA의 bootstrap Jaccard 0.980, ARI 0.976은 다른 방법(0.65–0.89)을 압도합니다. 그런데 LCA만 입력이 다릅니다: <strong>연속형 변수(금액·금리·로그 카운트)를 사분위 구간으로 이산화</strong>해서 씁니다(<code>discretize_numeric</code>). 이산화는 노이즈를 제거하므로 재표집 안정성을 인위적으로 끌어올립니다.</p>
+<p>즉 "LCA가 가장 안정적"이라는 결론은 <strong>알고리즘 우수성</strong>이 아니라 <strong>입력 전처리 차이</strong>의 산물일 수 있습니다. 다른 방법은 연속 공간, LCA는 이산 공간 — apples-to-apples 비교가 아닙니다.</p>
+<p><strong>권장:</strong> (1) 다른 방법도 동일하게 이산화한 입력으로 한 번 더 안정성을 측정하거나, (2) LCA의 높은 안정성을 "이산화로 인한 것일 수 있다"고 명시. 안정성 단독으로 preferred candidate를 LCA로 미는 현재 선택 로직(prediction_strength → stability → silhouette 순)을 재검토.</p>
+</div>
+
+<div class="box box-warn">
+<span class="tag t-major">MAJOR</span>
+<h3>B-2. LCA k=4가 사실상 "금융 vs 비금융" 2분할의 과분할</h3>
+<p>우선 후보 LCA k=4의 군집 프로파일을 보면:</p>
+<table>
+<tr><th>군집</th><th>크기</th><th>지배 속성</th><th>해석</th></tr>
+<tr><td>2</td><td>129</td><td>금융/융자 96%, 이자보전 71%</td><td class="pass">깨끗하게 분리됨</td></tr>
+<tr><td>0</td><td>274</td><td>경영, 컨설팅 47%, 마케팅 26%</td><td class="warn">3·0 군집 중복</td></tr>
+<tr><td>3</td><td>231</td><td>경영, 컨설팅 53%, 마케팅 36%, 사업화 33%</td><td class="warn">0번과 거의 동일</td></tr>
+<tr><td>1</td><td>161</td><td>경영, 보증지원 27%, 시설 22%</td><td>혼합</td></tr>
+</table>
+<p>군집 0과 3은 <strong>둘 다 경영-컨설팅-마케팅 지배</strong>로 실질적 차이가 모호합니다. 실제 강한 경계는 "융자(군집 2)" 하나뿐이고, 나머지 경영 덩어리를 3개로 쪼갠 것에 가깝습니다. 이는 gower_hierarchical k=4에서 한 군집이 99.4% 점유율로 붕괴하는 현상(<code>max_cluster_share=0.994</code>)과 같은 맥락 — <strong>비금융 정책이 하나의 거대 연속체</strong>임을 시사합니다.</p>
+<p><strong>권장:</strong> k=2(금융/비금융)부터의 프로파일도 함께 제시하고, "다축 태그 구조가 단일 계층보다 적합할 수 있다"는 보고서의 결론(실행순서 5항)을 데이터로 뒷받침. 군집 0·3의 분리 정당성을 통계적으로 검증(예: 두 군집 간 속성 분포 차이 검정)하거나 병합 권고.</p>
+</div>
+
+<div class="box box-warn">
+<span class="tag t-minor">MINOR</span>
+<h3>B-3. GroupKFold의 누수 방지가 대부분 비활성</h3>
+<p>795건에 사업군 757개 — 즉 <strong>703개가 단독(singleton) 그룹</strong>이고 다중 멤버 사업군은 16개(54건)뿐입니다. GroupKFold가 실제로 누수를 막는 대상은 이 54건이며, 나머지는 사실상 무작위 분할입니다. 설계는 옳지만 <strong>현재 데이터에서는 효과가 제한적</strong>임을 명시하는 것이 정직합니다.</p>
+</div>
+
+<div class="box box-warn">
+<span class="tag t-minor">MINOR</span>
+<h3>B-4. Gower 거리가 목적 이진변수에 과도하게 지배됨</h3>
+<p><code>build_gower_distance</code>는 모든 피처에 동일 가중을 줍니다. 피처 구성은 범주형 2 + 수치형 5 + 이진형 17(목적 14 + 플래그 3) = 24개. 이 중 <strong>목적 태그 14개가 58%</strong>를 차지해, Gower 거리가 사실상 "목적 태그 일치도"에 끌려갑니다. 금액·금리·대상 같은 다른 축의 기여가 희석됩니다.</p>
+<p><strong>권장:</strong> 피처 그룹별 가중(목적/금액/대상/절차를 각 25%씩 등) 또는 목적 태그를 하나의 다중라벨 블록으로 묶어 가중 정규화. 민감도 분석에 "Gower 피처 가중 변경 시 군집 변화"를 1개 더 추가.</p>
+</div>
+
+<div class="box box-warn">
+<span class="tag t-minor">MINOR</span>
+<h3>B-5. 통계적 검정의 표본 규모가 파일럿급</h3>
+<p>Bootstrap 48회, BLRT 12회는 스크립트 note에도 "increase for publication use"로 명시되어 있습니다. 현재 BLRT p-value 0.077은 <strong>12회 기준 해상도가 1/13 ≈ 0.077</strong>이라 사실상 "관측 LR보다 큰 부트스트랩이 0개"인 최솟값입니다. 신뢰구간이 매우 넓습니다.</p>
+<p><strong>권장(출판 시):</strong> Bootstrap 500–1000회, BLRT 100회 이상. DB/CH 지수가 20차원 MDS 좌표에서 계산되는 점(<code>classical_mds(components=20)</code>)도 전체 Gower 기하를 일부만 반영하므로 각주 필요.</p>
+</div>
+
+<h2>3. AI·기술 측면 제언</h2>
+
+<div class="box box-tech">
+<span class="tag t-tech">TECH</span>
+<h3>T-1. 임베딩이 범용 다국어 모델 — 도메인 적응 부재</h3>
+<p>현재 <code>paraphrase-multilingual-MiniLM-L12-v2</code>는 범용 다국어 문장 임베딩입니다. 한국어 행정·정책 텍스트에 특화되지 않아, "경영안정자금"과 "긴급 융자"의 정책적 차이나 "IP창출 패키지"와 "브랜드 디자인 지원"의 유사성 같은 <strong>도메인 의미를 충분히 포착하지 못할</strong> 가능성이 높습니다. 임베딩 군집화의 중간 성능(prediction strength 0.40)이 이를 시사합니다.</p>
+<p><strong>제언:</strong></p>
+<ul>
+<li><code>jhgan/ko-sroberta-multitask</code>, <code>BM-K/KoSimCSE-roberta</code> 등 한국어 특화 SBERT로 교체 비교</li>
+<li>코퍼스 내 도메인 적응: 795건 + 첨부 텍스트로 <strong>TSDAE / SimCSE 비지도 파인튜닝</strong> 후 임베딩 재생성</li>
+<li>최신(2026) 한국어 임베딩(예: 정책·법령 코퍼스 학습 모델)이 있으면 우선 검토</li>
+</ul>
+</div>
+
+<div class="box box-tech">
+<span class="tag t-tech">TECH</span>
+<h3>T-2. 임베딩 입력이 제목+요약+목적뿐 — 본문 미활용</h3>
+<p>지식DB 구축에 막대한 비용을 들여 첨부파일(HWP/PDF) 본문을 추출했으나, 임베딩 코퍼스는 <code>title + summary + purposes</code>만 사용합니다(pilot 187–195행). <strong>가장 정보량이 많은 본문이 임베딩에서 버려지고</strong> 있습니다.</p>
+<p><strong>제언:</strong> 본문을 청크 단위로 임베딩 후 평균/어텐션 풀링하거나, 본문에서 "지원내용·자격·제외" 섹션만 추출해 임베딩 입력에 포함. 긴 문서는 Longformer 계열 또는 섹션별 임베딩 결합.</p>
+</div>
+
+<div class="box box-tech">
+<span class="tag t-tech">TECH</span>
+<h3>T-3. LLM 약지도(weak supervision) 베이스라인 부재</h3>
+<p>전문가 라벨이 없다는 제약을 LLM으로 일부 완화할 수 있습니다. 2026년 환경에서 자연스러운 추가 베이스라인:</p>
+<ul>
+<li><strong>Zero/few-shot LLM 분류</strong>: 후보 taxonomy(예: 8–12개 정책유형)를 정의하고 LLM에 각 공고를 분류시켜 <strong>약한 참조 라벨</strong> 생성 → 비지도 군집과의 ARI/V-measure 비교. 행정 category 외의 제2 외부 기준이 생김</li>
+<li><strong>LLM-as-judge 군집 품질 평가</strong>: 각 군집의 샘플 공고를 LLM에 제시해 "이 군집은 일관된 정책유형인가"를 평정 → 정량 지표를 보완하는 정성 검증</li>
+<li><strong>LLM 기반 군집 명명(cluster labeling)</strong>: 군집별 대표 문서로 해석 가능한 이름 자동 생성 → 해석 가능성 제고</li>
+</ul>
+<p class="ref">관련: Snorkel류 weak supervision, "LLMs as annotators" 흐름. 단, LLM 라벨도 정답이 아니라 또 하나의 약한 기준임을 명시해야 함.</p>
+</div>
+
+<div class="box box-tech">
+<span class="tag t-tech">TECH</span>
+<h3>T-4. 밀도 기반·토픽 모델링 미포함 — k 강제의 한계</h3>
+<p>현재 모든 방법이 k∈[4,16]을 <strong>강제</strong>합니다. 그러나 C-1에서 보듯 구조가 약하므로, "군집이 존재하는가" 자체를 데이터에 묻는 방법이 필요합니다.</p>
+<p><strong>제언:</strong></p>
+<ul>
+<li><strong>HDBSCAN / OPTICS</strong>: k를 정하지 않고, 다수 문서를 노이즈로 남기면서 소수의 조밀한 하위그룹(예: 융자)만 추출. 약한 구조 데이터에 적합</li>
+<li><strong>BERTopic</strong>: 임베딩 + UMAP + HDBSCAN + c-TF-IDF. 정책 문서에 해석 가능한 토픽과 키워드를 동시 제공하는 현행 표준. 본 데이터의 텍스트 풍부성과 잘 맞음</li>
+<li>결과적으로 "전 문서를 강제 분할"이 아니라 "핵심 군집 + 미분류 연속체" 구조를 드러낼 수 있음 — B-2의 관찰과 정합</li>
+</ul>
+</div>
+
+<div class="box box-tech">
+<span class="tag t-tech">TECH</span>
+<h3>T-5. 다축(multi-label) taxonomy로의 전환 검토</h3>
+<p>정책공고는 본질적으로 <strong>하나의 공고가 여러 목적(운전자금+시설+이자보전)을 동시에</strong> 갖습니다. 단일 배타적 군집(hard clustering)은 이 구조와 맞지 않습니다. 낮은 silhouette의 근본 원인일 수 있습니다.</p>
+<p><strong>제언:</strong> (1) 퍼지 군집(Fuzzy C-means)이나 (2) 다축 태그 분류(대상축 × 지원형태축 × 목적축)로 재프레이밍. 이미 보고서 실행순서 5항이 "단일 계층 불안정 시 다축 태그"를 예고했으므로, 이를 <strong>대안이 아니라 주력 가설</strong>로 승격하는 것을 권장.</p>
+</div>
+
+<h2>4. 타당하게 잘 수행된 부분</h2>
+
+<table>
+<tr><th>항목</th><th>평가</th></tr>
+<tr><td>행정 라벨을 입력에서 제외, 사후 참조변수로만 사용</td><td class="pass">정확. 순환논리 회피</td></tr>
+<tr><td>GroupKFold 사업군 단위 분할 (설계)</td><td class="pass">표준적 누수 방지</td></tr>
+<tr><td>가중 스킴 3종(unweighted/1√n/1/n) 비교</td><td class="pass">1차 검토 B-2 반영. LCA는 robust(0.98), tfidf는 민감(0.54)임을 정량화</td></tr>
+<tr><td>Prediction Strength + V-measure 추가</td><td class="pass">1차 검토 B-5/B-6 반영</td></tr>
+<tr><td>content_repeat 확장(목적 Jaccard≥0.8 + 코사인≥0.9)</td><td class="pass">1차 검토 B-1 반영. 53쌍 식별</td></tr>
+<tr><td>6개 표현공간 비교 + 표현 간 silhouette 절대비교 경계 명시</td><td class="pass">방법론적으로 성숙</td></tr>
+<tr><td>MixedLCA EM 자체구현 + BIC/AIC/entropy/BLRT</td><td class="pass">정교. 다만 BLRT 반복수 부족(B-5)</td></tr>
+<tr><td>claimBoundary 명시(구조적 일관성·재현성만 주장)</td><td class="pass">과학적 겸손 유지</td></tr>
+</table>
+
+<h2>5. 권장 수정 우선순위</h2>
+
+<table>
+<tr><th>#</th><th>항목</th><th>우선순위</th><th>유형</th></tr>
+<tr><td>1</td><td>보고서 서두에 "약한 구조(low silhouette/PS)" 명시 (C-1)</td><td>최상</td><td>해석</td></tr>
+<tr><td>2</td><td>LCA 안정성의 이산화 인공물 가능성 명시 + 선택로직 재검토 (B-1)</td><td>높음</td><td>해석</td></tr>
+<tr><td>3</td><td>k=2 프로파일 제시 + 군집 0·3 병합 검토 (B-2)</td><td>높음</td><td>분석</td></tr>
+<tr><td>4</td><td>다축 태그 구조를 주력 가설로 승격 (T-5)</td><td>높음</td><td>설계</td></tr>
+<tr><td>5</td><td>HDBSCAN/BERTopic 추가 (T-4)</td><td>중간</td><td>AI</td></tr>
+<tr><td>6</td><td>한국어 특화 임베딩 + 본문 활용 (T-1, T-2)</td><td>중간</td><td>AI</td></tr>
+<tr><td>7</td><td>LLM 약지도 베이스라인 (T-3)</td><td>중간</td><td>AI</td></tr>
+<tr><td>8</td><td>Gower 피처 가중 (B-4)</td><td>낮음</td><td>분석</td></tr>
+<tr><td>9</td><td>Bootstrap 500+/BLRT 100+ (B-5)</td><td>출판 전 필수</td><td>통계</td></tr>
+<tr><td>10</td><td>GroupKFold 효과 제한 명시 (B-3)</td><td>낮음</td><td>서술</td></tr>
+</table>
+
+<h2>6. 학술적 인용 가능성 — 갱신</h2>
+
+<div class="box">
+<h3>현재 주장 가능</h3>
+<p>"6개 비지도 방법과 3개 가중 스킴으로 정책상품 taxonomy 후보를 탐색하고, 사업군 누수를 통제했다. <strong>모든 방법에서 군집 분리도는 낮았으며(Silhouette ≤ 0.17)</strong>, 강한 경계는 금융/융자 군집에서만 관찰되었다. 이는 정책공고가 배타적 단일 계층보다 다축·연속 구조에 가까움을 시사한다."</p>
+<p>→ 이 형태로 쓰면 <strong>방법론 + 음성 결과(negative/weak result)를 정직하게 보고</strong>하는 학술적으로 견고한 서술이 됩니다. 약한 구조는 결함이 아니라 발견입니다.</p>
+</div>
+
+<div class="box box-critical">
+<h3>여전히 주장하면 안 되는 것</h3>
+<p>"k=4 LCA taxonomy가 데이터에서 뚜렷하게 나타났다" / "정책 분류체계가 검증되었다" — Silhouette·Prediction Strength가 이를 지지하지 않습니다. "후보(candidate)"와 "약한 구조"라는 단서를 반드시 유지해야 합니다.</p>
+</div>
+
+<h2>7. 참고문헌 (추가분)</h2>
+<ul style="font-size:13px;color:#3a4540">
+<li>Kaufman, L., & Rousseeuw, P. J. (1990). <em>Finding Groups in Data: An Introduction to Cluster Analysis.</em> Wiley.</li>
+<li>Tibshirani, R., & Walther, G. (2005). Cluster validation by prediction strength. <em>JCGS</em>, 14(3), 511-528.</li>
+<li>Campello, R., Moulavi, D., & Sander, J. (2013). Density-based clustering based on hierarchical density estimates (HDBSCAN). <em>PAKDD</em>.</li>
+<li>Grootendorst, M. (2022). BERTopic: Neural topic modeling with a class-based TF-IDF procedure. <em>arXiv:2203.05794</em>.</li>
+<li>Wang, K., Reimers, N., & Gurevych, I. (2021). TSDAE: Using Transformer-based Sequential Denoising Auto-Encoder for Unsupervised Sentence Embedding Learning. <em>EMNLP Findings</em>.</li>
+<li>Ratner, A., et al. (2017). Snorkel: Rapid training data creation with weak supervision. <em>VLDB</em>.</li>
+</ul>
+
+</div>
+</body>
+</html>

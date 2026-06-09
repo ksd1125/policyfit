@@ -1,0 +1,161 @@
+[
+  {
+    "id": "PBLN_000000000122836",
+    "title": "[경기] 2026년 제조로봇ㆍAI융합 실증지원 사업 공고(제조로봇 도입지원 사업)",
+    "category": "금융",
+    "subcategory": "기술사업화/이전/지도",
+    "institution": "경기도",
+    "executor": "경기테크노파크",
+    "registeredAt": "2026-06-05 14:34:46",
+    "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000122836",
+    "hashtags": "기술,경영,경기,로봇자동화설비구축,AI실증,AI융합실증,제조로봇도입지원,2026,제조로봇,AI융합,제조공정,컨소시엄,경기테크노파크,중견,실증,로봇,경기도,중소기업",
+    "fields": {
+      "지원대상": {
+        "value": "중소기업",
+        "source": "api",
+        "confidence": "high"
+      },
+      "지원내용": {
+        "value": "경기도와 경기테크노파크가 도내 제조업의 혁신 촉진과 생산성 향상을 위해 추진하는 「2026년 제조로봇 도입지원 사업」 제조로봇ㆍAI 융합 실증지원을 다음과 같이 공고하오니 많은 참여 바랍니다. ☞ 도내 중소ㆍ중견기업(본사 또는 공장등록)으로 제조로봇ㆍAI 융합 실증 수행이 가능한 도입/공급기업으로 구성된 컨소시엄 - (도입기업) 로봇ㆍAI 융합 제조공정 도입 및 운영 등 실증이 가능한 기업 - (공급기업) 로봇ㆍAI 융합 제조공정 설치 및 유지보수 등이 가능한 기업 - 지원분야 : 뿌리(기계, 금속ㆍ플라스틱, 자동차, 전기전자), 조선ㆍ항공, 섬유, 식ㆍ음료, 바이오ㆍ화학, 로봇ㆍ장비 기타 제조 업종 ☞ 로봇ㆍAI 융합 제조공정 실증을 위한 제조로봇 및 AI 솔루션 등 로봇 자동화 설비 구축 비용 지원",
+        "source": "api",
+        "confidence": "high"
+      },
+      "신청기간": {
+        "value": "2026-06-04 ~ 2026-06-30",
+        "source": "api",
+        "confidence": "high"
+      },
+      "신청방법": {
+        "value": "온라인 접수 (경기테크노파크 사업관리시스템)",
+        "source": "api",
+        "confidence": "high"
+      },
+      "제출서류": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      },
+      "제외조건": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      },
+      "문의처": {
+        "value": "경기테크노파크 제조로봇팀 031-505-9112, 9122, 9106",
+        "source": "api",
+        "confidence": "high"
+      },
+      "유의사항": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      }
+    }
+  },
+  {
+    "id": "PBLN_000000000122838",
+    "title": "[세종] 2026년 2차 지역주력산업육성(지역특화프로젝트 레전드50+2.0) 사업화지원 모집 공고(지능형 모빌리티 부품 및 기능성 바이오 소재 산업)",
+    "category": "금융",
+    "subcategory": "기술사업화/이전/지도",
+    "institution": "중소벤처기업부",
+    "executor": "세종테크노파크",
+    "registeredAt": "2026-06-05 14:39:39",
+    "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000122838",
+    "hashtags": "기술,경영,세종,R&D 기획,2026,지역특화 프로젝트,레전드 50+,Post R&D,Pre R&D,장비,제품고급화,중소기업협동조합,디자인,기술지도,기술이전,인증,시장조사,컨설팅,중소기업기술정보진흥원,세종특별자치시,시제품,마케팅,특허,중소기업,중소벤처기업부,세종테크노파크",
+    "fields": {
+      "지원대상": {
+        "value": "중소기업",
+        "source": "api",
+        "confidence": "high"
+      },
+      "지원내용": {
+        "value": "중소벤처기업부가 추진하는 지역특화 프로젝트「레전드 50+」참여기업 대상 주력산업 기업지원 프로그램을 안내하오니, 해당 프로그램에 참여를 희망하는 프로젝트 참여기업의 많은 신청 바랍니다. ☞ 세종지역 지역특화 프로젝트 2.0에 선정된 참여기업 -「지역중소기업법」상의 지역중소기업(중소기업 또는 중소기업협동조합) - 사업장 소재지가 세종특별자치시 내 소재 ☞ Pre R&D(R&D 기획, 기술이전, 기술지도, 장비지원, 인증지원, 특허지원), Post R&D(시제품제작, 제품고급화, 디자인, 시장조사, 마케팅, 컨설팅) 지원 - 기업당 최대 25백만원 이내에서 자유롭게 프로그램 구성 ※ 자세한 지원내용 공고문 참조",
+        "source": "api",
+        "confidence": "high"
+      },
+      "신청기간": {
+        "value": "2026-06-05 ~ 2026-06-12",
+        "source": "api",
+        "confidence": "high"
+      },
+      "신청방법": {
+        "value": "온라인 접수(기업지원사업 관리시스템)",
+        "source": "api",
+        "confidence": "high"
+      },
+      "제출서류": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      },
+      "제외조건": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      },
+      "문의처": {
+        "value": "(프로그램 및 신청ㆍ접수) 세종테크노파크 044-850-2144 / (SMTECH 회원가입) 중소기업 통합콜센터 국번없이 1357",
+        "source": "api",
+        "confidence": "high"
+      },
+      "유의사항": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      }
+    }
+  },
+  {
+    "id": "PBLN_000000000122847",
+    "title": "[경북] 2026년 경북 가상융합산업혁신센터 통합 기업지원사업 참여기업 모집 재공고",
+    "category": "금융",
+    "subcategory": "기술사업화/이전/지도",
+    "institution": "경상북도",
+    "executor": "구미전자정보기술원",
+    "registeredAt": "2026-06-05 15:16:22",
+    "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000122847",
+    "hashtags": "기술,경영,경북,2026,가상융합산업,구미전자정보기술원,실증,경상북도,중소기업,서비스제작,인건비,가상융합산업혁신센터,서비스개발,교육",
+    "fields": {
+      "지원대상": {
+        "value": "중소기업",
+        "source": "api",
+        "confidence": "high"
+      },
+      "지원내용": {
+        "value": "구미전자정보기술원에서는 가상융합산업 분야 중소기업의 경쟁력 강화를 위한「2026년도 경북 가상융합산업혁신센터 통합 기업지원사업」을 다음과 같이 추진할 예정입니다. 지역 내 관련기업의 많은 관심과 참여를 바랍니다. ☞ 접수마감일 기준 본사 또는 지사의 소재지가 경북인 중소기업(법인 및 개인) ☞ 가상융합관련 서비스 제작 및 고도화, 기업 맞춤형 교육 지원 - (필수) 지원기업은 지원금의 20%이상을 현금 출자, 경북 가상융합산업 혁신센터 보유 장비를 활용한 서비스 실증 필수 - (서비스 개발 및 실증지원) 제작ㆍ전환하기 위해 필요한 인건비 및 직접비 지원 ※ 자세한 지원내용 공고문 참조",
+        "source": "api",
+        "confidence": "high"
+      },
+      "신청기간": {
+        "value": "2026-06-02 ~ 2026-06-19",
+        "source": "api",
+        "confidence": "high"
+      },
+      "신청방법": {
+        "value": "이메일 접수(hjshin@geri.re.kr)",
+        "source": "api",
+        "confidence": "high"
+      },
+      "제출서류": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      },
+      "제외조건": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      },
+      "문의처": {
+        "value": "구미전자정보기술원 054-460-9056, hjshin@geri.re.kr",
+        "source": "api",
+        "confidence": "high"
+      },
+      "유의사항": {
+        "value": null,
+        "source": null,
+        "confidence": "missing"
+      }
+    }
+  }
+]

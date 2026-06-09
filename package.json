@@ -1,0 +1,9 @@
+{
+  "name": "bizinfo-policy-dataset",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "audit:policyfit-match": "node scripts/audit-policyfit-matching.mjs"
+  }
+}

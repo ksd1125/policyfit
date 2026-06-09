@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "title": "정책핏 대화형 서비스 검토 및 Claude 작업 전달안",
+    "createdAt": "2026-06-08",
+    "targetApp": "outputs/policyfit/index.html",
+    "relatedFiles": [
+      "outputs/policyfit/policyfit-config.js",
+      "outputs/policyfit/policyfit-app.jsx",
+      "outputs/policyfit/policyfit.css",
+      "outputs/policyfit/index.html",
+      "outputs/policyfit-db.json"
+    ],
+    "purpose": "지역/업종/목적 매칭 오류를 줄이고, 정책핏이 검색 포털이 아니라 대화형 진단 서비스처럼 느껴지도록 개선 과제를 전달한다."
+  },
+  "currentDecisionRules": [
+    {
+      "name": "지역 + 업종/목적",
+      "mode": "national_first",
+      "description": "사용자가 사업장 지역과 업종 또는 목적을 함께 말하면 전국 공통 공고를 먼저 보여주고, 그 다음 해당 지역 공고를 보여준다.",
+      "examples": [
+        "반석동 카페 운영하는데 관련 정책 알려줘",
+        "청주 카페 운영자금 필요해",
+        "서울 강남 미용실 인건비 지원 있어?"
+      ]
+    },
+    {
+      "name": "지역만 제한",
+      "mode": "strict",
+      "description": "사용자가 특정 지역의 공고 전체를 요청하면 전국 공통 공고를 제외하고 해당 지역 공고만 보여준다.",
+      "examples": [
+        "대전 지역 공고 전체 알려줘",
+        "서울 지역 공고 전체 알려줘"
+      ]
+    },
+    {
+      "name": "전국 명시",
+      "mode": "national_only",
+      "description": "사용자가 전국 공고를 명시하면 regions:any 공고만 보여준다.",
+      "examples": [
+        "전국 온라인 쇼핑몰 마케팅 지원",
+        "전국 공통 소상공인 지원 알려줘"
+      ]
+    },
+    {
+      "name": "목적만 있음",
+      "mode": "broad_then_ask_region",
+      "description": "사용자가 마케팅, 운영자금, 인건비처럼 목적만 말하면 전체 공고에서 관련 공고를 먼저 보여주고, 꼬리 질문으로 지역을 묻는다.",
+      "examples": [
+        "마케팅 지원 알려줘",
+        "운영자금 지원 뭐 있어?",
+        "인건비 지원 알려줘"
+      ]
+    },
+    {
+      "name": "업종 + 목적",
+      "mode": "broad_then_ask_region",
+      "description": "사용자가 업종과 목적을 말했지만 지역을 말하지 않으면 전체 공고 기준으로 추천하고, 지역을 물어 다음 턴에서 좁힌다.",
+      "examples": [
+        "카페 마케팅 지원 알려줘",
+        "미용실 인건비 지원 있어?",
+        "편의점 운영자금 필요해"
+      ]
+    }
+  ],
+  "observedIssues": [
+    {
+      "severity": "high",
+      "area": "region_intent_detection",
+      "issue": "대전 지역 공고 전체 알려줘에서 '전 지역' 키워드가 '대전 지역' 내부에 걸려 전국으로 오탐될 수 있었다.",
+      "currentStatus": "fixed_in_v17",
+      "recommendation": "전국 판정은 명시적 '전국', '전지역', '전체 지역' 등으로만 수행하고, 지역명 alias 판정 뒤에 실행한다."
+    },
+    {
+      "severity": "high",
+      "area": "result_presentation",
+      "issue": "national_first 모드에서 전국 공고가 매우 많아 지역 공고가 100번째 이후에 등장할 수 있다.",
+      "currentStatus": "logic_available_not_ui_split",
+      "recommendation": "_regionClass를 이용해 '전국 공통 추천'과 '지역 공고' 섹션을 분리해서 보여준다."
+    },
+    {
+      "severity": "high",
+      "area": "conversation_flow",
+      "issue": "마케팅 지원 알려줘처럼 목적만 있는 질문에 바로 목록만 보여주면 검색 포털처럼 느껴지고, 대화형 진단 느낌이 약하다.",
+      "currentStatus": "needs_design_and_implementation",
+      "recommendation": "첫 답변은 넓게 추천하되, 말미에 '사업장이 어디인가요?'를 자연스럽게 물어 다음 턴으로 이어간다."
+    },
+    {
+      "severity": "high",
+      "area": "eligibility_targeting",
+      "issue": "둔산동 음식점 창업 준비처럼 일반 조건만 말했는데 장애인·청년·여성·사회적경제 등 특수 대상 공고가 상단에 노출될 수 있다.",
+      "currentStatus": "fixed_in_v18",
+      "recommendation": "사용자가 특수 대상을 직접 말하지 않으면 특수 대상 전용 공고는 일반 추천에서 제외한다. 사용자가 장애인/청년/여성/사회적경제 등을 말하면 다시 포함한다."
+    },
+    {
+      "severity": "high",
+      "area": "national_classification",
+      "issue": "regions:any로 분류되어 있지만 제목이나 기관에 울산·경북·광주처럼 지역명이 있는 공고가 전국 공통 공고처럼 노출될 수 있다.",
+      "currentStatus": "fixed_in_v18",
+      "recommendation": "제목/기관/수행기관에 지역 신호가 있으면 가짜 전국 공고로 보고 전국 공통 섹션에서 제외하거나 해당 지역 공고로 취급한다."
+    },
+    {
+      "severity": "medium",
+      "area": "region_granularity",
+      "issue": "policyfit-db.json의 regions 필드가 seoul/gyeonggi/metro/local/any 수준이라 시군구 단위 정밀 필터가 불가능하다.",
+      "currentStatus": "known_limitation",
+      "recommendation": "title, org, targetDetail에서 sido/sigungu를 추출해 별도 필드로 보강한다."
+    },
+    {
+      "severity": "medium",
+      "area": "purpose_detection",
+      "issue": "시설개선, 위생개선, 인테리어, 장비구입 같은 표현이 goal로 충분히 세분화되어 있지 않다.",
+      "currentStatus": "partial",
+      "recommendation": "goal을 fund/sales/digital/startup/hr 외에 facility 또는 ops_improvement 보조 의도로 확장하거나, 기존 category와 결합한 follow-up 질문으로 처리한다."
+    },
+    {
+      "severity": "medium",
+      "area": "answer_quality",
+      "issue": "추천 카드만 나열하면 사용자가 왜 이 공고가 나왔는지 이해하기 어렵다.",
+      "currentStatus": "partial_match_note_exists",
+      "recommendation": "답변 상단에 '해석한 조건', '전국/지역 표시 원칙', '다음에 좁힐 질문'을 항상 포함한다."
+    },
+    {
+      "severity": "low",
+      "area": "runtime_warning",
+      "issue": "브라우저 콘솔에 Babel in-browser transformer 경고가 남아 있다.",
+      "currentStatus": "existing_warning",
+      "recommendation": "운영 배포 전 JSX 사전 빌드로 전환한다."
+    }
+  ],
+  "recommendedConversationPatterns": [
+    {
+      "pattern": "purpose_only",
+      "inputExample": "마케팅 지원 알려줘",
+      "classification": {
+        "goal": "sales",
+        "region": "",
+        "industry": "",
+        "mode": "broad_then_ask_region"
+      },
+      "responseTemplate": "마케팅·판로 지원 공고를 전체 기준으로 먼저 찾아봤어요. 지역을 아직 말씀하지 않으셔서 전국 공통 공고와 지역별 공고를 함께 보여드릴게요. 더 정확히 보려면 사업장이 어디인가요? 예: 대전, 서울, 청주, 부산 해운대",
+      "nextQuestion": "사업장이 어느 지역인가요?"
+    },
+    {
+      "pattern": "industry_and_purpose_no_region",
+      "inputExample": "카페 마케팅 지원 알려줘",
+      "classification": {
+        "goal": "sales",
+        "industry": "food",
+        "region": "",
+        "mode": "broad_then_ask_region"
+      },
+      "responseTemplate": "카페는 음식·외식 업종으로 보고 마케팅·판로 지원을 먼저 찾아봤어요. 전국 공통 공고를 우선 보여드리고, 지역을 알려주시면 해당 지역 공고까지 이어서 좁혀드릴게요.",
+      "nextQuestion": "카페 사업장이 어느 지역인가요?"
+    },
+    {
+      "pattern": "region_industry_purpose",
+      "inputExample": "반석동 카페 운영자금",
+      "classification": {
+        "goal": "fund",
+        "industry": "food",
+        "region": "metro",
+        "regionStandard": "대전광역시 유성구",
+        "mode": "national_first"
+      },
+      "responseTemplate": "반석동은 대전광역시 유성구, 카페는 음식·외식 업종으로 해석했어요. 전국 공통 운영자금 공고를 먼저 보고, 이어서 대전 지역 공고를 보여드릴게요.",
+      "nextQuestion": "사업 단계가 창업 준비, 1년 미만, 1~3년, 3년 이상 중 어디에 가까운가요?"
+    },
+    {
+      "pattern": "region_only",
+      "inputExample": "대전 지역 공고 전체 알려줘",
+      "classification": {
+        "region": "metro",
+        "mode": "strict"
+      },
+      "responseTemplate": "대전 지역 공고만 모아서 보여드릴게요. 전국 공통 공고는 제외했습니다. 목적을 알려주시면 운영자금, 마케팅, 인건비 등으로 더 좁힐 수 있어요.",
+      "nextQuestion": "운영자금, 마케팅, 고용, 창업 중 어떤 목적을 먼저 볼까요?"
+    },
+    {
+      "pattern": "national_explicit",
+      "inputExample": "전국 온라인 쇼핑몰 마케팅 지원",
+      "classification": {
+        "goal": "sales",
+        "industry": "online",
+        "region": "any",
+        "mode": "national_only"
+      },
+      "responseTemplate": "온라인 판매·플랫폼 업종의 전국 단위 마케팅 지원 공고만 보여드릴게요. 지역별 공고까지 포함하려면 사업장 지역을 알려주세요.",
+      "nextQuestion": "지역별 공고도 함께 볼까요?"
+    }
+  ],
+  "implementationTasksForClaude": [
+    {
+      "priority": 1,
+      "task": "Results UI를 전국 공통 추천과 지역 공고 섹션으로 분리",
+      "details": [
+        "computeMatches 결과의 _regionClass 값을 사용한다.",
+        "national_first: national 섹션 먼저, regional 섹션 다음.",
+        "strict: regional-only 섹션만.",
+        "national_only: national-only 섹션만.",
+        "각 섹션 제목에 왜 이 순서인지 짧게 표시한다."
+      ],
+      "files": [
+        "outputs/policyfit/policyfit-app.jsx",
+        "outputs/policyfit/policyfit.css"
+      ]
+    },
+    {
+      "priority": 2,
+      "task": "목적만/업종+목적 질문에서 꼬리 질문 추가",
+      "details": [
+        "parseSeed 결과에 goal 또는 industry는 있으나 region이 없으면 broad_then_ask_region로 본다.",
+        "composeReply가 추천 3건과 함께 지역 질문을 반환하도록 한다.",
+        "채팅 UI에 지역 quick chips: 서울, 대전, 경기, 부산, 청주, 기타 지역을 표시한다."
+      ],
+      "files": [
+        "outputs/policyfit/policyfit-config.js",
+        "outputs/policyfit/policyfit-app.jsx"
+      ]
+    },
+    {
+      "priority": 3,
+      "task": "특수 대상 및 가짜 전국 공고 필터 회귀 테스트 추가",
+      "details": [
+        "둔산동에서 창업 준비중이야. 음식점은 장애인 창업 공고를 상단에 노출하지 않아야 한다.",
+        "둔산동 장애인 창업 준비중이야. 음식점은 장애인 창업 공고를 포함할 수 있어야 한다.",
+        "regions:any라도 제목/기관에 울산·경북·광주 등 지역명이 있으면 전국 공통 섹션에서 제외되어야 한다."
+      ],
+      "files": [
+        "tests/policyfit-region-intent.test.mjs",
+        "tests/policyfit-targeting.test.mjs"
+      ]
+    },
+    {
+      "priority": 4,
+      "task": "지역 오탐 회귀 테스트 추가",
+      "details": [
+        "대전 지역 공고 전체 알려줘는 strict로 분류되어야 한다.",
+        "전국 온라인 쇼핑몰 마케팅 지원은 national_only로 분류되어야 한다.",
+        "반석동 카페 운영자금은 national_first로 분류되어야 한다.",
+        "전 지역, 대전 지역, 전체 지역의 차이를 테스트한다."
+      ],
+      "files": [
+        "tests/policyfit-region-intent.test.mjs"
+      ]
+    },
+    {
+      "priority": 5,
+      "task": "DB 지역 정밀도 보강",
+      "details": [
+        "공고 title/org/targetDetail에서 sido, sigungu 후보를 추출한다.",
+        "policyfit-db.json에 regionText, sido, sigungu, isNational 필드를 추가한다.",
+        "UI 매칭은 broad regions와 precise region fields를 함께 사용한다."
+      ],
+      "files": [
+        "scripts/build-policyfit-db.py",
+        "outputs/policyfit-db.json"
+      ]
+    }
+  ],
+  "acceptanceTests": [
+    {
+      "input": "반석동 카페 운영하는데 관련 정책 알려줘",
+      "expectedMode": "national_first",
+      "expectedOrder": [
+        "national",
+        "regional"
+      ],
+      "expectedInterpretation": "반석동=대전광역시 유성구, 카페=음식·외식"
+    },
+    {
+      "input": "대전 지역 공고 전체 알려줘",
+      "expectedMode": "strict",
+      "expectedOrder": [
+        "regional-only"
+      ],
+      "mustNotInclude": [
+        "national",
+        "national-only"
+      ]
+    },
+    {
+      "input": "마케팅 지원 알려줘",
+      "expectedMode": "broad_then_ask_region",
+      "expectedFollowUp": "사업장이 어느 지역인가요?"
+    },
+    {
+      "input": "카페 마케팅 지원 알려줘",
+      "expectedMode": "broad_then_ask_region",
+      "expectedFollowUp": "카페 사업장이 어느 지역인가요?"
+    },
+    {
+      "input": "전국 온라인 쇼핑몰 마케팅 지원",
+      "expectedMode": "national_only",
+      "expectedOrder": [
+        "national-only"
+      ]
+    },
+    {
+      "input": "서울 지역 공고 전체 알려줘",
+      "expectedMode": "strict",
+      "expectedOrder": [
+        "regional-only"
+      ]
+    },
+    {
+      "input": "청주 카페 운영자금 필요해",
+      "expectedMode": "national_first",
+      "expectedInterpretation": "청주=충청북도 청주시, 카페=음식·외식"
+    },
+    {
+      "input": "광주 음식점 운영자금 알려줘",
+      "expectedMode": "national_first",
+      "expectedInterpretation": "광주=광주광역시"
+    },
+    {
+      "input": "경기 광주 편의점 자금 지원",
+      "expectedMode": "national_first",
+      "expectedInterpretation": "경기 광주=경기도 광주시"
+    },
+    {
+      "input": "대전 지역 공고 전체 알려줘",
+      "regression": "전 지역 키워드로 인해 전국으로 오탐되면 실패"
+    }
+  ],
+  "notesForClaude": [
+    "정책핏의 핵심은 검색 결과를 많이 보여주는 것이 아니라, 사용자의 말에서 조건을 해석하고 다음 질문으로 좁히는 것이다.",
+    "지역명은 필터가 아니라 의도 신호다. 지역만 물으면 strict, 지역+업종/목적이면 national_first다.",
+    "목적만 있는 질문은 전체 추천으로 시작하되 반드시 지역 꼬리 질문을 붙여야 대화형 서비스처럼 느껴진다.",
+    "결과 카드를 한 줄 리스트로만 보여주지 말고 전국 공통/지역 공고 섹션을 나누어 사용자가 순서를 이해하게 해야 한다.",
+    "현재 DB의 지역 정밀도는 broad region 수준이다. 시군구 정확도를 높이려면 데이터 필드 보강이 필요하다."
+  ]
+}

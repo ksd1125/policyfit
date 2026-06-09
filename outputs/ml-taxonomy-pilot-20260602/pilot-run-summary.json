@@ -1,0 +1,136 @@
+{
+  "status": "PILOT_COMPLETE",
+  "records": 795,
+  "families": 757,
+  "kRange": [
+    4,
+    12
+  ],
+  "bootstrapRepeats": 16,
+  "modelsCompared": 36,
+  "bestByAlgorithm": {
+    "gower_pam": {
+      "algorithm": "gower_pam",
+      "representation": "gower_mixed",
+      "k": 8,
+      "silhouette": 0.151976,
+      "davies_bouldin": 2.457018,
+      "calinski_harabasz": 56.903083,
+      "min_cluster_size": 44,
+      "max_cluster_share": 0.32956,
+      "singleton_clusters": 0,
+      "structurally_viable": 1,
+      "ari_category": 0.145978,
+      "nmi_category": 0.298228,
+      "v_measure_category": 0.298228,
+      "ari_subcategory": 0.155409,
+      "nmi_subcategory": 0.320333,
+      "v_measure_subcategory": 0.320333
+    },
+    "gower_hierarchical": {
+      "algorithm": "gower_hierarchical",
+      "representation": "gower_mixed",
+      "k": 5,
+      "silhouette": 0.165734,
+      "davies_bouldin": 1.285228,
+      "calinski_harabasz": 35.541784,
+      "min_cluster_size": 1,
+      "max_cluster_share": 0.792453,
+      "singleton_clusters": 2,
+      "structurally_viable": 0,
+      "ari_category": 0.260106,
+      "nmi_category": 0.330692,
+      "v_measure_category": 0.330692,
+      "ari_subcategory": 0.105802,
+      "nmi_subcategory": 0.255119,
+      "v_measure_subcategory": 0.255119
+    },
+    "structured_kmeans": {
+      "algorithm": "structured_kmeans",
+      "representation": "structured_onehot",
+      "k": 5,
+      "silhouette": 0.139338,
+      "davies_bouldin": 1.710489,
+      "calinski_harabasz": 106.259926,
+      "min_cluster_size": 1,
+      "max_cluster_share": 0.377358,
+      "singleton_clusters": 1,
+      "structurally_viable": 0,
+      "ari_category": 0.139307,
+      "nmi_category": 0.185723,
+      "v_measure_category": 0.185723,
+      "ari_subcategory": 0.109485,
+      "nmi_subcategory": 0.172875,
+      "v_measure_subcategory": 0.172875
+    },
+    "text_tfidf_svd_kmeans": {
+      "algorithm": "text_tfidf_svd_kmeans",
+      "representation": "tfidf_svd",
+      "k": 12,
+      "silhouette": 0.161819,
+      "davies_bouldin": 2.869681,
+      "calinski_harabasz": 23.155353,
+      "min_cluster_size": 20,
+      "max_cluster_share": 0.12956,
+      "singleton_clusters": 0,
+      "structurally_viable": 1,
+      "ari_category": 0.171334,
+      "nmi_category": 0.36333,
+      "v_measure_category": 0.36333,
+      "ari_subcategory": 0.25477,
+      "nmi_subcategory": 0.417021,
+      "v_measure_subcategory": 0.417021
+    }
+  },
+  "stability": [
+    {
+      "algorithm": "gower_pam",
+      "k": 8,
+      "bootstrap_repeats": 16,
+      "stability_ari_mean": 0.59867,
+      "stability_ari_min": 0.327843,
+      "stability_jaccard_mean": 0.632777,
+      "stability_jaccard_min": 0.425417
+    },
+    {
+      "algorithm": "gower_hierarchical",
+      "k": 5,
+      "bootstrap_repeats": 16,
+      "stability_ari_mean": 0.434147,
+      "stability_ari_min": -0.016224,
+      "stability_jaccard_mean": 0.69414,
+      "stability_jaccard_min": 0.530996
+    },
+    {
+      "algorithm": "structured_kmeans",
+      "k": 5,
+      "bootstrap_repeats": 16,
+      "stability_ari_mean": 0.795045,
+      "stability_ari_min": 0.60127,
+      "stability_jaccard_mean": 0.855039,
+      "stability_jaccard_min": 0.700271
+    },
+    {
+      "algorithm": "text_tfidf_svd_kmeans",
+      "k": 12,
+      "bootstrap_repeats": 16,
+      "stability_ari_mean": 0.574666,
+      "stability_ari_min": 0.498541,
+      "stability_jaccard_mean": 0.692187,
+      "stability_jaccard_min": 0.546704
+    }
+  ],
+  "expandedContentRepeatCandidatePairs": 53,
+  "preferredRobustnessPilotCandidate": {
+    "algorithm": "text_tfidf_svd_kmeans",
+    "k": 12,
+    "reason": "Highest family-aware resampling Jaccard among structurally viable pilot candidates"
+  },
+  "limitations": [
+    "LCA is deferred to the full benchmark.",
+    "Prediction Strength is deferred to the full benchmark.",
+    "TF-IDF+SVD is a text pilot; sentence embeddings remain to be compared.",
+    "Cross-representation silhouette values must not be treated as directly comparable.",
+    "No administrative or legal correctness claim is made."
+  ]
+}

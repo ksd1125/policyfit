@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="date" content="2026-06-06">
+<meta name="keywords" content="정책핏, 오류탐지, 에이전트, QA">
+<title>정책핏 오류 탐지 리포트 — 32건</title>
+<style>
+  :root{--blue:#3182F6;--ink:#191F28;--gray:#6B7684;--line:#E5E8EB;--bg:#F2F4F6;
+        --red:#FF5252;--amber:#FF9500;--green:#00C896;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,"Pretendard","Segoe UI",sans-serif;max-width:1000px;
+       margin:30px auto;padding:24px;color:var(--ink);line-height:1.6;}
+  h1{color:var(--blue);border-bottom:3px solid var(--blue);padding-bottom:12px;}
+  h2{margin-top:36px;font-size:19px;border-left:4px solid var(--blue);padding-left:12px;}
+  .meta{color:var(--gray);font-size:14px;}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0;}
+  .kpi{background:var(--bg);border-radius:12px;padding:18px;text-align:center;}
+  .kpi .n{font-size:26px;font-weight:700;color:var(--blue);}
+  .kpi .l{font-size:12px;color:var(--gray);margin-top:4px;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--bg);font-weight:600;}
+  .sev{display:inline-block;padding:1px 9px;border-radius:5px;font-size:12px;font-weight:600;}
+  .h{background:#FFEBEE;color:var(--red);}
+  .m{background:#FFF4E5;color:var(--amber);}
+  .l{background:#E5F8F3;color:var(--green);}
+  .done{color:var(--green);font-weight:600;}
+  .todo{color:var(--gray);}
+  .auto{color:var(--blue);}
+  code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:12px;}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);}body{padding:14px;}}
+</style>
+</head>
+<body>
+<h1>정책핏 오류 탐지 리포트</h1>
+<p class="meta">2026-06-06 · 3개 병렬 탐지 에이전트(데이터/코드/UI) · 총 <b>32건</b> 발견</p>
+
+<div class="grid">
+  <div class="kpi"><div class="n">32</div><div class="l">총 발견</div></div>
+  <div class="kpi"><div class="n">7</div><div class="l">즉시 수정 완료</div></div>
+  <div class="kpi"><div class="n">9</div><div class="l">LLM/데이터 자동해결 예정</div></div>
+  <div class="kpi"><div class="n">16</div><div class="l">우선순위 대기</div></div>
+</div>
+
+<h2>① 수정 완료 (7건)</h2>
+<table>
+<tr><th>심각도</th><th>오류</th><th>위치</th><th>수정 내용</th></tr>
+<tr><td><span class="sev h">높음</span></td><td>"확인 필요" 금액에 "✓확인" 배지 (13건)</td><td>policyfit-ui.jsx</td><td class="done">✓ placeholder 정규식 판정</td></tr>
+<tr><td><span class="sev h">높음</span></td><td>industryAll 명시 필드 무시 (휴리스틱 우선)</td><td>policyfit-config.js</td><td class="done">✓ 명시 필드 우선, 레거시만 휴리스틱</td></tr>
+<tr><td><span class="sev h">높음</span></td><td>목적문 사실 왜곡 "재취업"</td><td>PBLN_122136</td><td class="done">✓ "사업 지속·생활안정"으로 수정 (DB+캐시)</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>진단 외 경로에서 품질점수를 매칭도로 오표시</td><td>policyfit-app.jsx</td><td class="done">✓ pscore 없으면 배지 숨김</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>StaffMode 답변에 placeholder 금액 노출 (342건 위험)</td><td>policyfit-app.jsx</td><td class="done">✓ amountText() 헬퍼, 자연스러운 문장</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>문서 795 vs 실제 799건</td><td>index.html</td><td class="done">✓ 799로 갱신</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>open-ps1 죽은 경로 policyfit.html</td><td>open-policyfit-8090.ps1</td><td class="done">✓ policyfit/index.html</td></tr>
+</table>
+
+<h2>② LLM 분류·데이터로 자동 해결 예정 (9건)</h2>
+<p>진행 중인 <b>분류 LLM 재검증(Task #34)</b>이 한도 회복 시 자동 처리하거나, 데이터 보강으로 해소됩니다.</p>
+<table>
+<tr><th>오류</th><th>규모</th><th>해결 경로</th></tr>
+<tr><td>goals 'digital' 과다 태깅 (융자/수수료에 디지털)</td><td>52건</td><td class="auto">LLM 재분류</td></tr>
+<tr><td>관광 인센티브가 '창업 지원' 오분류</td><td>3건</td><td class="auto">LLM 재분류</td></tr>
+<tr><td>관광 targetShort="중소기업"인데 실수혜=여행사</td><td>31건</td><td class="auto">LLM 재분류/대상 보정</td></tr>
+<tr><td>비사업(컨설팅/폐업/보험료)이 fund 계열</td><td>7건</td><td class="auto">LLM 재분류</td></tr>
+<tr><td>레거시 amountLabel vs 신규 필드 모순</td><td>118건</td><td class="auto">UI가 amountPerApplicant 우선(완화), 동기화 검토</td></tr>
+<tr><td>benefits에 '천원' 단위 잔존</td><td>25건</td><td class="auto">normalize를 benefits까지 확장</td></tr>
+<tr><td>결측 필드 (benefits 1, goals 1, targetDetail 13)</td><td>15건</td><td class="auto">재추출/보강</td></tr>
+<tr><td>중복 제목 2건 분류 불일치</td><td>2건</td><td class="auto">통합/일관화</td></tr>
+<tr><td>관광 인센티브 분류 일관성</td><td>31건</td><td class="auto">판로·마케팅 통일</td></tr>
+</table>
+
+<h2>③ 우선순위 대기 (16건)</h2>
+<table>
+<tr><th>심각도</th><th>오류</th><th>위치</th><th>비고</th></tr>
+<tr><td><span class="sev h">높음</span></td><td>parse_amount 단위 미환산(amountValue=선두숫자)</td><td>build-policyfit-db.py</td><td>normalize가 뒤에서 재계산해 가려짐. 단독실행 시 노출</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>normalize 천억 단위 미지원("2조 3천억" 누락)</td><td>normalize-amount-units.py</td><td>거대 총액만 영향</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>relaxed goal undefined → 임의 4건 노출</td><td>policyfit-app.jsx:283</td><td>빈 상태 추천</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>캐시버전 ?v=2 고정 (코드 수정 시 stale)</td><td>index.html</td><td>배포 시 버전 증가 규칙</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>BarRow가 카운트를 금액 포맷(krw)</td><td>policyfit-ui.jsx</td><td>1000건+ 시 증상</td></tr>
+<tr><td><span class="sev m">중간</span></td><td>watch collect-mini ID 불일치 가능</td><td>watch-new-notices.py</td><td>API 타이밍 의존</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>접근성: 아이콘 버튼 aria-label 누락</td><td>policyfit-ui.jsx</td><td>닫기/뒤로/검색</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>접근성: 모달 ESC/포커스 트랩/스크롤잠금 없음</td><td>policyfit-app.jsx</td><td>role=dialog 추가</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>editor.html innerHTML 무이스케이프(XSS 잠복)</td><td>editor.html</td><td>현재 데이터 안전</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>status 정적 저장 + 프론트 미사용</td><td>build-policyfit-db.py</td><td>필드 제거 검토</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>region 'local' 290건 집약(지역 변별 불가)</td><td>policyfit-config.js</td><td>설계 트레이드오프</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>pscore 50 폴백 dead code</td><td>policyfit-config.js</td><td>주석-동작 불일치</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>rebuild docstring 8 vs 12단계 / verify KeyError 위험</td><td>rebuild-all.py</td><td>방어코드</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>주기저장 done%10==0 (done=0 시 매번)</td><td>extract/classify-llm.py</td><td>경미</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>_amount_short 단위 혼동</td><td>build-policyfit-db.py</td><td>표시용</td></tr>
+<tr><td><span class="sev l">낮음</span></td><td>build 단독실행 시 LLM 필드 소실 위험</td><td>build-policyfit-db.py</td><td>rebuild-all은 안전</td></tr>
+</table>
+
+<h2>탐지 방식</h2>
+<p>3개 <b>병렬 general-purpose 에이전트</b>를 구성해 독립 탐지:</p>
+<ul>
+<li><b>데이터 품질</b>: audit 스크립트 3종 실행 + 799건 직접 분석 + 25건 육안 검수 → 10영역</li>
+<li><b>코드·로직</b>: jsx/js/py 정독 + 정규식·매칭 실제 재현 테스트 → 11건</li>
+<li><b>UI·문서</b>: 렌더링·반응형·접근성·데이터계약·문서 교차대조 → 11건</li>
+</ul>
+<p class="meta">정상 확인(오탐 방지): URL 799건 정상 · CAT_ICON↔카테고리 완전일치 · amountSource↔UI분기 정상 · 중복 ID 없음 · match 범위 정상</p>
+</body>
+</html>

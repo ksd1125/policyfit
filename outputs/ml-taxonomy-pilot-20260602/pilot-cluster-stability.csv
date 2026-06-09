@@ -1,0 +1,5 @@
+﻿algorithm,k,bootstrap_repeats,stability_ari_mean,stability_ari_min,stability_jaccard_mean,stability_jaccard_min
+gower_pam,8,16,0.59867,0.327843,0.632777,0.425417
+gower_hierarchical,5,16,0.434147,-0.016224,0.69414,0.530996
+structured_kmeans,5,16,0.795045,0.60127,0.855039,0.700271
+text_tfidf_svd_kmeans,12,16,0.574666,0.498541,0.692187,0.546704

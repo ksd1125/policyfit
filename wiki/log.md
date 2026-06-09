@@ -1,0 +1,25 @@
+# 작업 로그
+
+- 20260601-224706: 기업마당 4개 분야 수집 실행
+- 20260601-notice-type-analysis: 수집 공고 795건 대상 유형화 분석 실행
+- 20260601-conversion: 원문 텍스트화 실행 (HTML 795/795, 첨부 1450/1636, 실패 186건)
+- 20260601-field-coverage: 8개 정규화 후보 필드 커버리지 분석 완료
+- 20260601-normalize: 795건 정규화 데이터셋 생성 (2.3MB JSON)
+- 20260601-sample-query: 5개 시나리오 질의 테스트 완료 (평균 완성도 79%)
+- 20260601-chatbot-proto: 브라우저 챗봇 프로토타입 구현 (policy-chatbot.html)
+- 20260601-chatbot-v2: 상권AI 디자인 시스템 적용 + 대화형 UX 전면 재작성
+- 20260601-chatbot-v3: 사용자 6대 질문 카드 + 금액 자동추출 + 톤 정규화
+- 20260602-qa-review: 35건 전문가 검토 → 전체 수정 완료 (12/12 자동 테스트 통과)
+- 20260602-advisor-mode: AI 조언자 파이프라인 구현 (IntentParser+ConversationState+PolicyMatcher+NarrativeBuilder+CompareTable)
+- 20260602-feedback-5: 전국→공통, 지역외 공고 제거, 카드크기 통일, 변경공고 dedup, 용도 적합성 검증
+- 20260602-methodology-review: 사전배치 재현성 독립검증(SHA-256 일치) + 학술 검토 (methodology-review-20260602.html)
+- 20260602-benchmark-review: ML taxonomy benchmark 리뷰어 검토 — 약한 구조 발견(silhouette≤0.17) + AI 기술제언 5건 (benchmark-reviewer-report-20260602.html)
+- 20260602-purpose-axis: 벤치마크 다축 결론 챗봇 적용 — 목적 축(14태그) 추가, chatbot-db.json 생성, 융자/보조금 분기, 목적 태그 칩 시각화. "인테리어 비용" 정확 매칭 검증(107건 전부 시설개보수 태그 보유)
+- 20260602-card-uniform: 결과 카드 균일 높이(332.9px 고정) — 제목/요약 2줄, glance 2행, 태그 2행+목적 최대 3개
+- 20260602-institution-tier: 기관 위계 정렬 — 중앙부처·산하기관(공통) → 지자체 → 지자체 산하기관 순
+- 20260602-explore-mode: 자유 탐색 모드 — 부처/지역 둘러보기, 사업군 비교, 서류 검색, 자유 다면 조합
+- 20260602-ux-overhaul: P0 8건 개선 — 가치헤드라인+첫화면3개, 보조금 하드필터, 결과 3그룹, 출처/갱신일, 서류 정제, 행동버튼(원문/문의/체크리스트복사), 진행상태+이전단계, 실패대응(1357/조건완화)
+- 20260602-p1: 후속 대화(서류적은순/지원금큰순/마감임박/다른지역비교) + 이벤트 측정(search/followup/recommend/consult_fail/card_expanded/official_click/checklist_copied/session_abandoned)
+- 20260602-consult-ui: 검색포털→상담챗봇 전환. 문제 12 + 개선 12. 페르소나(상담원 이든)+대화형 첫화면, 채팅 앵커 레이아웃, 상단 맥락바, 봇 메타 맥락화, 내러티브 휴먼화, 비교표 토글, 질문 4단계, 용도 칩 일상어, 사용자아바타 제거
+- 20260602-sections-db: 공고 자유추출 섹션 DB(chatbot-sections.json, 2.8MB, 평균5.8섹션) + 지연로드 + extractFromNotice('이 공고에 더 물어보기' 토픽칩: 평가·선정/우대·가점/제외/서류/사후관리) + 자유질의 라우팅
+- 20260603-policyfit-plan: 정책핏(오프라인 디자인 번들) 디코드·검토 → 신규 정책핏 챗봇 기획 + 자동 데이터 수급 파이프라인(기존 py 정제·분류 재사용) + 인수인계서 작성 (outputs/정책핏-구현-인수인계-20260603.html). 다음 세션 구현 예정

@@ -1,0 +1,22 @@
+{
+  "runId": "watch-1780676529",
+  "html_total": 4,
+  "html_success": 4,
+  "html_fail": 0,
+  "attach_total": 6,
+  "attach_success": 5,
+  "attach_fail": 1,
+  "by_extension": {
+    ".hwp": 5,
+    ".zip": 1
+  },
+  "by_extension_success": {
+    ".hwp": 5
+  },
+  "failures": [
+    {
+      "id": "PBLN_000000000122847/01__(붙임)2026년 경북 가상융합산업혁신센터 통합 기업지원사업 참여기업 모집 재공고.zip",
+      "error": "UNSUPPORTED_FORMAT"
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정책공고 지식DB 구축 기획서</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:#F5F2EC;color:#1A1916;line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:32px 24px}
+h1{font-size:24px;font-weight:700;margin-bottom:8px;color:#2D4540}
+h2{font-size:18px;font-weight:600;margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid #E8E3D7;color:#2D4540}
+h3{font-size:15px;font-weight:600;margin:20px 0 8px;color:#3a4540}
+p,li{font-size:14px;margin-bottom:6px}
+ul,ol{padding-left:20px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th,td{border:1px solid #E8E3D7;padding:8px 10px;text-align:left}
+th{background:#E8F0ED;font-weight:600;color:#2D4540}
+code{background:#f4f0e6;padding:2px 6px;border-radius:4px;font-size:12px}
+pre{background:#f4f0e6;padding:14px;border-radius:8px;overflow-x:auto;font-size:12px;margin:10px 0;line-height:1.5}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.badge-high{background:#dcfce7;color:#166534}
+.badge-mid{background:#fef3c7;color:#92400e}
+.badge-low{background:#fde2e1;color:#a84b40}
+.note{background:#fffdf8;border-left:4px solid #2D4540;padding:12px 16px;margin:16px 0;border-radius:0 8px 8px 0;font-size:13px}
+.stat{display:inline-block;background:#fff;border:1px solid #E8E3D7;border-radius:8px;padding:12px 16px;margin:4px;text-align:center}
+.stat .num{font-size:24px;font-weight:700;color:#2D4540}
+.stat .label{font-size:11px;color:#6F6B62}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>정책공고 지식DB 구축 기획서</h1>
+<p style="color:#6F6B62">2026-06-02 | Codex 실행용 스펙</p>
+
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:20px 0">
+<div class="stat"><div class="num">795</div><div class="label">전체 공고</div></div>
+<div class="stat"><div class="num">764</div><div class="label">첨부 MD 있음</div></div>
+<div class="stat"><div class="num">1,450</div><div class="label">첨부 MD 파일</div></div>
+<div class="stat"><div class="num">~13MB</div><div class="label">전체 텍스트</div></div>
+</div>
+
+<h2>1. 목적</h2>
+<p>현재 정규화 데이터(<code>normalized-notices</code>)는 API 메타데이터 + HTML 구조 추출 수준이다. 첨부파일(HWP/PDF → MD)에 들어있는 <strong>구체적 지원 내용, 사용 용도, 제한 사항, 신청 절차</strong>가 반영되지 않았다.</p>
+<p>이 기획서는 795건의 모든 소스(API + HTML + 첨부 MD)를 통합 파싱하여 <strong>공고당 구조화된 지식 레코드</strong>를 생성하는 스펙이다.</p>
+
+<h2>2. 입력 소스</h2>
+<table>
+<tr><th>소스</th><th>경로</th><th>건수</th><th>내용</th></tr>
+<tr><td>정규화 JSON</td><td><code>outputs/normalized-notices-20260601-224706.json</code></td><td>795</td><td>API 메타 + HTML 구조 필드 8개</td></tr>
+<tr><td>상세 HTML MD</td><td><code>raw/markdown/{runId}/{noticeId}/detail.md</code></td><td>795</td><td>소관부처, 사업개요, 신청기간, 신청방법, 문의처</td></tr>
+<tr><td>첨부파일 MD</td><td><code>raw/markdown/{runId}/{noticeId}/*.md</code> (detail.md 제외)</td><td>1,450</td><td>본문출력파일, HWP/PDF 변환 텍스트</td></tr>
+</table>
+
+<h2>3. 출력 스키마 (공고 1건 = 1 레코드)</h2>
+
+<pre>{
+  "id": "PBLN_000000000117038",
+  "title": "[충북] 2026년도 소상공인 육성자금 지원계획 공고",
+  "region": "충북",
+  "category": "금융",
+  "subcategory": "융자",
+  "institution": "충청북도",
+  "executor": "충북신용보증재단",
+  "registeredAt": "2025-12-30",
+  "url": "https://...",
+
+  // ── 핵심: 구조화된 지원 정보 ──
+  "support": {
+    "summary": "도내 소상공인에게 운전자금 및 시설개보수자금을 저금리 융자 지원",
+    "type": "융자",
+    "purposes": ["운전자금", "시설개보수"],
+    "amount": {"max": "7천만원", "raw": "대출한도 : 7천만원 이내(기 지원금액 포함)"},
+    "rate": "연 2.0% 이내",
+    "duration": "5년 이내"
+  },
+
+  "eligibility": {
+    "target": "소상공인",
+    "conditions": ["도내 사업장 소재", "업력 제한 없음"],
+    "exclusions": ["휴·폐업 중인 업체", "금융기관 여신거래 불가", "세금 체납자"],
+    "industryRestrictions": ["유흥주점", "도박", "사행성 업종"]
+  },
+
+  "application": {
+    "period": "예산 소진시까지",
+    "periodType": "budget_exhausted",
+    "method": "보증드림 앱 또는 온라인",
+    "steps": ["보증드림 앱 접속", "상담 예약 접수", "서류 제출", "심사", "대출 실행"],
+    "documents": ["사업자등록증 사본", "신분증", "매출증빙서류"],
+    "onlineAvailable": true
+  },
+
+  "contact": {
+    "name": "충북신용보증재단",
+    "phone": "043-249-5700",
+    "email": null,
+    "website": null
+  },
+
+  // ── 메타: 정보 품질 ──
+  "quality": {
+    "grade": "detailed",
+    "sources": ["api", "html", "attachment"],
+    "attachmentCount": 2,
+    "contentLength": 3500,
+    "purposeConfidence": "high"
+  }
+}</pre>
+
+<h2>4. 필드별 추출 규칙</h2>
+
+<h3>4-1. support.purposes (지원 용도) — 핵심</h3>
+<div class="note">
+<strong>이것이 가장 중요한 필드.</strong> "이 프로그램으로 인테리어 비용을 쓸 수 있나?"에 답하는 필드.<br>
+첨부파일에서 "지원항목", "사업비 사용범위", "지원 내용" 등의 섹션을 찾아 구체적 용도를 리스트로 추출.
+</div>
+<table>
+<tr><th>용도 태그</th><th>매칭 키워드</th></tr>
+<tr><td>운전자금</td><td>운전자금, 운영자금, 경영안정자금, 유동자금</td></tr>
+<tr><td>시설개보수</td><td>시설, 인테리어, 설비, 개보수, 리모델링, 점포환경개선</td></tr>
+<tr><td>인건비</td><td>인건비, 인력, 급여, 임금, 4대보험</td></tr>
+<tr><td>재료비</td><td>재료비, 원자재, 원부자재</td></tr>
+<tr><td>마케팅비</td><td>마케팅, 홍보, 광고, 판촉, 전시</td></tr>
+<tr><td>사업화</td><td>사업화, 시제품, 프로토타입, R&D, 연구개발</td></tr>
+<tr><td>교육훈련</td><td>교육, 훈련, 연수, 역량강화</td></tr>
+<tr><td>컨설팅</td><td>컨설팅, 진단, 멘토링, 자문</td></tr>
+<tr><td>디자인·브랜딩</td><td>디자인, 브랜드, 패키징, 포장, BI/CI</td></tr>
+<tr><td>인증취득</td><td>인증, ISO, HACCP, 규격, 특허</td></tr>
+<tr><td>수출</td><td>수출, 해외, 바이어, 전시회</td></tr>
+<tr><td>온라인판로</td><td>온라인, 쇼핑몰, 입점, 라이브커머스</td></tr>
+<tr><td>이자보전</td><td>이자, 이차보전, 금리, 대출이자</td></tr>
+<tr><td>보증지원</td><td>보증, 신용보증, 기술보증</td></tr>
+</table>
+
+<h3>4-2. support.amount (지원 금액)</h3>
+<p>패턴: <code>\d+[,\d]*(억원|천만원|백만원|만원)</code> + "이내", "한도", "최대" 앞뒤 문맥</p>
+<p>추가: 자부담 비율, 매칭 조건 (예: "투자금의 최대 5배")</p>
+
+<h3>4-3. eligibility.exclusions (제외 대상)</h3>
+<p>첨부파일에서 "지원제외", "참여제한", "제외대상", "다음에 해당하는 자" 섹션을 찾아 리스트로 추출.</p>
+
+<h3>4-4. application.steps (신청 절차)</h3>
+<p>"신청방법", "접수절차", "신청 안내" 섹션에서 순서대로 추출.</p>
+
+<h3>4-5. application.documents (필요 서류)</h3>
+<p>"제출서류", "구비서류" 섹션에서 리스트로 추출.</p>
+
+<h3>4-6. quality.grade (정보 품질 등급)</h3>
+<table>
+<tr><th>등급</th><th>기준</th><th>예상 비율</th></tr>
+<tr><td><span class="badge badge-high">detailed</span></td><td>purposes 2개+, amount 있음, exclusions 있음</td><td>~15%</td></tr>
+<tr><td><span class="badge badge-mid">moderate</span></td><td>purposes 1개+, amount 또는 exclusions 있음</td><td>~55%</td></tr>
+<tr><td><span class="badge badge-low">vague</span></td><td>purposes 없음, "공고문 참조" 수준</td><td>~30%</td></tr>
+</table>
+
+<h2>5. Codex 실행 지침</h2>
+
+<h3>5-1. 스크립트 위치</h3>
+<p><code>scripts/build-knowledge-db.py</code></p>
+
+<h3>5-2. 입력</h3>
+<ul>
+<li><code>outputs/normalized-notices-20260601-224706.json</code> (기존 정규화 데이터)</li>
+<li><code>raw/markdown/20260601-224706/{noticeId}/detail.md</code> (상세 HTML)</li>
+<li><code>raw/markdown/20260601-224706/{noticeId}/*.md</code> (첨부 MD)</li>
+</ul>
+
+<h3>5-3. 처리 흐름</h3>
+<ol>
+<li>정규화 JSON 로드 → 공고 795건 루프</li>
+<li>각 공고에 대해:
+  <ul>
+  <li>detail.md 읽기</li>
+  <li>첨부 *.md 전체 읽기 (합치기)</li>
+  <li>전체 텍스트에서 섹션별 추출:
+    <ul>
+    <li><code>support.purposes</code>: 용도 태그 키워드 매칭</li>
+    <li><code>support.amount</code>: 금액 패턴 + 문맥</li>
+    <li><code>support.rate</code>: 금리/이율 패턴</li>
+    <li><code>eligibility.exclusions</code>: 제외 섹션 파싱</li>
+    <li><code>application.steps</code>: 절차 섹션 파싱</li>
+    <li><code>application.documents</code>: 서류 섹션 파싱</li>
+    <li><code>contact</code>: 전화번호/이메일 패턴</li>
+    </ul>
+  </li>
+  <li>quality.grade 판정</li>
+  </ul>
+</li>
+<li>전체 결과를 <code>outputs/knowledge-db.json</code>으로 저장</li>
+<li>요약 리포트를 <code>outputs/knowledge-db-report.html</code>로 저장</li>
+</ol>
+
+<h3>5-4. 핵심 주의사항</h3>
+<ul>
+<li>첨부 MD는 HWP에서 변환된 것이라 <strong>표 구조가 깨져 있을 수 있음</strong>. &lt;...&gt; 태그 잔해, 연속 공백 등 정리 필요</li>
+<li>같은 정보가 detail.md와 첨부에 중복 등장 가능 → <strong>dedup 처리</strong></li>
+<li>"변경 공고", "수정 공고"는 이전 공고와 동일 제목 → <strong>최신본만 유지</strong> (기존 _hidden 로직 참조)</li>
+<li>purposes 추출 시 <strong>"사용 불가" 맥락 주의</strong>: "인건비는 지원 불가"에서 "인건비"를 용도로 잡으면 안 됨</li>
+</ul>
+
+<h2>6. 출력 파일</h2>
+<table>
+<tr><th>파일</th><th>설명</th></tr>
+<tr><td><code>outputs/knowledge-db.json</code></td><td>795건 전체 지식DB (위 스키마)</td></tr>
+<tr><td><code>outputs/knowledge-db-report.html</code></td><td>추출 결과 요약: 등급 분포, 필드 커버리지, 샘플 레코드</td></tr>
+</table>
+
+<h2>7. 검증 기준</h2>
+<ul>
+<li>purposes 추출율: 전체의 50%+ (현재 추정 ~60%)</li>
+<li>amount 추출율: 전체의 40%+ (현재 39%)</li>
+<li>exclusions 추출율: 전체의 50%+ (현재 55.7%)</li>
+<li>quality=detailed: 전체의 10%+</li>
+<li>"지원 불가" 문맥에서 잘못 추출된 purposes: 0건</li>
+</ul>
+
+</div>
+</body>
+</html>

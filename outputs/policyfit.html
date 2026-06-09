@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>정책핏 — 나에게 맞는 정책을 대화로</title>
+<meta name="description" content="검색이 아닌 진단. 몇 가지 질문에 답하면 나에게 딱 맞는 지원사업을 찾아드립니다.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --accent:#3182F6;--accent-soft:rgba(49,130,246,.08);--accent-ink:#1b5cc4;
+  --bg:#F7F8FB;--bg2:#FFFFFF;--ink:#111827;--ink2:#374151;--muted:#6B7280;
+  --line:#E5E7EB;--line2:#D1D5DB;--green:#059669;--amber:#D97706;--red:#DC2626;
+  --r:14px;--r-lg:20px;--r-xl:26px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.08);
+  --ease:cubic-bezier(.22,.68,0,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",-apple-system,"Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:var(--accent);text-decoration:none}
+
+/* ── App bar ── */
+.appbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.appbar-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:16px}
+.logo{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:700;color:var(--ink);cursor:pointer}
+.logo b{color:var(--accent)}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center}
+.appbar-nav{display:flex;gap:4px;margin-left:16px}
+.appbar-nav button{padding:6px 12px;border-radius:var(--r);font-size:14px;font-weight:500;color:var(--muted);transition:all .15s}
+.appbar-nav button.on,.appbar-nav button:hover{color:var(--accent);background:var(--accent-soft)}
+.appbar-spacer{flex:1}
+.mode-switch{display:flex;gap:2px;background:var(--bg);border-radius:var(--r);padding:3px}
+.mode-switch button{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:calc(var(--r) - 2px);font-size:12.5px;font-weight:500;color:var(--muted);transition:all .15s}
+.mode-switch button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+
+/* ── Page / Layout ── */
+.page{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+.col{max-width:720px;margin:0 auto}
+.rise{animation:rise .35s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.fade{animation:fadeIn .3s ease both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:48px 0 32px}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent);margin-bottom:12px}
+.hero h1{font-size:28px;font-weight:800;line-height:1.35;margin-bottom:12px}
+.hero .hl{color:var(--accent)}
+.hero .sub{font-size:15px;color:var(--muted);max-width:520px;margin:0 auto 24px;line-height:1.6}
+.askbar{display:flex;align-items:center;gap:10px;max-width:560px;margin:0 auto;background:#fff;border:1.5px solid var(--line);border-radius:var(--r-xl);padding:6px 6px 6px 16px;box-shadow:var(--shadow-sm);transition:border-color .15s}
+.askbar:focus-within{border-color:var(--accent)}
+.askbar input{flex:1;border:none;outline:none;font-size:15px;background:transparent}
+.askbar .go{width:42px;height:42px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.suggests{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px auto 0;max-width:560px}
+.suggest-pill{padding:7px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:13px;color:var(--muted);transition:all .15s}
+.suggest-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+/* Hero types */
+.hero-types{margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.hero-types-lbl{font-size:13px;color:var(--muted);font-weight:500}
+.type-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);background:#fff;border:1px solid var(--line);font-size:14px;font-weight:500;color:var(--ink2);transition:all .15s}
+.type-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+/* ── Section ── */
+.sec{margin-top:40px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-head h2{font-size:20px;font-weight:700}
+.more{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--accent);font-weight:500}
+
+/* ── Policy Card ── */
+.pcard{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s var(--ease)}
+.pcard:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.pcard-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.pcard-ic{width:40px;height:40px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)}
+.pcard-cat{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:2px}
+.pcard h3{font-size:15px;font-weight:700;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.org{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;margin-top:3px}
+.sum{font-size:13.5px;color:var(--ink2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px}
+.pcard-amount{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.amt-cap{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.num{font-size:14px;font-weight:700;color:var(--accent)}
+.pcard-foot{display:flex;align-items:center;gap:8px}
+.spacer{flex:1}
+
+/* ── Badges ── */
+.elig{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.elig-able{background:#ECFDF5;color:var(--green)}
+.elig-check{background:#FFFBEB;color:var(--amber)}
+.elig-need{background:#FEF2F2;color:var(--red)}
+.dday{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--muted)}
+.dday-urgent{color:var(--red);font-weight:700}
+.dday-always{color:var(--green)}
+.tcat{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:11.5px;font-weight:600}
+
+/* ── Match ring ── */
+.match-ring{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.match-ring-num{position:absolute;font-size:13px;font-weight:800;color:var(--accent)}
+
+/* ── Avatar ── */
+.pf-avatar{border-radius:50%;background:linear-gradient(135deg,var(--accent-soft),rgba(49,130,246,.15));display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0}
+
+/* ── Chat / Diagnose ── */
+.chat-wrap{padding-bottom:20px}
+.chat-progress{display:flex;align-items:center;gap:10px;padding:12px 0 16px;position:sticky;top:56px;background:var(--bg);z-index:5}
+.chat-progress .bar{flex:1;height:4px;border-radius:99px;background:var(--line)}
+.chat-progress .bar i{display:block;height:100%;border-radius:99px;background:var(--accent);transition:width .4s var(--ease)}
+.quickresult{display:flex;align-items:center;gap:4px;padding:6px 14px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;white-space:nowrap}
+.bubble-row{display:flex;gap:10px;align-items:flex-end}
+.bubble-row.me{justify-content:flex-end}
+.bubble{max-width:80%;padding:12px 16px;border-radius:var(--r-lg);font-size:14.5px;line-height:1.55}
+.bubble.ai{background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px}
+.bubble.me{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.bubble .q{font-weight:600;margin-bottom:4px}
+.bubble .qh{font-size:13px;color:var(--muted)}
+.skip-note{text-align:center;font-size:12.5px;color:var(--muted);padding:4px 0}
+.opts{display:flex;flex-wrap:wrap;gap:7px;padding:8px 0 4px;margin-left:46px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:var(--r);background:#fff;border:1.5px solid var(--line);font-size:14px;font-weight:500;color:var(--ink2);transition:all .15s}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip-active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip-count{font-size:12px;opacity:.65;font-weight:600}
+.chip-skip{border-style:dashed;color:var(--muted)}
+.typing{display:flex;gap:5px;padding:14px 18px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.4;animation:typeDot .9s infinite}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
+@keyframes typeDot{0%,80%{opacity:.4;transform:scale(1)}40%{opacity:1;transform:scale(1.15)}}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:7px;border-radius:var(--r);font-weight:600;transition:all .15s}
+.btn-sm{padding:6px 14px;font-size:13px}
+.btn-md{padding:8px 18px;font-size:14px}
+.btn-lg{padding:12px 24px;font-size:16px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-line{background:transparent;border:1.5px solid var(--line);color:var(--ink2)}
+.btn-line:hover{border-color:var(--accent);color:var(--accent)}
+.btn-soft{background:var(--accent-soft);color:var(--accent)}
+.btn-ghost{color:var(--muted)}
+.btn-full{width:100%;justify-content:center}
+
+/* ── Results ── */
+.results-head{margin-bottom:20px}
+.results-head h1{font-size:24px;font-weight:800;margin-bottom:6px}
+.results-head h1 .n{color:var(--accent)}
+.results-head>p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:12px}
+.cond-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.cond{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:999px;background:var(--accent-soft);font-size:13px;font-weight:500;color:var(--accent)}
+.cond .k{font-weight:700;margin-right:2px}
+.results-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.results-toolbar .count{font-size:13px;color:var(--muted)}
+.sortsel{display:flex;gap:2px;background:var(--bg);border-radius:var(--r);padding:3px}
+.sortsel button{padding:5px 12px;border-radius:calc(var(--r) - 2px);font-size:12.5px;font-weight:500;color:var(--muted)}
+.sortsel button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+.results-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.trend-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.empty-big{text-align:center;padding:48px 0;margin-bottom:24px}
+.empty-big .ic{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.empty-big h1{font-size:22px;margin-bottom:8px}
+.empty-big p{color:var(--muted);max-width:400px;margin:0 auto}
+.empty-actions{display:flex;gap:10px;margin-top:20px}
+
+/* ── Browse ── */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.cat-card{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:left;transition:all .15s}
+.cat-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md)}
+.cat-ic{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-ic-sm{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent);margin-right:6px;vertical-align:middle}
+.cat-meta{flex:1;min-width:0}
+.cat-meta h3{font-size:15px;font-weight:700}
+.cat-orgs{font-size:12px;color:var(--muted)}
+.cat-count{text-align:right}
+.cat-count b{font-size:22px;font-weight:800;color:var(--accent)}
+.cat-count span{font-size:13px;color:var(--muted);margin-left:2px}
+.cat-urgent{font-size:11px;font-weight:600;color:var(--red);background:#FEF2F2;padding:2px 8px;border-radius:99px}
+.browse-back{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+.browse-cta{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--accent-soft);border-radius:var(--r);margin-top:12px;font-size:14px;color:var(--accent);font-weight:500}
+.browse-cta>div{display:flex;align-items:center;gap:8px}
+
+/* ── Alert Card ── */
+.alert-card{display:flex;align-items:flex-start;gap:14px;background:#fff;border:1.5px solid var(--line);border-radius:var(--r);padding:18px;margin-top:20px}
+.alert-card.done{border-color:var(--green);background:#F0FDF4}
+.alert-card .ic{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.alert-card.done .ic{background:#DCFCE7;color:var(--green)}
+.alert-txt{flex:1}
+.alert-txt h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.alert-txt p{font-size:13px;color:var(--muted);line-height:1.55}
+
+/* ── Detail Sheet ── */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;animation:fadeIn .2s}
+.sheet{position:fixed;right:0;top:0;bottom:0;width:min(520px,100vw);background:#fff;z-index:201;display:flex;flex-direction:column;animation:slideIn .3s var(--ease)}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:none}}
+.sheet-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
+.sheet-bar .close{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .1s}
+.sheet-bar .close:hover{background:var(--bg)}
+.sheet-bar .t{font-size:15px;font-weight:600}
+.savebtn.on{color:var(--accent)}
+.save-toast{position:absolute;right:48px;font-size:12px;color:var(--accent);white-space:nowrap}
+.sheet-body{flex:1;overflow-y:auto;padding:20px}
+.dt-cat{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px}
+.dt-title{font-size:20px;font-weight:800;line-height:1.35;margin-bottom:6px}
+.dt-org{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:12px}
+.dt-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat{background:var(--bg);border-radius:var(--r);padding:14px}
+.stat .k{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:4px;font-weight:500}
+.stat .v{font-size:18px;font-weight:800;color:var(--ink)}
+.stat .vs{font-size:12px;color:var(--muted);margin-top:2px}
+.block{margin-bottom:20px}
+.block-h{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin-bottom:10px}
+.block-h .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.body{font-size:14px;color:var(--ink2);line-height:1.6}
+.prep{display:flex;flex-direction:column;gap:6px}
+.prep-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);background:var(--bg)}
+.prep-item .box{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prep-item.have .box{background:#DCFCE7;color:var(--green)}
+.prep-item.need .box{background:#FEF3C7;color:var(--amber)}
+.prep-item .lab{flex:1;font-size:14px;font-weight:500}
+.prep-item .st{font-size:12px;font-weight:600}
+.prep-item.have .st{color:var(--green)}
+.prep-item.need .st{color:var(--amber)}
+.steps{display:flex;flex-direction:column;gap:6px}
+.step{display:flex;gap:12px;align-items:flex-start;padding:8px 0}
+.step .num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.step .stxt{font-size:14px;color:var(--ink2);line-height:1.5;padding-top:3px}
+.callout{display:flex;gap:12px;padding:14px;border-radius:var(--r);background:#FFFBEB;border:1px solid #FDE68A;margin-top:16px}
+.callout .ic{color:var(--amber);flex-shrink:0;margin-top:1px}
+.callout p{font-size:13px;color:var(--ink2);line-height:1.55}
+.sheet-foot{display:flex;gap:10px;padding:14px 16px;border-top:1px solid var(--line);flex-shrink:0}
+
+/* ── Why section ── */
+.why{margin-top:48px;text-align:center}
+.why-head h2{font-size:22px;font-weight:800;margin-bottom:6px}
+.why-head p{font-size:14px;color:var(--muted);margin-bottom:24px}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;text-align:left}
+.why-item{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.why-item .ic{width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.why-item h4{font-size:15px;font-weight:700;margin-bottom:6px}
+.why-item p{font-size:13.5px;color:var(--ink2);line-height:1.55;margin-bottom:8px}
+.why-item .vs{font-size:12px;color:var(--muted);font-style:italic}
+
+/* ── Footer ── */
+.home-foot{margin-top:48px;text-align:center;padding:24px 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.8}
+.home-foot-brand{display:flex;align-items:center;justify-content:center;gap:6px;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
+
+/* ── Pro / Staff ── */
+.pro-head{text-align:center;padding:32px 0 24px}
+.pro-head h1{font-size:24px;font-weight:800;margin-bottom:6px}
+.pro-head p{font-size:14px;color:var(--muted);max-width:520px;margin:0 auto}
+.protabs{display:flex;gap:4px;justify-content:center;margin-top:16px}
+.protabs button{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--r);font-size:14px;font-weight:600;color:var(--muted);transition:all .15s}
+.protabs button.on{background:var(--accent);color:#fff}
+.brief-box{display:flex;gap:14px;background:#fff;border:1.5px solid var(--accent);border-radius:var(--r);padding:18px;margin-bottom:20px}
+.brief-ic{width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brief-box h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.brief-box p{font-size:13.5px;color:var(--ink2);line-height:1.6}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.kpi-k{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:4px}
+.kpi-v{font-size:24px;font-weight:800}
+.kpi-v span{font-size:14px;font-weight:500;color:var(--muted);margin-left:2px}
+.pro-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.pro-2col{grid-template-columns:1fr}.results-list{grid-template-columns:1fr}.stat-grid{grid-template-columns:1fr}.hero h1{font-size:22px}.mode-switch{display:none}}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.panel-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.panel-h h3{font-size:16px;font-weight:700}
+.panel-h .muted{font-size:12px;color:var(--muted)}
+.bar-row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.bar-label{width:120px;font-size:13px;color:var(--ink2);display:flex;align-items:center;gap:6px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-rank{width:18px;height:18px;border-radius:5px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bar-track{flex:1;height:8px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar-track i{display:block;height:100%;border-radius:99px;transition:width .4s var(--ease)}
+.bar-val{font-size:13px;font-weight:600;color:var(--ink);width:60px;text-align:right;flex-shrink:0}
+.delta{font-size:12px;font-weight:600;margin-left:6px}
+.delta.up{color:var(--green)}
+.delta.down{color:var(--red)}
+
+/* ── Staff ── */
+.staff-grid{display:grid;grid-template-columns:320px 1fr;gap:20px}
+@media(max-width:800px){.staff-grid{grid-template-columns:1fr}}
+.staff-panel{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.staff-panel.sticky{position:sticky;top:76px;align-self:start}
+.staff-panel h3{font-size:16px;font-weight:700;margin-bottom:14px}
+.field{margin-bottom:14px}
+.field label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px}
+.field-opts{display:flex;flex-wrap:wrap;gap:6px}
+.staff-textarea{width:100%;height:72px;border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;font:inherit;font-size:13px;resize:none;outline:none}
+.staff-textarea:focus{border-color:var(--accent)}
+.staff-empty{text-align:center;padding:40px 0}
+.staff-empty .ic{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.staff-empty h3{margin-bottom:6px}
+.staff-empty p{font-size:13px;color:var(--muted)}
+.script-card{background:#F0F9FF;border:1.5px solid #BAE6FD;border-radius:var(--r);padding:16px;margin-bottom:16px}
+.script-card .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.script-card .t{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--accent)}
+.script-card .cp{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--accent);font-weight:500}
+.script-card p{font-size:14px;line-height:1.6;margin-bottom:8px}
+.script-card .hl{font-weight:700;color:var(--accent)}
+
+/* ── Q List / Agency ── */
+.q-list{display:flex;flex-direction:column;gap:4px}
+.q-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px}
+.q-row:hover{background:var(--bg)}
+.q-rank{width:20px;height:20px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.q-text{flex:1;font-size:13px}
+.q-count{font-size:13px;font-weight:600;color:var(--ink)}
+.agency-list{display:flex;flex-direction:column;gap:6px}
+.agency-row{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px}
+.agency-row:hover{background:var(--bg)}
+.agency-ic{width:32px;height:32px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.agency-name{flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agency-name span{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.agency-count{font-size:12px;color:var(--muted);flex-shrink:0;width:60px}
+.agency-bar{width:80px;height:6px;background:var(--bg);border-radius:99px;overflow:hidden;flex-shrink:0}
+.agency-bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.agency-demand{font-size:13px;font-weight:600;width:50px;text-align:right;flex-shrink:0}
+
+/* ── BriefAsk ── */
+.briefask{margin-top:16px}
+.briefask-hint{font-size:13px;color:var(--muted);margin-bottom:12px}
+.briefask-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ans-list{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.ans-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;text-align:left;width:100%}
+.ans-row:hover{background:var(--bg)}
+.ans-title{flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ans-sub{font-size:12px;color:var(--muted);flex-shrink:0}
+.ans-right{font-size:13px;font-weight:600;flex-shrink:0}
+.ans-right.urgent{color:var(--red)}
+
+/* ── Assist ── */
+.assist{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;z-index:5}
+.assist-title{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}
+.assist-ava{width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.assist-body{flex:1;overflow-y:auto;padding:16px}
+.assist-ctx{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-bottom:12px}
+.assist-ctx span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.assist-mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.assist-mini span{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--amber);font-weight:500}
+.assist-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.assist-foot{padding:10px 16px;border-top:1px solid var(--line)}
+
+/* ── Compare ── */
+.cmp-kinds{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.cmp-kind{display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:var(--r);text-align:left;transition:all .15s}
+.cmp-kind:hover{border-color:var(--accent);box-shadow:var(--shadow-md)}
+.cmp-kind .ic{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cmp-kind h4{font-size:14px;font-weight:700;margin-bottom:2px}
+.cmp-kind p{font-size:12px;color:var(--muted)}
+.cmp-run{display:flex;align-items:center;gap:10px;margin-top:10px}
+.cmp-pickn{font-size:12px;color:var(--muted);font-weight:500}
+.cmp-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cmp-scroll{overflow-x:auto}
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px}
+.cmp-table th,.cmp-table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cmp-corner{background:var(--bg);font-weight:600;color:var(--muted)}
+.cmp-colh{background:var(--bg);font-weight:700;min-width:140px}
+.cmp-rowh{font-weight:600;color:var(--muted);white-space:nowrap}
+.cmp-strong{font-weight:700}
+
+/* ── Ptable ── */
+.ptable-wrap{overflow-x:auto}
+.ptable{width:100%;border-collapse:collapse;font-size:12.5px}
+.ptable th{padding:8px;text-align:left;font-weight:600;color:var(--muted);border-bottom:2px solid var(--line);white-space:nowrap}
+.ptable td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.ptable tr{cursor:pointer}
+.ptable tr:hover{background:var(--bg)}
+.td-title{font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-amt{font-weight:600;color:var(--accent);white-space:nowrap}
+.ta-r{text-align:right}
+
+/* ── Disclaimer ── */
+.disclaimer{margin-top:32px;padding:14px;border-radius:var(--r);background:#FFFBEB;border:1px solid #FDE68A;font-size:12px;color:var(--ink2);line-height:1.6;text-align:center}
+
+/* ── Print ── */
+@media print{.appbar,.mode-switch,.askbar,.protabs{display:none}.sheet{position:static;width:100%}.scrim{display:none}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ══════════════════════════════════════════════════════
+// DATA — loaded from policyfit-db.json
+// ══════════════════════════════════════════════════════
+let POLICIES = [];
+let DATA_LOADED = false;
+
+function computeDday(endDate) {
+  if (!endDate) return null;
+  const end = new Date(endDate + "T23:59:59");
+  const now = new Date();
+  const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+  return diff < 0 ? -1 : diff;
+}
+
+// ══════════════════════════════════════════════════════
+// ICONS
+// ══════════════════════════════════════════════════════
+function Icon({ name, size = 24, stroke = 2, style }) {
+  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none",
+    stroke: "currentColor", strokeWidth: stroke, strokeLinecap: "round",
+    strokeLinejoin: "round", style };
+  switch (name) {
+    case "spark": return <svg {...p}><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>;
+    case "arrow-right": return <svg {...p}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
+    case "arrow-left": return <svg {...p}><path d="M19 12H5M11 18l-6-6 6-6"/></svg>;
+    case "check": return <svg {...p}><path d="M20 6L9 17l-5-5"/></svg>;
+    case "check-circle": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>;
+    case "alert": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>;
+    case "won": return <svg {...p}><path d="M4 6l3 12 3-9 2 9 3-12M3 10h18M3 14h18"/></svg>;
+    case "coins": return <svg {...p}><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>;
+    case "bulb": return <svg {...p}><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.6 1 1.2 1 2.5h6c0-1.3.3-1.9 1-2.5A6 6 0 0012 3z"/></svg>;
+    case "monitor": return <svg {...p}><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>;
+    case "cap": return <svg {...p}><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11.5V16c0 1.2 2.7 2.5 6 2.5s6-1.3 6-2.5v-4.5M22 9v5"/></svg>;
+    case "globe": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 4 6 4 9s-1.4 6.4-4 9c-2.6-2.6-4-6-4-9s1.4-6.4 4-9z"/></svg>;
+    case "refresh": return <svg {...p}><path d="M21 12a9 9 0 11-2.6-6.4M21 4v4.5h-4.5"/></svg>;
+    case "calendar": return <svg {...p}><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>;
+    case "doc": return <svg {...p}><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>;
+    case "search": return <svg {...p}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>;
+    case "send": return <svg {...p}><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>;
+    case "store": return <svg {...p}><path d="M4 9l1-4h14l1 4M4 9v10a1 1 0 001 1h14a1 1 0 001-1V9M4 9h16M9 20v-6h6v6"/></svg>;
+    case "shop": return <svg {...p}><path d="M4 10v9a1 1 0 001 1h14a1 1 0 001-1v-9"/><path d="M3 10l2-5.5h14L21 10a2.4 2.4 0 01-4.3 1.4 2.4 2.4 0 01-4.3 0 2.4 2.4 0 01-4.3 0A2.4 2.4 0 013 10z"/></svg>;
+    case "chart": return <svg {...p}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>;
+    case "users": return <svg {...p}><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0M16 6a3 3 0 010 6M21 20a6 6 0 00-5-5.9"/></svg>;
+    case "building": return <svg {...p}><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h.01M13 7h.01M9 11h.01M13 11h.01M9 15h.01M13 15h.01M9 21v-3h6v3"/></svg>;
+    case "person": return <svg {...p}><circle cx="12" cy="8" r="3.2"/><path d="M5 20a7 7 0 0114 0"/></svg>;
+    case "headset": return <svg {...p}><path d="M4 13v-1a8 8 0 0116 0v1M4 13a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2v-2a2 2 0 012-2zM20 13a2 2 0 00-2 2v2a2 2 0 002 2 2 2 0 002-2v-2a2 2 0 00-2-2zM18 19a4 4 0 01-4 3h-2"/></svg>;
+    case "shield": return <svg {...p}><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>;
+    case "tag": return <svg {...p}><path d="M3 7v5l9 9 7-7-9-9H3z"/><circle cx="7.5" cy="9.5" r="1.2"/></svg>;
+    case "clock": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>;
+    case "copy": return <svg {...p}><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg>;
+    case "bookmark": return <svg {...p}><path d="M6 4h12v16l-6-4-6 4V4z"/></svg>;
+    case "x": return <svg {...p}><path d="M6 6l12 12M18 6L6 18"/></svg>;
+    case "filter": return <svg {...p}><path d="M3 5h18l-7 8v6l-4-2v-4L3 5z"/></svg>;
+    case "target": return <svg {...p}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>;
+    case "bell": return <svg {...p}><path d="M6 9a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6zM10 20a2 2 0 004 0"/></svg>;
+    case "compass": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/></svg>;
+    case "rocket": return <svg {...p}><path d="M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2M9 11a4 4 0 015.5-5.5C17 4 20 4 20 4s0 3-1.5 5.5A4 4 0 0113 15l-2 1-3-3 1-2z"/><circle cx="15" cy="9" r="1"/></svg>;
+    default: return null;
+  }
+}
+
+const CAT_ICON = {
+  "운영자금":"coins","고용·인건비":"users","판로·마케팅":"chart",
+  "디지털 전환":"monitor","창업 지원":"bulb","안전망·세제":"shield","시설·환경":"store",
+  "교육·컨설팅":"cap","수출·해외진출":"globe","재기·재도전":"refresh",
+};
+
+// ══════════════════════════════════════════════════════
+// UI PRIMITIVES
+// ══════════════════════════════════════════════════════
+function Btn({ children, variant="primary", size="md", icon, iconRight, onClick, full, style }) {
+  return <button className={`btn btn-${variant} btn-${size}${full?" btn-full":""}`} onClick={onClick} style={style}>
+    {icon && <Icon name={icon} size={size==="lg"?20:18}/>}{children && <span>{children}</span>}
+    {iconRight && <Icon name={iconRight} size={size==="lg"?20:18}/>}
+  </button>;
+}
+function Chip({ children, active, onClick, count }) {
+  return <button className={`chip${active?" chip-active":""}`} onClick={onClick}>
+    {children}{count!=null && <span className="chip-count">{count}</span>}
+  </button>;
+}
+function Avatar({ size=36 }) {
+  return <div className="pf-avatar" style={{width:size,height:size}}><Icon name="spark" size={size*0.55} stroke={2.2}/></div>;
+}
+function MatchRing({ value, size=46 }) {
+  const r=(size-6)/2, c=2*Math.PI*r;
+  return <div className="match-ring" style={{width:size,height:size}}>
+    <svg width={size} height={size}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--line)" strokeWidth="4"/>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--accent)" strokeWidth="4"
+        strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c*(1-value/100)}
+        transform={`rotate(-90 ${size/2} ${size/2})`} style={{transition:"stroke-dashoffset .8s ease"}}/>
+    </svg>
+    <span className="match-ring-num">{value}</span>
+  </div>;
+}
+function EligibleBadge({ status }) {
+  if(status==="able") return <span className="elig elig-able"><Icon name="check-circle" size={15}/>신청 가능</span>;
+  if(status==="check") return <span className="elig elig-check"><Icon name="alert" size={15}/>조건 확인 필요</span>;
+  return <span className="elig elig-need"><Icon name="alert" size={15}/>정보 더 필요</span>;
+}
+function DdayPill({ dday }) {
+  if(dday==null) return <span className="dday dday-always"><Icon name="clock" size={13}/>상시</span>;
+  if(dday<0) return <span className="dday dday-urgent"><Icon name="clock" size={13}/>마감</span>;
+  return <span className={`dday${dday<=14?" dday-urgent":""}`}><Icon name="clock" size={13}/>D-{dday}</span>;
+}
+
+// ══════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════
+const USER_TYPES = [
+  {id:"owner", label:"소상공인·자영업자", desc:"이미 사업을 운영 중이에요"},
+  {id:"prestart", label:"예비 창업자", desc:"창업을 준비하고 있어요"},
+];
+const TYPE_PROFILE = {
+  owner: {prefill:{}, goals:["fund","sales","digital","hr"], stages:["y1","y13","y3"],
+    note:"운영 중인 사업장 기준으로 자금·판로·고용 지원을 찾아드려요."},
+  prestart: {prefill:{stage:"pre"}, goals:["startup","fund","digital"],
+    note:"아직 창업 전이니 창업 자금·공간·교육 위주로 찾아드려요."},
+};
+const QUESTIONS = [
+  {id:"goal", q:"지금 가장 급한 건 무엇인가요?", hint:"이것만 골라도 결과를 볼 수 있어요",
+    options:[{id:"fund",label:"운영자금·대출"},{id:"sales",label:"매출·판로 확대"},{id:"digital",label:"디지털 전환"},{id:"startup",label:"창업 자금·공간"},{id:"hr",label:"인건비·고용"}]},
+  {id:"stage", q:"사업 단계는 어디쯤인가요?", hint:"지원금 자격을 가르는 핵심 기준이에요",
+    options:[{id:"pre",label:"창업 준비 중"},{id:"y1",label:"1년 미만"},{id:"y13",label:"1~3년차"},{id:"y3",label:"3년 이상"}]},
+  {id:"industry", q:"어떤 업종이세요?", hint:"선택 사항이에요 · 더 정확해져요",
+    options:[{id:"food",label:"음식·외식"},{id:"retail",label:"도소매·유통"},{id:"service",label:"생활·서비스"},{id:"online",label:"온라인·플랫폼"},{id:"maker",label:"제조·기술"},{id:"etc",label:"기타"}]},
+  {id:"region", q:"사업장이 어디인가요?", hint:"선택 사항이에요 · 지역 전용 사업도 찾아드려요",
+    options:[{id:"seoul",label:"서울"},{id:"gyeonggi",label:"경기·인천"},{id:"metro",label:"광역시"},{id:"local",label:"그 외 지역"},{id:"any",label:"상관없어요"}]},
+];
+const CONDLABEL = {
+  industry:{food:"음식·외식",retail:"도소매·유통",service:"생활·서비스",online:"온라인·플랫폼",maker:"제조·기술",etc:"기타"},
+  stage:{pre:"창업 준비",y1:"1년 미만",y13:"1~3년차",y3:"3년 이상"},
+  goal:{fund:"운영자금",sales:"판로 확대",digital:"디지털 전환",startup:"창업 자금",hr:"고용·인건비"},
+  region:{seoul:"서울",gyeonggi:"경기·인천",metro:"광역시",local:"그 외",any:"전국"},
+};
+
+function questionsForType(ut) {
+  const prof = TYPE_PROFILE[ut] || {};
+  return QUESTIONS.map(q => {
+    if(q.id==="goal" && prof.goals) return {...q, options:q.options.filter(o=>prof.goals.includes(o.id))};
+    if(q.id==="stage" && prof.stages) return {...q, options:q.options.filter(o=>prof.stages.includes(o.id))};
+    return q;
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// MATCHING
+// ══════════════════════════════════════════════════════
+function computeMatches(answers) {
+  const {industry, stage, goal, region} = answers || {};
+  return POLICIES.map(p => {
+    if(goal && !p.goals.includes(goal)) return {...p, pscore:0};
+    if(region && region!=="any") {
+      const rs = p.regions || ["any"];
+      if(!rs.includes("any") && !rs.includes(region)) return {...p, pscore:0};
+    }
+    let s = 0;
+    if(goal) s += 36;
+    if(stage) { if(p.stages.includes(stage)) s += 30; else s -= 50; }
+    if(industry && p.tags.includes(industry)) s += 14;
+    s += p.match / 12;
+    const pscore = Math.max(0, Math.min(99, Math.round(s + 25)));
+    return {...p, pscore};
+  }).filter(p => p.pscore > 28).sort((a,b) => b.pscore - a.pscore);
+}
+function optionCount(answers, qid, optId) {
+  return computeMatches({...answers, [qid]:optId}).length;
+}
+
+// seed → prefill
+const GOAL_KW = {
+  fund:["운영자금","자금","대출","융자","돈","경영안정","긴급","보증"],
+  sales:["판로","매출","판매","마케팅","홍보","수출","라이브","스토어","온라인 판매"],
+  digital:["키오스크","디지털","배달","스마트","테이블오더","포스","비대면"],
+  startup:["창업","예비창업","사업화","초기창업","아이디어","공간","사무실"],
+  hr:["고용","직원","인건비","채용","알바","보험","4대보험"],
+};
+const IND_KW = {
+  food:["음식","식당","외식","카페","요식"],retail:["도소매","유통","상점","마트"],
+  online:["온라인","쇼핑몰","플랫폼"],maker:["제조","공장","기술","생산"],
+  service:["서비스","미용","학원","헬스","세탁"],
+};
+function parseSeed(text) {
+  if(!text) return {};
+  const t = text.toLowerCase(), out = {};
+  for(const [g,kws] of Object.entries(GOAL_KW)) if(kws.some(k=>t.includes(k))){out.goal=g;break;}
+  for(const [i,kws] of Object.entries(IND_KW)) if(kws.some(k=>t.includes(k))){out.industry=i;break;}
+  return out;
+}
+
+// ══════════════════════════════════════════════════════
+// POLICY CARD
+// ══════════════════════════════════════════════════════
+function PolicyCard({p, compact, onClick, showMatch}) {
+  return <button className={`pcard${compact?" compact":""}`} onClick={onClick}>
+    <div className="pcard-top">
+      <div className="pcard-ic"><Icon name={CAT_ICON[p.category]||"doc"} size={24}/></div>
+      <div style={{flex:1,minWidth:0}}>
+        <div className="pcard-cat">{p.category}</div>
+        <h3>{p.title}</h3>
+        <div className="org"><Icon name="building" size={13}/>{p.org}</div>
+      </div>
+      {showMatch && p.pscore && <MatchRing value={p.pscore}/>}
+    </div>
+    <p className="sum">{p.summary}</p>
+    <div className="pcard-amount">
+      <span className="amt-cap"><Icon name="won" size={14}/>지원 규모</span>
+      <span className="num">{p.amountLabel}</span>
+    </div>
+    <div className="pcard-foot">
+      <EligibleBadge status={p.eligible}/>
+      <span className="spacer"/>
+      <DdayPill dday={p.dday}/>
+    </div>
+  </button>;
+}
+
+// ══════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════
+const SUGGESTS = ["운영자금이 필요해요","온라인 판매를 하고 싶어요","창업을 준비 중이에요"];
+
+function Home({onStart, onPickType, onOpenPolicy, onBrowse}) {
+  const [q, setQ] = useState("");
+  const trending = [...POLICIES].filter(p=>p.dday!=null && p.dday>=0).sort((a,b)=>a.dday-b.dday).slice(0,3);
+
+  return <div className="page rise">
+    <section className="hero">
+      <div className="eyebrow"><Icon name="spark" size={15}/>AI 정책 도우미</div>
+      <h1>복잡한 공고문은 그만.<br/><span className="hl">대화 한 번</span>으로 내 정책을 찾으세요.</h1>
+      <p className="sub">목적·금액·기간·준비물까지 핵심만 정리해 드려요. 검색이 아니라, 몇 가지 질문에 답하면 나에게 딱 맞는 지원사업이 골라집니다.</p>
+      <div className="askbar">
+        <Icon name="spark" size={22} stroke={2.2} style={{color:"var(--accent)"}}/>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="무엇을 도와드릴까요? 예: 운영자금이 필요해요"
+          onKeyDown={e=>e.key==="Enter"&&onStart(q)}/>
+        <button className="go" onClick={()=>onStart(q)} aria-label="시작"><Icon name="arrow-right" size={22}/></button>
+      </div>
+      <div className="suggests">
+        {SUGGESTS.map(s=><button key={s} className="suggest-pill" onClick={()=>onStart(s)}>{s}</button>)}
+      </div>
+      <div className="hero-types">
+        <span className="hero-types-lbl">내 상황에 맞게 시작하기</span>
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,justifyContent:"center"}}>
+          {USER_TYPES.map(u=><button key={u.id} className="type-pill" onClick={()=>onPickType(u.id)}>
+            <Icon name={u.id==="owner"?"shop":"bulb"} size={17}/>{u.label}
+          </button>)}
+        </div>
+      </div>
+    </section>
+
+    {trending.length>0 && <section className="sec">
+      <div className="sec-head"><h2>마감이 임박한 사업</h2><button className="more" onClick={onBrowse}>전체 보기<Icon name="arrow-right" size={15}/></button></div>
+      <div className="trend-row">
+        {trending.map(p=><PolicyCard key={p.id} p={p} compact onClick={()=>onOpenPolicy(p)}/>)}
+      </div>
+    </section>}
+
+    <section className="why">
+      <div className="why-head"><h2>왜 정책핏인가요?</h2><p>기존 정책 포털과 무엇이 다른지 한눈에 보세요.</p></div>
+      <div className="why-grid">
+        <div className="why-item"><div className="ic"><Icon name="target" size={22}/></div><h4>검색이 아닌 진단</h4><p>업종·단계·목적 몇 가지만 답하면 나에게 맞는 사업만 골라줘요.</p><span className="vs">기존 포털: 키워드 검색 → 수백 건 목록</span></div>
+        <div className="why-item"><div className="ic"><Icon name="doc" size={22}/></div><h4>공고문 대신 핵심 카드</h4><p>목적·지원금액·기간·내가 준비할 것만 한눈에.</p><span className="vs">기존 포털: 수십 페이지 PDF 공고문</span></div>
+        <div className="why-item"><div className="ic"><Icon name="headset" size={22}/></div><h4>상담·정책 담당자도 함께</h4><p>상담 현황 브리핑과 사업 비교까지, 담당자를 위한 도구도 한곳에.</p><span className="vs">기존 포털: 담당자가 직접 공고 대조</span></div>
+      </div>
+    </section>
+
+    <footer className="home-foot">
+      <div className="home-foot-brand"><span className="logo-mark"><Icon name="spark" size={15} stroke={2.4}/></span>정책핏</div>
+      <p>본 화면의 정책 정보는 서비스 시연을 위한 예시 데이터입니다. 실제 신청 전 각 기관의 공고를 확인하세요.</p>
+      <p>문의 · 소상공인 통합콜센터 1357</p>
+    </footer>
+  </div>;
+}
+
+// ══════════════════════════════════════════════════════
+// DIAGNOSE
+// ══════════════════════════════════════════════════════
+function Diagnose({userType, seed, prefill, questions, onComplete, onBack}) {
+  const QSET = questions || QUESTIONS;
+  const askList = QSET.filter(q=>!(prefill && prefill[q.id]));
+  const [msgs, setMsgs] = useState([]);
+  const [answers, setAnswers] = useState(prefill||{});
+  const [step, setStep] = useState(0);
+  const [typing, setTyping] = useState(false);
+  const [done, setDone] = useState(false);
+  const utLabel = (USER_TYPES.find(u=>u.id===userType)||{}).label;
+  const typeNote = (TYPE_PROFILE[userType]||{}).note;
+  const scrollDown = ()=>requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}));
+
+  function finish(ans) {
+    setTyping(true);
+    setTimeout(()=>{
+      setTyping(false);
+      const found = computeMatches(ans).length;
+      const text = found>0 ? `조건에 맞는 지원사업 ${found}건을 매칭도 순으로 정리했어요.`
+        : "딱 맞는 공고는 아직 없지만, 비슷한 사업과 알림 신청을 안내해 드릴게요.";
+      setMsgs(m=>[...m,{type:"ai",text},{type:"result",count:found,answers:ans}]);
+      setDone(true); scrollDown();
+    },950);
+  }
+  useEffect(()=>{
+    const known = [];
+    if(prefill?.goal) known.push("목적");
+    if(prefill?.industry) known.push("업종");
+    let greet;
+    if(seed && known.length) greet=`"${seed}" 잘 이해했어요. ${known.join("·")}은 파악했고, ${askList.length}가지만 더 확인할게요.`;
+    else if(userType) greet=`${utLabel}이시군요! ${typeNote||""} ${askList.length?`${askList.length}가지만 답하면 딱 맞는 사업을 골라드려요.`:""}`;
+    else if(seed) greet=`"${seed}" 관련해서 도와드릴게요. 가장 급한 것부터 골라주세요.`;
+    else greet="안녕하세요! 가장 급한 것 하나만 골라도 결과를 볼 수 있어요.";
+    setMsgs([{type:"ai",text:greet}]);
+    setTyping(true);
+    const t=setTimeout(()=>{
+      setTyping(false);
+      if(askList.length===0) finish(answers);
+      else {setMsgs(m=>[...m,{type:"q",q:askList[0]}]);scrollDown();}
+    },800);
+    return ()=>clearTimeout(t);
+  },[]);
+
+  function advance(ans,label,skipped){
+    if(label) setMsgs(m=>[...m,{type:"me",text:label}]);
+    else if(skipped) setMsgs(m=>[...m,{type:"skip"}]);
+    setAnswers(ans);
+    const ns=step+1; setStep(ns); scrollDown(); setTyping(true);
+    setTimeout(()=>{
+      setTyping(false);
+      if(ns<askList.length){setMsgs(m=>[...m,{type:"q",q:askList[ns]}]);scrollDown();}
+      else finish(ans);
+    },700);
+  }
+  const pick=(qid,opt)=>advance({...answers,[qid]:opt.id},opt.label,false);
+  const skip=()=>advance(answers,null,true);
+  const liveCount=computeMatches(answers).length;
+  const optional=qid=>qid==="industry"||qid==="region";
+  const lastQIdx=(()=>{for(let i=msgs.length-1;i>=0;i--) if(msgs[i].type==="q") return i; return -1;})();
+  const answered=Object.keys(answers).length;
+
+  return <div className="page">
+    <div className="col chat-wrap">
+      <div className="chat-progress">
+        <button className="btn btn-sm btn-ghost" onClick={onBack} style={{padding:"8px 10px"}}><Icon name="arrow-left" size={18}/></button>
+        <div className="bar"><i style={{width:`${done?100:(step/askList.length)*100}%`}}/></div>
+        {!done && (msgs.length>1||typing) && <button className="quickresult" onClick={()=>onComplete(answers)}>
+          {answered>=1?`결과 ${liveCount}건 보기`:"건너뛰고 전체 보기"}<Icon name="arrow-right" size={15}/>
+        </button>}
+      </div>
+      {msgs.map((m,i)=>{
+        if(m.type==="ai") return <div className="bubble-row fade" key={i}><Avatar/><div className="bubble ai">{m.text}</div></div>;
+        if(m.type==="me") return <div className="bubble-row me fade" key={i}><div className="bubble me">{m.text}</div></div>;
+        if(m.type==="skip") return <div className="skip-note fade" key={i}>이 질문은 건너뛰었어요</div>;
+        if(m.type==="q"){
+          const isCurrent=i===lastQIdx&&!typing&&!done;
+          return <div key={i} className="fade">
+            <div className="bubble-row"><Avatar/><div className="bubble ai" style={{maxWidth:"92%"}}><p className="q">{m.q.q}</p><p className="qh">{m.q.hint}</p></div></div>
+            {isCurrent && <div className="opts">
+              {m.q.options.map(o=><Chip key={o.id} onClick={()=>pick(m.q.id,o)} count={optionCount(answers,m.q.id,o.id)}>{o.label}</Chip>)}
+              {optional(m.q.id) && <button className="chip chip-skip" onClick={skip}>건너뛰기</button>}
+            </div>}
+          </div>;
+        }
+        if(m.type==="result") return <div className="bubble-row fade" key={i} style={{marginLeft:48}}>
+          <button className={`btn btn-lg ${m.count?"btn-primary":"btn-line"}`} onClick={()=>onComplete(m.answers)}>
+            {m.count?`맞춤 정책 ${m.count}건 보기`:"비슷한 사업·알림 보기"} <Icon name="arrow-right" size={20}/>
+          </button>
+        </div>;
+        return null;
+      })}
+      {typing && <div className="bubble-row fade"><Avatar/><div className="bubble ai" style={{padding:0}}><div className="typing"><i/><i/><i/></div></div></div>}
+    </div>
+  </div>;
+}
+
+// ══════════════════════════════════════════════════════
+// ALERT CARD
+// ══════════════════════════════════════════════════════
+function AlertCard({answers}) {
+  const [on,setOn]=useState(false);
+  const condText=Object.entries(answers).filter(([k])=>CONDLABEL[k]).map(([k,v])=>CONDLABEL[k][v]).join(" · ")||"내 조건";
+  return <div className={`alert-card${on?" done":""}`}>
+    <div className="ic"><Icon name={on?"check-circle":"bell"} size={22}/></div>
+    <div className="alert-txt">
+      <h4>{on?"알림을 신청했어요":"찾는 공고가 없나요?"}</h4>
+      <p>{on?`'${condText}' 조건에 맞는 새 공고가 등록되면 알려드려요.`:"조건에 맞는 새 공고가 등록되면 가장 먼저 알려드릴게요."}</p>
+    </div>
+    {!on && <Btn variant="primary" icon="bell" onClick={()=>{localStorage.setItem("pf_alert",JSON.stringify(answers));setOn(true);}}>새 공고 알림 받기</Btn>}
+  </div>;
+}
+
+// ══════════════════════════════════════════════════════
+// BROWSE
+// ══════════════════════════════════════════════════════
+function BrowseView({onOpenPolicy, onDiagnose}) {
+  const [cat,setCat]=useState(null);
+  const [sort,setSort]=useState("dday");
+  const byCat={};
+  POLICIES.forEach(p=>{(byCat[p.category]=byCat[p.category]||[]).push(p);});
+  const cats=Object.entries(byCat).map(([c,items])=>({c,items})).sort((a,b)=>b.items.length-a.items.length);
+
+  let list=cat?[...byCat[cat]]:[];
+  if(sort==="dday") list.sort((a,b)=>(a.dday??9999)-(b.dday??9999));
+  if(sort==="amount") list.sort((a,b)=>(b.amountValue??0)-(a.amountValue??0));
+
+  if(!cat) return <div className="page rise"><div className="col" style={{maxWidth:920}}>
+    <div className="results-head">
+      <h1>전체 지원사업 <span className="n">{POLICIES.length}건</span></h1>
+      <p>유형을 선택하면 해당 분야의 사업만 모아서 볼 수 있어요.</p>
+      <div className="browse-cta"><div><Icon name="target" size={18}/><span>나에게 맞는 사업만 빠르게 찾고 싶다면?</span></div>
+        <Btn variant="primary" size="sm" icon="spark" onClick={onDiagnose}>맞춤 진단 시작</Btn></div>
+    </div>
+    <div className="cat-grid">
+      {cats.map(({c,items})=>{
+        const urgent=items.filter(p=>p.dday!=null&&p.dday>=0&&p.dday<=14).length;
+        return <button key={c} className="cat-card" onClick={()=>{setCat(c);setSort("dday");window.scrollTo({top:0});}}>
+          <div className="cat-ic"><Icon name={CAT_ICON[c]||"doc"} size={24}/></div>
+          <div className="cat-meta"><h3>{c}</h3><span className="cat-orgs">{new Set(items.map(p=>p.org)).size}개 기관</span></div>
+          <div className="cat-count"><b>{items.length}</b><span>건</span></div>
+          {urgent>0 && <span className="cat-urgent">마감임박 {urgent}</span>}
+        </button>;
+      })}
+    </div>
+  </div></div>;
+
+  return <div className="page rise"><div className="col" style={{maxWidth:920}}>
+    <div className="results-head">
+      <button className="browse-back" onClick={()=>{setCat(null);window.scrollTo({top:0});}}><Icon name="arrow-left" size={16}/>전체 유형</button>
+      <h1 style={{marginTop:12}}><span className="cat-ic-sm"><Icon name={CAT_ICON[cat]||"doc"} size={20}/></span>{cat} <span className="n">{list.length}건</span></h1>
+    </div>
+    <div className="results-toolbar">
+      <span className="count">총 {list.length}건</span>
+      <div className="sortsel">
+        <button className={sort==="dday"?"on":""} onClick={()=>setSort("dday")}>마감임박순</button>
+        <button className={sort==="amount"?"on":""} onClick={()=>setSort("amount")}>지원규모순</button>
+      </div>
+    </div>
+    <div className="results-list">{list.map(p=><PolicyCard key={p.id} p={p} onClick={()=>onOpenPolicy(p)}/>)}</div>
+  </div></div>;
+}
+
+// ══════════════════════════════════════════════════════
+// RESULTS
+// ══════════════════════════════════════════════════════
+function Results({answers, onOpenPolicy, onRedo, onStaff, onDiagnose}) {
+  const conds=Object.entries(answers||{}).filter(([k,v])=>CONDLABEL[k]&&v);
+  const hasConditions=conds.length>0;
+  const [sort,setSort]=useState(hasConditions?"match":"dday");
+  let list=hasConditions?computeMatches(answers):[...POLICIES];
+  const empty=hasConditions&&list.length===0;
+  const relaxed=computeMatches({goal:answers.goal}).filter(p=>!list.find(x=>x.id===p.id)).slice(0,4);
+  if(sort==="match"&&hasConditions) list=[...list].sort((a,b)=>b.pscore-a.pscore);
+  if(sort==="dday") list=[...list].sort((a,b)=>(a.dday??9999)-(b.dday??9999));
+  if(sort==="amount") list=[...list].sort((a,b)=>(b.amountValue??0)-(a.amountValue??0));
+
+  const condChips=<div className="cond-bar">
+    {conds.map(([k,v])=><span className="cond" key={k}><span className="k">{({industry:"업종",stage:"단계",goal:"목적",region:"지역"})[k]}</span>{CONDLABEL[k][v]}</span>)}
+    <button className="btn btn-sm btn-soft" onClick={onRedo}><Icon name="filter" size={15}/>조건 다시 진단</button>
+  </div>;
+
+  if(!hasConditions) return <BrowseView onOpenPolicy={onOpenPolicy} onDiagnose={onDiagnose}/>;
+
+  if(empty) return <div className="page rise"><div className="col" style={{maxWidth:760}}>
+    <div className="results-head">{condChips}</div>
+    <div className="empty-big">
+      <div className="ic"><Icon name="compass" size={30}/></div>
+      <h1>조건에 딱 맞는 공고가 아직 없어요</h1>
+      <p>지금은 해당 조건의 모집 공고가 없지만, 막다른 길이 아니에요.</p>
+    </div>
+    <AlertCard answers={answers}/>
+    {relaxed.length>0 && <div style={{marginTop:28}}>
+      <div className="sec-head" style={{marginBottom:14}}><h2 style={{fontSize:20}}>조건을 넓힌 비슷한 사업</h2></div>
+      <div className="results-list">{relaxed.map(p=><PolicyCard key={p.id} p={p} showMatch onClick={()=>onOpenPolicy(p)}/>)}</div>
+    </div>}
+    <div className="empty-actions">
+      <Btn variant="line" full icon="filter" onClick={onRedo}>조건 바꿔서 다시 찾기</Btn>
+    </div>
+  </div></div>;
+
+  return <div className="page rise"><div className="col" style={{maxWidth:920}}>
+    <div className="results-head">
+      <h1><span className="n">{list.length}건</span>의 맞춤 정책을 찾았어요</h1>
+      <p>입력하신 조건과 잘 맞는 순서로 정리했어요. <b>매칭도</b>는 조건과 얼마나 맞는지를 0~100으로 나타낸 점수예요.</p>
+      {condChips}
+    </div>
+    <div className="results-toolbar">
+      <span className="count">총 {list.length}건</span>
+      <div className="sortsel">
+        <button className={sort==="match"?"on":""} onClick={()=>setSort("match")}>매칭도순</button>
+        <button className={sort==="dday"?"on":""} onClick={()=>setSort("dday")}>마감임박순</button>
+        <button className={sort==="amount"?"on":""} onClick={()=>setSort("amount")}>지원규모순</button>
+      </div>
+    </div>
+    <div className="results-list">{list.map(p=><PolicyCard key={p.id} p={p} showMatch onClick={()=>onOpenPolicy(p)}/>)}</div>
+    <AlertCard answers={answers}/>
+    <div className="disclaimer">본 화면의 정책 정보는 서비스 시연을 위한 예시 데이터입니다. 실제 신청 전 각 기관의 공고를 반드시 확인하세요. 문의: 소상공인 통합콜센터 1357</div>
+  </div></div>;
+}
+
+// ══════════════════════════════════════════════════════
+// DETAIL SHEET
+// ══════════════════════════════════════════════════════
+function Detail({p, onClose}) {
+  const [saved,setSaved]=useState(false);
+  const haveN=p.prepare.filter(x=>x.status==="have").length;
+  return <>
+    <div className="scrim" onClick={onClose}/>
+    <aside className="sheet">
+      <div className="sheet-bar">
+        <button className="close" onClick={onClose}><Icon name="x" size={20}/></button>
+        <span className="t">정책 상세</span>
+        <span style={{flex:1}}/>
+        <button className={`close savebtn${saved?" on":""}`} onClick={()=>setSaved(v=>!v)} title={saved?"저장됨":"저장하기"}>
+          <Icon name="bookmark" size={20}/>{saved&&<span className="save-toast">저장됨</span>}
+        </button>
+      </div>
+      <div className="sheet-body">
+        <span className="dt-cat"><Icon name={CAT_ICON[p.category]||"doc"} size={15}/>{p.category}</span>
+        <h1 className="dt-title">{p.title}</h1>
+        <div className="dt-org"><Icon name="building" size={14}/>{p.org}{p.executor&&p.executor!==p.org&&` (${p.executor})`}</div>
+        <div className="dt-badges">
+          <EligibleBadge status={p.eligible}/>
+          <DdayPill dday={p.dday}/>
+          <span className="elig" style={{background:"var(--accent-soft)",color:"var(--accent-ink)"}}><Icon name="spark" size={14}/>매칭도 {p.pscore||p.match}</span>
+        </div>
+        <p className="block body" style={{fontSize:16.5,color:"var(--ink)",fontWeight:600,margin:"4px 0 22px"}}>{p.summary}</p>
+        <div className="stat-grid">
+          <div className="stat"><div className="k"><Icon name="won" size={15}/>지원 금액</div><div className="v">{p.amountLabel}</div>{p.amountSub&&<div className="vs">{p.amountSub}</div>}</div>
+          <div className="stat"><div className="k"><Icon name="calendar" size={15}/>신청 기간</div><div className="v">{p.dday!=null?(p.dday>=0?`D-${p.dday}`:"마감"):"상시"}</div><div className="vs">{p.period}</div></div>
+        </div>
+        {p.purpose && <div className="block"><h3 className="block-h"><span className="dot"/>이 사업이 뭔가요?</h3><p className="body">{p.purpose}</p></div>}
+        <div className="block">
+          <h3 className="block-h"><span className="dot"/>나는 무엇을 준비하나요?</h3>
+          <p className="body" style={{marginBottom:14}}>준비물 {p.prepare.length}가지 중 <b style={{color:"var(--green)"}}>{haveN}가지</b>는 보통 이미 갖고 계세요.</p>
+          <div className="prep">{p.prepare.map((x,i)=><div key={i} className={`prep-item ${x.status}`}>
+            <div className="box"><Icon name={x.status==="have"?"check":"doc"} size={16} stroke={2.6}/></div>
+            <span className="lab">{x.label}</span>
+            <span className="st">{x.status==="have"?"보유 가능":"준비 필요"}</span>
+          </div>)}</div>
+        </div>
+        <div className="block">
+          <h3 className="block-h"><span className="dot"/>신청은 이렇게 진행돼요</h3>
+          <div className="steps">{p.steps.map((s,i)=><div className="step" key={i}><div className="num">{i+1}</div><div className="stxt">{s}</div></div>)}</div>
+        </div>
+        {p.note && <div className="callout"><Icon name="alert" size={20} className="ic"/><p>{p.note}</p></div>}
+      </div>
+      <div className="sheet-foot">
+        {p.url && <Btn variant="primary" full iconRight="arrow-right" onClick={()=>window.open(p.url,"_blank")}>공고 원문 보기</Btn>}
+      </div>
+    </aside>
+  </>;
+}
+
+// ══════════════════════════════════════════════════════
+// PLANNER (전문가 모드)
+// ══════════════════════════════════════════════════════
+const krw = n => (n||0).toLocaleString("ko-KR");
+function BarRow({label,value,max,suffix,accent,rank}) {
+  const pct=Math.max(3,Math.round((value/max)*100));
+  return <div className="bar-row">
+    <div className="bar-label">{rank!=null&&<span className="bar-rank">{rank}</span>}<span>{label}</span></div>
+    <div className="bar-track"><i style={{width:pct+"%",background:accent||"var(--accent)"}}/></div>
+    <div className="bar-val">{krw(value)}{suffix||""}</div>
+  </div>;
+}
+
+function Planner({onOpenPolicy}) {
+  const total=POLICIES.length;
+  const agencies=[...new Set(POLICIES.map(p=>p.org))];
+  const urgent=POLICIES.filter(p=>p.dday!=null&&p.dday>=0&&p.dday<=14);
+  const catMap={};
+  POLICIES.forEach(p=>{catMap[p.category]=(catMap[p.category]||0)+1;});
+  const cats=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+  const catMax=Math.max(...cats.map(c=>c[1]));
+
+  return <div className="page rise">
+    <div className="pro-head">
+      <div className="eyebrow"><Icon name="chart" size={15}/>정책 입안자 브리핑</div>
+      <h1>지원사업 현황을 한 장으로 브리핑</h1>
+      <p>운영 중인 사업을 주제·기관별로 비교하고 요약해 드려요.</p>
+    </div>
+    <div className="brief-box">
+      <div className="brief-ic"><Icon name="spark" size={20}/></div>
+      <div><h4>현황 요약</h4>
+        <p>현재 <b>{total}개</b> 지원사업을 <b>{agencies.length}개 기관</b>이 운영 중입니다.
+        주제별로는 <b>{cats[0][0]}·{cats[1]?cats[1][0]:""}</b> 비중이 가장 높고, <b>2주 내 마감 {urgent.length}건</b>이 임박했습니다.</p>
+      </div>
+    </div>
+    <div className="kpi-grid">
+      <div className="kpi"><div className="kpi-k">운영 중 사업</div><div className="kpi-v">{total}<span>건</span></div></div>
+      <div className="kpi"><div className="kpi-k">운영 기관</div><div className="kpi-v">{agencies.length}<span>곳</span></div></div>
+      <div className="kpi"><div className="kpi-k">2주 내 마감</div><div className="kpi-v" style={{color:"var(--amber)"}}>{urgent.length}<span>건</span></div></div>
+    </div>
+    <div className="panel" style={{marginBottom:16}}>
+      <div className="panel-h"><h3>주제별 사업 분포</h3><span className="muted">사업 수 기준</span></div>
+      <div className="barlist">{cats.map(([c,n])=><BarRow key={c} label={c} value={n} max={catMax} suffix="건"/>)}</div>
+    </div>
+    <div className="disclaimer">관리자 문의량 지표는 시연용 가상치입니다. 실제 운영 시 데이터 연동이 필요합니다.</div>
+  </div>;
+}
+
+// ══════════════════════════════════════════════════════
+// STAFF MODE (상담·관리자)
+// ══════════════════════════════════════════════════════
+const STAFF_FIELDS = [
+  {id:"industry",label:"업종"},{id:"stage",label:"사업 단계"},
+  {id:"goal",label:"문의 목적"},{id:"region",label:"지역"},
+].map(f=>({...f,opts:(QUESTIONS.find(q=>q.id===f.id)||{}).options||[]}));
+
+function StaffMode({onOpenPolicy}) {
+  const [sel,setSel]=useState({});
+  const [result,setResult]=useState(null);
+  const [copied,setCopied]=useState(false);
+  const set=(k,v)=>setSel(s=>({...s,[k]:s[k]===v?undefined:v}));
+  function run() {
+    const list=computeMatches(sel);
+    setResult(list.length ? {top:list[0],count:list.length,ableCount:list.filter(p=>p.eligible==="able").length,list:list.slice(0,5),
+      ind:CONDLABEL.industry[sel.industry]||"해당",stg:CONDLABEL.stage[sel.stage]||"현재"} : {count:0,list:[]});
+    setCopied(false);
+  }
+  function copy(){
+    if(!result||!result.count) return;
+    const t=result.top;
+    const txt=`[${result.ind} · ${result.stg} 민원인 대상 추천]\n조건에 맞는 지원사업은 총 ${result.count}건이며, 그중 ${result.ableCount}건은 바로 신청 가능합니다.\n\n가장 적합: ${t.title} (${t.org})\n· 지원: ${t.amountLabel}\n· 기간: ${t.period}\n· 안내: ${t.note}`;
+    navigator.clipboard?.writeText(txt); setCopied(true); setTimeout(()=>setCopied(false),1800);
+  }
+
+  return <div className="page rise">
+    <div className="pro-head">
+      <div className="eyebrow"><Icon name="headset" size={15}/>상담·관리자 모드</div>
+      <h1>상담 현황을 보고, 빠르게 조회·답변하세요</h1>
+      <p>민원인의 조건을 입력하면 적합 사업과 답변 스크립트를 만들어요.</p>
+    </div>
+    <div className="staff-grid">
+      <div className="staff-panel sticky">
+        <h3>민원인 조건 입력</h3>
+        {STAFF_FIELDS.map(f=><div className="field" key={f.id}><label>{f.label}</label>
+          <div className="field-opts">{f.opts.map(o=><Chip key={o.id} active={sel[f.id]===o.id} onClick={()=>set(f.id,o.id)}>{o.label}</Chip>)}</div>
+        </div>)}
+        <Btn variant="primary" full icon="search" onClick={run}>적합 사업 조회</Btn>
+      </div>
+      <div>
+        {!result && <div className="staff-panel"><div className="staff-empty">
+          <div className="ic"><Icon name="headset" size={28}/></div>
+          <h3>조건을 선택하고 조회해 주세요</h3>
+          <p>민원인의 업종·단계·목적을 고른 뒤 '적합 사업 조회'를 누르면 추천 사업과 답변 스크립트가 나타나요.</p>
+        </div></div>}
+        {result && result.count===0 && <div className="staff-panel"><div className="staff-empty">
+          <div className="ic"><Icon name="compass" size={28}/></div>
+          <h3>조건에 맞는 사업이 없어요</h3>
+          <p>조건을 넓히거나, 민원인에게 새 공고 알림 신청을 안내해 주세요.</p>
+        </div></div>}
+        {result && result.count>0 && <div className="fade">
+          <div className="script-card">
+            <div className="sh"><span className="t"><Icon name="spark" size={16}/>답변 스크립트</span>
+              <button className="cp" onClick={copy}><Icon name={copied?"check":"copy"} size={15}/>{copied?"복사됨":"복사"}</button></div>
+            <p>조건에 맞는 지원사업은 총 <span className="hl">{result.count}건</span>이며, 그중 <span className="hl">{result.ableCount}건</span>은 바로 신청 가능합니다.</p>
+            <p>가장 적합한 사업은 <span className="hl">{result.top.title}</span>({result.top.org})입니다. {result.top.amountLabel}을 지원하며 {result.top.period} 기준입니다.</p>
+          </div>
+          <div className="results-toolbar" style={{marginTop:4}}><span className="count">적합 사업 {result.count}건 (상위 5건 표시)</span></div>
+          <div className="results-list" style={{gridTemplateColumns:"1fr"}}>
+            {result.list.map(p=><PolicyCard key={p.id} p={p} showMatch onClick={()=>onOpenPolicy(p)}/>)}
+          </div>
+        </div>}
+      </div>
+    </div>
+  </div>;
+}
+
+// ══════════════════════════════════════════════════════
+// APP ROOT
+// ══════════════════════════════════════════════════════
+function App() {
+  const [route,setRoute]=useState("loading");
+  const [ctx,setCtx]=useState({userType:null,seed:""});
+  const [answers,setAnswers]=useState(null);
+  const [openP,setOpenP]=useState(null);
+
+  const mode=route==="staff"?"staff":route==="planner"?"planner":"user";
+  function go(r){setRoute(r);window.scrollTo({top:0});}
+  function startDiagnose(seed){setCtx({userType:null,seed:seed||"",prefill:parseSeed(seed),questions:null});go("diagnose");}
+  function pickType(id){
+    const prof=TYPE_PROFILE[id]||{};
+    setCtx({userType:id,seed:"",prefill:prof.prefill||{},questions:questionsForType(id)});
+    go("diagnose");
+  }
+
+  useEffect(()=>{
+    fetch("policyfit-db.json").then(r=>r.json()).then(data=>{
+      POLICIES=data.map(p=>({...p, dday:computeDday(p.endDate)}));
+      DATA_LOADED=true;
+      setRoute("home");
+    }).catch(err=>{
+      console.error("Failed to load policyfit-db.json:",err);
+      setRoute("error");
+    });
+  },[]);
+
+  const ROLES=[
+    {id:"user",label:"이용자",icon:"person",route:"home"},
+    {id:"staff",label:"상담·관리",icon:"headset",route:"staff"},
+    {id:"planner",label:"정책 입안",icon:"chart",route:"planner"},
+  ];
+
+  if(route==="loading") return <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",flexDirection:"column",gap:16}}>
+    <div className="logo-mark" style={{width:56,height:56,borderRadius:16,fontSize:28}}><Icon name="spark" size={28} stroke={2.4}/></div>
+    <p style={{color:"var(--muted)",fontSize:14}}>정책 데이터를 불러오는 중...</p>
+  </div>;
+
+  if(route==="error") return <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",flexDirection:"column",gap:16}}>
+    <p style={{color:"var(--red)",fontSize:16,fontWeight:600}}>데이터 로드 실패</p>
+    <p style={{color:"var(--muted)",fontSize:14}}>policyfit-db.json 파일을 확인해주세요.</p>
+  </div>;
+
+  return <div>
+    <header className="appbar"><div className="appbar-inner">
+      <div className="logo" onClick={()=>go("home")}><span className="logo-mark"><Icon name="spark" size={18} stroke={2.4}/></span>정책<b>핏</b></div>
+      {mode==="user" && <nav className="appbar-nav">
+        <button className={route==="home"?"on":""} onClick={()=>go("home")}>홈</button>
+        <button className={(route==="diagnose"||route==="results")?"on":""} onClick={()=>startDiagnose("")}>맞춤 진단</button>
+      </nav>}
+      <span className="appbar-spacer"/>
+      <div className="mode-switch">{ROLES.map(r=><button key={r.id} className={mode===r.id?"on":""} onClick={()=>go(r.route)}>
+        <Icon name={r.icon} size={16}/>{r.label}
+      </button>)}</div>
+    </div></header>
+
+    {route==="home" && <Home onStart={startDiagnose} onPickType={pickType} onOpenPolicy={setOpenP} onBrowse={()=>{setAnswers({});go("results");}}/>}
+    {route==="diagnose" && <Diagnose key={JSON.stringify(ctx)} userType={ctx.userType} seed={ctx.seed} prefill={ctx.prefill} questions={ctx.questions}
+      onComplete={a=>{setAnswers(a);go("results");}} onBack={()=>go("home")}/>}
+    {route==="results" && answers && <Results answers={answers} onOpenPolicy={setOpenP} onRedo={()=>go("diagnose")} onStaff={()=>go("staff")} onDiagnose={()=>startDiagnose("")}/>}
+    {route==="staff" && <StaffMode onOpenPolicy={setOpenP}/>}
+    {route==="planner" && <Planner onOpenPolicy={setOpenP}/>}
+
+    {openP && <Detail p={openP} onClose={()=>setOpenP(null)}/>}
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

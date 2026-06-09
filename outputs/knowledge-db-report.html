@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generated-at" content="2026-06-06 09:18">
+<title>지식DB 구축 리포트</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard Variable',sans-serif;background:#F5F2EC;color:#1A1916;line-height:1.7}
+.w{max-width:900px;margin:0 auto;padding:32px 24px}
+h1{font-size:22px;color:#2D4540;margin-bottom:16px}
+h2{font-size:17px;color:#2D4540;margin:28px 0 10px;border-bottom:2px solid #E8E3D7;padding-bottom:6px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+th,td{border:1px solid #E8E3D7;padding:7px 10px;text-align:left}
+th{background:#E8F0ED;font-weight:600}
+.bar{height:18px;border-radius:4px;display:inline-block;vertical-align:middle}
+.b-h{background:#16a34a}.b-m{background:#ca8a04}.b-l{background:#dc2626}
+pre{background:#f4f0e6;padding:12px;border-radius:8px;font-size:11px;overflow-x:auto;margin:8px 0}
+.s{display:inline-block;background:#fff;border:1px solid #E8E3D7;border-radius:8px;padding:10px 14px;margin:3px;text-align:center}
+.s .n{font-size:22px;font-weight:700;color:#2D4540}.s .l{font-size:11px;color:#6F6B62}
+.note{background:#fffdf8;border-left:4px solid #ca8a04;padding:12px 14px;margin:12px 0;border-radius:0 8px 8px 0;font-size:13px}
+.toc{font-size:13px;margin:14px 0 18px;padding-left:18px}.toc a{color:#2D4540}
+@media print{body{background:#fff}.w{max-width:none;padding:0}}
+</style></head><body><div class="w">
+<h1>지식DB 구축 리포트</h1>
+<p style="color:#6F6B62">총 795건 처리 · 생성 2026-06-06 09:18</p>
+<ol class="toc">
+<li><a href="#coverage">커버리지</a></li>
+<li><a href="#quality">정확도 점검</a></li>
+<li><a href="#purposes">용도 태그 분포</a></li>
+<li><a href="#samples">상세 등급 샘플</a></li>
+</ol>
+
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin:16px 0">
+<div class="s"><div class="n">550</div><div class="l">상세</div></div>
+<div class="s"><div class="n">222</div><div class="l">보통</div></div>
+<div class="s"><div class="n">23</div><div class="l">모호</div></div>
+<div class="s"><div class="n">670</div><div class="l">용도 추출</div></div>
+<div class="s"><div class="n">527</div><div class="l">금액 추출</div></div>
+<div class="s"><div class="n">130</div><div class="l">금리 추출</div></div>
+<div class="s"><div class="n">424</div><div class="l">제외조건</div></div>
+<div class="s"><div class="n">488</div><div class="l">서류 추출</div></div>
+<div class="s"><div class="n">646</div><div class="l">온라인 접수</div></div>
+</div>
+
+<h2 id="coverage">커버리지</h2>
+<div class="note">커버리지는 값이 채워진 비율이며 정확도와 같지 않습니다. 금액 후보가 여러 개인 공고와 목적 태그가 많은 공고는 후속 표본 검토가 필요합니다.</div>
+<table>
+<tr><th>필드</th><th>추출 건수</th><th>비율</th></tr>
+<tr><td>지원 용도(purposes)</td><td>670</td><td>84.3%</td></tr>
+<tr><td>지원 금액(amount)</td><td>527</td><td>66.3%</td></tr>
+<tr><td>금리(rate)</td><td>130</td><td>16.4%</td></tr>
+<tr><td>제외 조건(exclusions)</td><td>424</td><td>53.3%</td></tr>
+<tr><td>제출 서류(documents)</td><td>488</td><td>61.4%</td></tr>
+<tr><td>온라인 접수 가능</td><td>646</td><td>81.3%</td></tr>
+</table>
+
+<h2 id="quality">정확도 점검</h2>
+<table>
+<tr><th>점검 항목</th><th>건수</th><th>해석</th></tr>
+<tr><td>금액 후보 2개 이상</td><td>268</td><td>최대값 자동 선택. 총사업비와 기업별 한도 혼합 여부 표본 검토 필요</td></tr>
+<tr><td>목적 태그 6개 이상</td><td>3</td><td>복합 지원사업 또는 과다 태깅 가능성 검토</td></tr>
+</table>
+<div class="note">1차 보정 적용: 목적 태그는 API 지원내용 중심으로 판정하고, 금리는 금리·이율·이차보전 문맥의 0~30% 값만 허용하며, 목록 추출은 다음 섹션 제목에서 중단합니다.</div>
+
+<h2 id="purposes">용도 태그 분포</h2>
+<table>
+<tr><th>용도</th><th>건수</th></tr>
+<tr><td>컨설팅</td><td>255</td></tr><tr><td>마케팅비</td><td>165</td></tr><tr><td>사업화</td><td>125</td></tr><tr><td>이자보전</td><td>121</td></tr><tr><td>인증취득</td><td>112</td></tr><tr><td>교육훈련</td><td>108</td></tr><tr><td>시설개보수</td><td>107</td></tr><tr><td>디자인·브랜딩</td><td>96</td></tr><tr><td>운전자금</td><td>90</td></tr><tr><td>보증지원</td><td>87</td></tr><tr><td>수출</td><td>59</td></tr><tr><td>인건비</td><td>51</td></tr><tr><td>온라인판로</td><td>45</td></tr><tr><td>재료비</td><td>13</td></tr>
+</table>
+
+<h2 id="samples">상세 등급 샘플</h2>
+<pre>{
+  &quot;id&quot;: &quot;PBLN_000000000103611&quot;,
+  &quot;title&quot;: &quot;[경북] 구미 방산혁신클러스터 방산 헬프데스크-지역소재기업 경영ㆍ기술지원 모집 공고&quot;,
+  &quot;region&quot;: &quot;경북&quot;,
+  &quot;category&quot;: &quot;경영&quot;,
+  &quot;subcategory&quot;: &quot;디자인/상품화/사업화&quot;,
+  &quot;institution&quot;: &quot;경상북도&quot;,
+  &quot;executor&quot;: &quot;국방기술진흥연구소&quot;,
+  &quot;registeredAt&quot;: &quot;2025-01-10 11:28:22&quot;,
+  &quot;url&quot;: &quot;https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000103611&quot;,
+  &quot;support&quot;: {
+    &quot;summary&quot;: &quot;경북ㆍ구미지역 내에 소재(본사, 연구소, 공장, 지사)한 중소ㆍ벤처기업 / 지적재산권 출원, 외부주관 세미나ㆍ교육ㆍ워크숍, 기업 인증, 홍보, 시험경비, 전문기술 등 지원 - 업체당 최대 200만원 ~ 500만원 이내 지원&quot;,
+    &quot;type&quot;: &quot;디자인/상품화/사업화&quot;,
+    &quot;purposes&quot;: [
+      &quot;마케팅비&quot;,
+      &quot;교육훈련&quot;,
+      &quot;인증취득&quot;
+    ],
+    &quot;amount&quot;: {
+      &quot;max&quot;: &quot;업체당 최대 200만원&quot;,
+      &quot;raw&quot;: &quot;업체당 최대 200만원&quot;
+    },
+    &quot;rate&quot;: null,
+    &quot;duration&quot;: null
+  },
+  &quot;eligibility&quot;: {
+    &quot;target&quot;: &quot;중소기업&quot;,
+    &quot;conditions&quot;: [],
+    </pre><pre>{
+  &quot;id&quot;: &quot;PBLN_000000000109367&quot;,
+  &quot;title&quot;: &quot;[세종] 2기 Invest On 투자 역량강화 프로그램 보육기업 모집 공고&quot;,
+  &quot;region&quot;: &quot;세종&quot;,
+  &quot;category&quot;: &quot;창업&quot;,
+  &quot;subcategory&quot;: &quot;사업화지원&quot;,
+  &quot;institution&quot;: &quot;세종특별자치시&quot;,
+  &quot;executor&quot;: &quot;세종창조경제혁신센터&quot;,
+  &quot;registeredAt&quot;: &quot;2025-05-16 10:38:56&quot;,
+  &quot;url&quot;: &quot;https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000109367&quot;,
+  &quot;support&quot;: {
+    &quot;summary&quot;: &quot;(Track 1) 세종시 소재(협약 3개월 이내 이전 예정) 창업 7년 미만 기업 - (Track 2) 세종시 소재(협약 3개월 이내 이전 예정) 창업 3년 미만 기업 / (Track 1, Track 2) 투자 전문가 2:1 전담 멘토링, IR피칭덱 디자인, 피칭스킬, IR 데모데이, 투자포럼 및 투자밋업 지원 - (Track 1) 투자검토 및 공동(후속)&quot;,
+    &quot;type&quot;: &quot;사업화지원&quot;,
+    &quot;purposes&quot;: [
+      &quot;컨설팅&quot;,
+      &quot;디자인·브랜딩&quot;
+    ],
+    &quot;amount&quot;: {
+      &quot;max&quot;: &quot;5천\n만원&quot;,
+      &quot;raw&quot;: &quot;5천\n만원&quot;
+    },
+    &quot;rate&quot;: null,
+    &quot;duration&quot;: null
+  },
+  &quot;eligibility&quot;: {
+    &quot;targ</pre><pre>{
+  &quot;id&quot;: &quot;PBLN_000000000116045&quot;,
+  &quot;title&quot;: &quot;[부산] 6차 부산특구(암모니아 친환경에너지) 2차년도 안착화지원사업 통합 공고&quot;,
+  &quot;region&quot;: &quot;부산&quot;,
+  &quot;category&quot;: &quot;경영&quot;,
+  &quot;subcategory&quot;: &quot;디자인/상품화/사업화&quot;,
+  &quot;institution&quot;: &quot;부산광역시&quot;,
+  &quot;executor&quot;: &quot;부산테크노파크&quot;,
+  &quot;registeredAt&quot;: &quot;2025-11-03 10:39:17&quot;,
+  &quot;url&quot;: &quot;https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000116045&quot;,
+  &quot;support&quot;: {
+    &quot;summary&quot;: &quot;부산 암모니아 친환경에너지 규제자유특구 지정 사업자 / 특허지원, 전시회 및 박람회 지원, 홍보물 제작지원, 책임보험 지원, 기업 맞춤형 지원 ※ 자세한 지원내용 공고문 참조&quot;,
+    &quot;type&quot;: &quot;디자인/상품화/사업화&quot;,
+    &quot;purposes&quot;: [
+      &quot;마케팅비&quot;,
+      &quot;사업화&quot;,
+      &quot;인증취득&quot;
+    ],
+    &quot;amount&quot;: null,
+    &quot;rate&quot;: null,
+    &quot;duration&quot;: null
+  },
+  &quot;eligibility&quot;: {
+    &quot;target&quot;: &quot;중소기업&quot;,
+    &quot;conditions&quot;: [],
+    &quot;exclusions&quot;: [
+      &quot;기타부도&quot;,
+      &quot;휴폐업&quot;,
+      &quot;국세(지방세) 체납처분&quot;,
+      &quot;채무불이행자&quot;,
+      &quot;파산‧</pre>
+
+</div></body></html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="date" content="2026-06-03">
+<meta name="keywords" content="정책핏, PolicyFit, 정책 챗봇, 데이터 수급, 인수인계">
+<title>정책핏(PolicyFit) 구현 인수인계서 — 2026-06-03</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",-apple-system,"Malgun Gothic",sans-serif;background:#f4f6fb;color:#1a1a1a;line-height:1.7}
+.w{max-width:960px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:25px;font-weight:800;color:#3182F6;margin-bottom:4px}
+.sub{color:#5b6472;font-size:13px;margin-bottom:24px}
+h2{font-size:18px;font-weight:700;color:#1b2b4b;margin:30px 0 12px;padding-bottom:6px;border-bottom:2px solid #dbe4f3}
+h3{font-size:15px;font-weight:700;margin:18px 0 7px;color:#2a3a52}
+p,li{font-size:14px;margin-bottom:6px}
+ul,ol{padding-left:20px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th,td{border:1px solid #dbe4f3;padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#eaf1fd;font-weight:700;color:#1b2b4b}
+code{background:#eef2f9;padding:2px 6px;border-radius:5px;font-size:12px;font-family:"SF Mono",Consolas,monospace}
+pre{background:#0f1b33;color:#cfe0ff;padding:14px 16px;border-radius:10px;overflow-x:auto;font-size:12px;line-height:1.6;margin:10px 0}
+.box{background:#fff;border:1px solid #dbe4f3;border-radius:12px;padding:16px 18px;margin:14px 0}
+.box-key{border-left:4px solid #3182F6;background:#f5f9ff}
+.box-warn{border-left:4px solid #e8a33d;background:#fffaf0}
+.tag{display:inline-block;background:#3182F6;color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;margin-right:4px}
+.muted{color:#5b6472}
+.chk{list-style:none;padding-left:0}
+.chk li{padding-left:24px;position:relative}
+.chk li::before{content:'☐';position:absolute;left:0;color:#3182F6;font-weight:700}
+@media print{body{background:#fff}.box{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<h1>✦ 정책핏(PolicyFit) AI 챗봇 — 구현 인수인계서</h1>
+<p class="sub">작성 2026-06-03 · 세션 N · 다음 세션에서 그대로 착수 가능 · 프로젝트: <code>mail-handoff-lite-20260601-1745</code></p>
+
+<div class="box box-key">
+<b>한 줄 요약.</b> 디자인 목업 <code>정책핏 (오프라인).html</code>을 기준으로 <b>"검색이 아닌 진단"</b> 컨셉의 정책 챗봇을 <b>신규 구축</b>한다. 데이터는 기존 정제·분류 py 체인을 재사용한 <b>자동 갱신 파이프라인</b>으로 안정 수급한다. 전문가/관리자 모드 포함 <b>5종 유형</b> 전체.
+</div>
+
+<h2>1. 디자인 사양 (목업 디코드 결과)</h2>
+<h3>브랜드·톤</h3>
+<ul>
+<li>이름 <b>정책핏</b>, 슬로건 "복잡한 공고문은 그만. 대화 한 번으로 내 정책을 찾으세요."</li>
+<li>컬러 <b>토스 블루 #3182F6</b>, 폰트 <b>Pretendard</b>, 별(✦) 로고, 모바일 앱 느낌</li>
+<li>핵심 가치 <b>"검색이 아닌 진단"</b> — 몇 가지 질문 → 맞춤 사업 자동 선별</li>
+</ul>
+<h3>5종 사용자 유형 (온보딩 "어떤 분이세요?")</h3>
+<p>① 소상공인·자영업자(운영 중) ② 예비창업자 ③ 정책 담당자 ④ 일반 시민 ⑤ 상담원</p>
+<p class="muted">유형이 흐름을 바꿈: 자동 채움 / 질문 생략 / 관점 변경 (예: 운영 중 → 창업자금 제외, 예비창업자 → 창업 관점)</p>
+<h3>진단 질문 (유형별 분기, "1개만 답해도 결과")</h3>
+<ol>
+<li><b>목적(최우선)</b>: 운영자금·대출 / 매출·판로 / 디지털 전환 / 창업 자금·공간 / 인건비·고용</li>
+<li><b>사업 단계</b>: 창업 준비 중 / N년 미만 / N년 이상</li>
+<li><b>업종(선택)</b>: 음식·외식 / 도소매·유통 / 생활·서비스 / 온라인·플랫폼 / 제조·기술</li>
+<li><b>지역(선택)</b>: 경기·인천 / 광역시 / 그 외</li>
+</ol>
+<p class="muted">선택지 칩에 건수 표기("N건 보기"), "건너뛰고 전체 보기", "이 질문은 건너뛰었어요". 디자인 의도: <b>괄호 숫자 = 최종 결과 건수와 일치</b>.</p>
+<h3>결과 (매칭도 순)</h3>
+<ul>
+<li>"조건에 맞는 지원사업 N건을 매칭도 순으로 정리했어요"</li>
+<li>핵심 카드: 목적 · 지원금액 · 기간 · D-day · <b>매칭도%</b> · 자격 · <b>준비물</b> · 신청절차</li>
+<li>0건: "비슷한 사업·알림 보기"(막다른 길 금지). 면책 + <b>소상공인 통합콜센터 1357</b></li>
+</ul>
+<h3>부가 기능</h3>
+<ul>
+<li><b>조건 저장</b> / <b>새 공고 알림</b>(카톡·문자 — 프로토는 로컬)</li>
+<li><b>전체 둘러보기</b>: 유형별 분류 카드(분야별 모집 중 사업 수)</li>
+<li><b>"왜 정책핏인가요?"</b>: 기존 포털(키워드·수백건·PDF) vs 정책핏(진단·핵심카드·용어풀이)</li>
+<li><b>전문가/관리자 모드</b>: 정책 입안자 브리핑(차트), 관리자 상담 현황 — "분야별 1건당 평균 문의", "마감 임박 N건", "문의 집중 Top3", "공고 신설·예산 확대 검토" 등</li>
+</ul>
+<h3>데이터 스키마(디자인 기대 필드)</h3>
+<pre>id, title, org, category, tags[], summary, purpose,
+amountLabel, amountValue, amountSub, period, dday, match,
+eligible[], prepare[], steps[], status(모집중/마감/예산소진),
+goals[], stages[], regions[], note</pre>
+
+<h2>2. 데이터 수급 (안정성) — 핵심 답변</h2>
+<div class="box box-key">
+<b>Q. 자동 수급하면 정제·분류도 되나?</b><br>
+<b>A. 예.</b> 새 공고를 수집한 뒤 <b>기존 py 체인을 그대로 재실행</b>하면 목적/금액/대상/서류/섹션 분류와 중복 제거가 동일하게 적용된다. 정책핏의 <code>purpose·amount·match·prepare·steps</code>는 이 산출물에서 매핑된다.
+</div>
+<h3>2-1. 재사용 체인 (이미 완성)</h3>
+<pre>collect-bizinfo.mjs   기업마당 API(금융/내수/창업/경영) → raw/api·html·files (runId 스냅샷)
+  → normalize-notices.py        8필드 정규화
+  → build-knowledge-db.py       ★분류: 목적태그14·금액·금리·대상·제외·서류·섹션 + quality 등급
+  → build-ml-preallocation.py   중복·변경공고·사업군 dedup
+  → build-chatbot-db.py         경량 목록/추천(family 포함)
+  → build-chatbot-sections.py   공고 자유추출 섹션 DB
+검증: tests/ (회귀) · validate-ml-preallocation.py (재현성 SHA-256)</pre>
+<h3>2-2. 안정화로 추가</h3>
+<ol>
+<li><b>증분 수집</b>: <code>pblancId + updtPnttm</code>로 신규/변경만. 변경 없는 첨부 재다운 생략(852MB 방지)</li>
+<li><b>신선도</b>: <code>collectedAt·lastChecked·status</code> 저장. <b>dday는 저장 금지, 로드 시 동적 계산</b>(스냅샷 노화 방지)</li>
+<li><b>스냅샷 버저닝</b>: <code>raw/*/{runId}</code> 불변 보관(최근 N개), 파생 DB는 <code>latest</code>+날짜본</li>
+<li><b>오케스트레이터</b> <code>refresh-policyfit.mjs</code>: 수집→정제→분류→빌드→검증 한 방</li>
+<li><b>검증 게이트</b>: tests/validate 통과해야 <code>latest</code> 교체(실패 시 이전본 유지)</li>
+<li><b>자동 스케줄</b>: <code>/schedule</code> 스킬(크론) 또는 OS 작업 스케줄러로 일/주 단위</li>
+</ol>
+<h3>2-3. 정책핏 어댑터</h3>
+<p><code>build-policyfit-db.py</code> 신규: <code>knowledge-db.json</code>+<code>ml-preallocation</code> → 정책핏 스키마. <code>match</code>는 진단 슬롯 교차 점수(기존 matchPolicies 이식, 런타임), <code>goals/stages/regions</code> 태그로 선택지별 건수 계산. 산출 <code>policyfit-db.json</code> + 기존 <code>chatbot-sections.json</code> 재사용.</p>
+
+<h2>3. 구현 계획 (신규 <code>outputs/policyfit.html</code>)</h2>
+<p class="muted">단일 파일·자체 완결. 기존 <code>policy-chatbot.html</code>의 검증된 함수(매칭·목적축·자유추출 extractFromNotice·이벤트·실패대응)를 이식.</p>
+<table>
+<tr><th>단계</th><th>내용</th></tr>
+<tr><td>P1 디자인 시스템</td><td>토스 블루 토큰, Pretendard, 카드/칩/버블, 모바일 우선</td></tr>
+<tr><td>P2 온보딩</td><td>5유형 선택 → 유형별 프로필(자동채움/생략/관점)</td></tr>
+<tr><td>P3 진단 플로우</td><td>목적→단계→업종(선택)→지역(선택), 선택지 건수, 1개만 답해도 결과, 건너뛰기</td></tr>
+<tr><td>P4 결과</td><td>매칭도 순 카드(금액·기간·D-day·match%·준비물·steps), 0건 폴백, 면책/1357</td></tr>
+<tr><td>P5 부가</td><td>조건 저장(localStorage), 새 공고 알림(로컬), 전체 둘러보기, "왜 정책핏" 비교</td></tr>
+<tr><td>P6 전문가/관리자</td><td>입안자 브리핑(분야별 문의·마감임박·Top3 + 차트), 관리자 상담 현황 ※문의량은 시연 가상치 명시</td></tr>
+<tr><td>P7 자유 추출</td><td>카드에서 평가기준/우대/제외 토픽 → chatbot-sections.json</td></tr>
+</table>
+
+<h2>4. 파일 맵</h2>
+<table>
+<tr><th>구분</th><th>파일</th><th>비고</th></tr>
+<tr><td>재사용(데이터)</td><td>collect-bizinfo.mjs, normalize-notices.py, build-knowledge-db.py, build-ml-preallocation.py, build-chatbot-sections.py</td><td>정제·분류 체인</td></tr>
+<tr><td>재사용(로직)</td><td>outputs/policy-chatbot.html</td><td>매칭/자유추출/이벤트/실패대응 함수 이식 원본</td></tr>
+<tr><td>신규(데이터)</td><td>scripts/build-policyfit-db.py, scripts/refresh-policyfit.mjs</td><td>어댑터 + 갱신 오케스트레이터</td></tr>
+<tr><td>신규(앱)</td><td>outputs/policyfit.html, outputs/policyfit-db.json</td><td>정책핏 챗봇 + 데이터</td></tr>
+<tr><td>디자인 원본</td><td>outputs/정책핏 (오프라인).html</td><td>비주얼 참조(번들 23MB)</td></tr>
+</table>
+
+<h2>5. 새 세션 착수 가이드</h2>
+<div class="box">
+<ul>
+<li><b>루트</b>: <code>C:\Users\sudon\Desktop\cowork\project\mail-handoff-lite-20260601-1745</code></li>
+<li><b>데이터 현황</b>: 795건 스냅샷(runId <code>20260601-224706</code>), 4개 분야, knowledge-db 분류 완료. <code>.env.local</code>에 BIZINFO_API_KEY.</li>
+<li><b>서버</b>: <code>python -m http.server 8090 --directory outputs</code> → <code>http://localhost:8090/policyfit.html</code></li>
+<li><b>디자인 카피 추출본</b>: <code>outputs/_pf_*.txt</code>(앱 텍스트/스키마, 임시) — 참고 후 정리</li>
+</ul>
+<p><b>착수 순서</b></p>
+<ol class="chk">
+<li>build-policyfit-db.py 작성 → policyfit-db.json 생성</li>
+<li>policyfit.html P1~P7 구현 (policy-chatbot.html 함수 이식)</li>
+<li>refresh-policyfit.mjs 작성 (증분 수집 + 검증 게이트)</li>
+<li>데스크톱·모바일 브라우저 검증, 콘솔 에러 0</li>
+</ol>
+</div>
+<div class="box box-warn">
+<b>주의</b>
+<ul>
+<li>dday는 <b>동적 계산</b>(저장 금지) — 스냅샷이 늙어도 마감 정확</li>
+<li>화면에 <b>시연 데이터 면책</b> + 1357 안내 유지</li>
+<li>관리자 <b>문의량 지표는 가상치</b> — "예시"임을 명시</li>
+<li>첨부 852MB <b>전량 재다운 금지</b>(증분)</li>
+</ul>
+</div>
+<h3>미결정 (새 세션에서 확인)</h3>
+<ul>
+<li>알림 실제 발송(카톡·문자)은 백엔드 필요 → 프로토는 로컬 저장</li>
+<li>자동 스케줄러 위치: 로컬 작업 스케줄러 vs 서버</li>
+<li>카테고리 4종 유지 vs 확장(정책핏 목적축에 맞춰 searchLclasId 추가)</li>
+</ul>
+
+<h2>6. 검증 체크리스트</h2>
+<ul class="chk">
+<li>policyfit-db.json 795건, goals/stages/regions/match 필드 채워짐</li>
+<li>온보딩 5유형 분기 동작</li>
+<li>진단 4질문, 선택지 건수 = 최종 결과 수 일치</li>
+<li>결과 매칭도 순, 0건 폴백, 자유추출 동작</li>
+<li>전문가/관리자 지표가 데이터에서 산출</li>
+<li>증분 갱신: 변경 없는 첨부 재다운 안 함, 검증 실패 시 latest 미교체</li>
+<li>데스크톱·모바일, 콘솔 에러 0</li>
+</ul>
+
+<p class="muted" style="margin-top:24px">범위 밖: 실제 알림 발송(백엔드/메시징), LLM 실시간 호출, 기업마당 외 데이터 소스.</p>
+
+</div>
+</body>
+</html>

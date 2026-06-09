@@ -1,0 +1,8 @@
+{
+  "null_k": 4,
+  "alternative_k": 5,
+  "observed_lr": 222.9474,
+  "bootstrap_repeats": 12,
+  "bootstrap_p_value": 0.076923,
+  "note": "Pilot-scale parametric BLRT; increase repetitions for publication use."
+}

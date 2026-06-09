@@ -1,0 +1,25 @@
+# === 시크릿 (절대 커밋 금지) ===
+.env.local
+.env
+*.key
+
+# === 대용량 원본 (GitHub 한도 초과, 별도 환경에서 재수집) ===
+raw/
+
+# === DB 백업 / 임시 산출물 ===
+*.bak
+*-bak
+outputs/*.pre-rebuild
+outputs/_pf_*.txt
+outputs/*.output
+
+# === 대용량 단일 파일 산출물 (23M, 필요시 별도 전달) ===
+outputs/정책핏 (오프라인).html
+
+# === 환경 / 캐시 ===
+.claude/
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

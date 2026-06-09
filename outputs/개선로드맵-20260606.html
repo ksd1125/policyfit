@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="date" content="2026-06-06">
+<meta name="keywords" content="정책핏, 개선로드맵, 상용화, 오류진단">
+<title>정책핏 개선 로드맵 — 2026.06.06</title>
+<style>
+  :root { --blue:#3182F6; --ink:#191F28; --gray:#6B7684; --line:#E5E8EB; --bg:#F2F4F6;
+          --green:#00C896; --amber:#FF9500; --red:#FF5252; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Pretendard","Segoe UI",sans-serif; max-width:960px;
+         margin:30px auto; padding:24px; color:var(--ink); line-height:1.65; }
+  h1 { color:var(--blue); border-bottom:3px solid var(--blue); padding-bottom:12px; font-size:26px; }
+  h2 { margin-top:40px; font-size:20px; border-left:4px solid var(--blue); padding-left:12px; }
+  .meta { color:var(--gray); font-size:14px; margin-bottom:24px; }
+  .toc { background:var(--bg); border-radius:12px; padding:16px 24px; margin:20px 0; }
+  .toc a { color:var(--blue); text-decoration:none; margin-right:16px; font-size:14px; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+  th { background:var(--bg); font-weight:600; }
+  .status-ok { color:var(--green); font-weight:600; }
+  .badge { display:inline-block; padding:2px 10px; border-radius:6px; font-size:12px; font-weight:600; }
+  .b-high { background:#FFEBEE; color:var(--red); }
+  .b-mid { background:#FFF4E5; color:var(--amber); }
+  .b-low { background:#E5F8F3; color:var(--green); }
+  .card { background:var(--bg); border-radius:12px; padding:20px; margin:16px 0; }
+  .card h3 { margin:0 0 8px; font-size:16px; }
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:20px 0; }
+  .kpi { background:var(--bg); border-radius:12px; padding:18px; text-align:center; }
+  .kpi .n { font-size:24px; font-weight:700; color:var(--blue); }
+  .kpi .l { font-size:12px; color:var(--gray); margin-top:4px; }
+  .effort { font-size:12px; color:var(--gray); }
+  @media print { body { margin:0; } .toc { display:none; } }
+  @media (max-width:640px){ .grid{grid-template-columns:repeat(2,1fr);} body{padding:14px;} }
+</style>
+</head>
+<body>
+<h1>정책핏 개선 로드맵</h1>
+<p class="meta">작성일 2026-06-06 · 대상 799건 · 진단 기반 차기 개선 제안</p>
+
+<div class="toc">
+  <strong>목차</strong><br>
+  <a href="#diag">1. 진단 결과</a>
+  <a href="#now">2. 즉시 개선</a>
+  <a href="#mid">3. 제품 완성도</a>
+  <a href="#comm">4. 상용화(GitHub)</a>
+  <a href="#prio">5. 우선순위</a>
+</div>
+
+<h2 id="diag">1. 진단 결과 — 현재 매우 안정적</h2>
+<div class="grid">
+  <div class="kpi"><div class="n">0</div><div class="l">무결성 오류</div></div>
+  <div class="kpi"><div class="n">98.4</div><div class="l">목적문 평균점</div></div>
+  <div class="kpi"><div class="n">79%</div><div class="l">금액 LLM검증·안전</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">잘못된 금액노출</div></div>
+</div>
+<p>전수 패턴 진단 결과 <span class="status-ok">필수필드 누락·깨진문자·관공서체·대상혼동·링크오류 모두 0건</span>.
+검출된 항목은 모두 정상 동작이거나 의도된 표시였습니다:</p>
+<table>
+<tr><th>항목</th><th>건수</th><th>판정</th></tr>
+<tr><td>금액 거대미표기</td><td>3</td><td>LLM 검증한 실제 융자 한도(200·150·300억) — 정상, 단 표현 개선 여지</td></tr>
+<tr><td>기간 만료</td><td>78</td><td>실제 마감 공고. UI가 dday로 "마감" 정확 표시 — 정상</td></tr>
+<tr><td>record.status 미사용</td><td>799</td><td>dead field (UI는 dday 사용) — 정리 대상</td></tr>
+</table>
+
+<h2 id="now">2. 즉시 개선 (낮은 노력 · 높은 효과)</h2>
+
+<div class="card">
+<h3>① 금액 신뢰도 배지 <span class="badge b-mid">중요</span></h3>
+<p>현재 카드는 "445,000원"(LLM검증)과 규칙 추출값을 동일하게 표시 — 사용자가 신뢰도를 구분 못 함.
+<b>LLM검증(✓ 확인됨) / 공고확인 필요(91건) / 추정</b>을 작은 배지로 구분 표시.</p>
+<p class="effort">노력: UI 1곳 · 효과: 신뢰도·투명성 ↑ · amountSource 필드 이미 존재</p>
+</div>
+
+<div class="card">
+<h3>② 거대 융자한도 표현 명확화 <span class="badge b-low">간단</span></h3>
+<p>"사업별 최대 200억원 이내" → 사용자가 1인 한도로 오해 가능. "융자 사업 종류별 한도"임을 부기하거나
+"최대 200억원(사업유형별)" 형태로.</p>
+<p class="effort">노력: 3건 · 효과: 오해 방지</p>
+</div>
+
+<div class="card">
+<h3>③ dead field 정리 <span class="badge b-low">간단</span></h3>
+<p>record.status("모집중")는 UI 미사용. 제거하거나 dday 기반 동적값("모집중"/"마감")으로 일원화.</p>
+<p class="effort">노력: build 1줄 · 효과: 데이터 정합성</p>
+</div>
+
+<h2 id="mid">3. 제품 완성도 (중간 노력)</h2>
+
+<div class="card">
+<h3>④ 남은 258건 금액 LLM 완성 <span class="badge b-mid">진행중</span></h3>
+<p>Codex 한도 소진으로 보류된 258건(미검증 167 + guard 91). 한도 회복마다 <code>resume-amounts.py</code>가 자동 이어서 처리.
+완성 시 79% → 100% LLM 검증.</p>
+<p class="effort">노력: 자동(한도 의존) · 효과: 전수 검증 완성</p>
+</div>
+
+<div class="card">
+<h3>⑤ 신규 공고 자동 파이프라인 통합 <span class="badge b-mid">중요</span></h3>
+<p>현재 watch-new-notices(수집)와 LLM 금액구조화가 분리. 이를 묶어
+<b>신규 공고 → 목적문 생성 → 금액 LLM 구조화 → guard → DB 병합</b>을 단일 흐름으로.
+rebuild-all에 preserve 단계는 추가됨.</p>
+<p class="effort">노력: 오케스트레이터 확장 · 효과: 운영 자동화</p>
+</div>
+
+<div class="card">
+<h3>⑥ 매칭 고도화 <span class="badge b-low">선택</span></h3>
+<p>현재 computeMatches가 목적/업종/단계/지역 기반 pscore 산출(작동 양호).
+추가로 금액규모 적합도, 마감임박 가중, 자연어 검색 의도 파싱 고려 가능.</p>
+<p class="effort">노력: 매칭 로직 확장 · 효과: 추천 정확도 ↑</p>
+</div>
+
+<h2 id="comm">4. 상용화 (GitHub) 준비</h2>
+<table>
+<tr><th>항목</th><th>내용</th></tr>
+<tr><td>GitHub Actions</td><td>일일 cron으로 collect→build→LLM→배포 자동화 (스케줄러 대체)</td></tr>
+<tr><td>데이터 버저닝</td><td>policyfit-db.json 일자별 스냅샷, 변경 이력</td></tr>
+<tr><td>README·문서</td><td>파이프라인 다이어그램, 스크립트 카탈로그, 기여 가이드</td></tr>
+<tr><td>비용 관리</td><td>Codex 한도 → 신규/변경 공고만 LLM(증분 처리), 캐시 재사용</td></tr>
+<tr><td>품질 게이트</td><td>audit-full.py를 CI에 연결 — 무결성 0 보장 후 배포</td></tr>
+</table>
+
+<h2 id="prio">5. 권장 우선순위</h2>
+<table>
+<tr><th>순위</th><th>작업</th><th>이유</th></tr>
+<tr><td>1</td><td>① 금액 신뢰도 배지</td><td>사용자 신뢰 직결, 노력 최소</td></tr>
+<tr><td>2</td><td>⑤ 신규공고 자동 파이프라인</td><td>상용화 핵심 인프라</td></tr>
+<tr><td>3</td><td>④ 258건 LLM 완성</td><td>자동 진행 중, 한도만 회복되면 됨</td></tr>
+<tr><td>4</td><td>②③ 표현·정리</td><td>마감 품질, 간단</td></tr>
+<tr><td>5</td><td>GitHub Actions</td><td>상용화 시점</td></tr>
+</table>
+
+<p style="margin-top:30px; color:var(--gray); font-size:13px;">
+이 문서는 진단 스크립트(audit-full.py) 결과 기반 자동 생성 · 정책핏 세션 2026-06-06</p>
+</body>
+</html>

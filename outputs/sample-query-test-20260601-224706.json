@@ -1,0 +1,46 @@
+{
+  "runId": "20260601-224706",
+  "queries": [
+    {
+      "query": "소상공인 자금 지원",
+      "matched": 489,
+      "top5_avg_completeness": 72.5,
+      "top5_high": 25,
+      "top5_medium": 4,
+      "top5_missing": 11
+    },
+    {
+      "query": "온라인 판매 판로 지원",
+      "matched": 564,
+      "top5_avg_completeness": 70.0,
+      "top5_high": 25,
+      "top5_medium": 3,
+      "top5_missing": 12
+    },
+    {
+      "query": "창업 초기 지원",
+      "matched": 404,
+      "top5_avg_completeness": 92.5,
+      "top5_high": 25,
+      "top5_medium": 12,
+      "top5_missing": 3
+    },
+    {
+      "query": "보증 특례보증",
+      "matched": 238,
+      "top5_avg_completeness": 85.0,
+      "top5_high": 25,
+      "top5_medium": 9,
+      "top5_missing": 6
+    },
+    {
+      "query": "경영 컨설팅 지원",
+      "matched": 617,
+      "top5_avg_completeness": 75.0,
+      "top5_high": 25,
+      "top5_medium": 5,
+      "top5_missing": 10
+    }
+  ],
+  "avgCompleteness": 79.0
+}

@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>정책공고 AI</title>
+<meta name="description" content="소상공인·중소기업 지원사업 검색 AI 챗봇">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700&display=swap">
+<style>
+:root {
+  --accent: #2D4540;
+  --accent-soft: rgba(45,69,64,.08);
+  --bg-warm: #F5F2EC;
+  --bg-soft: #FAF7F1;
+  --surface: #ffffff;
+  --text: #1A1916;
+  --text-sec: #3a4540;
+  --muted: #6F6B62;
+  --subtle: #7A756C;
+  --line: #E8E3D7;
+  --line-strong: #D5CFC3;
+  --up: #4F7A5E;
+  --warn: #8c5a12;
+  --down: #A84B40;
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 3px rgba(30,40,30,.04), 0 1px 2px rgba(30,40,30,.02);
+  --shadow-md: 0 4px 16px rgba(30,40,30,.06), 0 1px 4px rgba(30,40,30,.03);
+  --ease: cubic-bezier(.22,.68,0,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",-apple-system,"Noto Sans KR",sans-serif;background:var(--bg-warm);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+.app{max-width:720px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;position:relative}
+
+/* ── Header ── */
+.top-bar{padding:14px 20px;display:flex;align-items:center;gap:10px}
+.brand-mark{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--accent)}
+.top-title{font-size:15px;font-weight:600;color:var(--text)}
+.top-ai{font-weight:300;opacity:.5;margin-left:2px}
+
+/* ── Chat area ── */
+.chat-area{flex:1;overflow-y:auto;padding:0 16px 16px;display:flex;flex-direction:column;gap:16px}
+
+/* ── Welcome ── */
+.welcome{max-width:480px;margin:auto;padding:48px 20px 32px;text-align:center;position:relative;transition:opacity .4s var(--ease),max-height .5s var(--ease);overflow:hidden}
+.welcome.hidden{opacity:0;max-height:0;padding:0;pointer-events:none}
+.welcome-bg{position:absolute;inset:0;border-radius:24px;background:radial-gradient(ellipse at 30% 20%,rgba(45,69,64,.07) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(180,140,80,.05) 0%,transparent 50%);z-index:0}
+.welcome-inner{position:relative;z-index:1}
+.welcome h1{font-family:"Noto Serif KR",serif;font-size:clamp(28px,5vw,38px);font-weight:700;color:var(--text);line-height:1.2;margin-bottom:6px}
+.welcome .ai{font-weight:300;color:var(--accent);opacity:.7}
+.welcome .desc{font-size:14px;color:var(--muted);margin-bottom:28px}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}
+.scenario-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text-sec);transition:all .2s var(--ease);line-height:1.35}
+.scenario-btn:hover,.scenario-btn:focus-visible{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);box-shadow:var(--shadow-sm);transform:translateY(-1px);outline:none}
+.scenario-icon{font-size:20px;flex-shrink:0}
+.scenario-text{display:flex;flex-direction:column;gap:1px}
+.scenario-label{font-weight:600}
+.scenario-sub{font-size:11.5px;color:var(--subtle);font-weight:400}
+
+/* ── Explore section (탐색 진입) ── */
+.explore-section{margin-top:24px;padding-top:16px;border-top:1px dashed var(--line-strong)}
+.explore-title{font-size:13px;color:var(--muted);margin-bottom:12px;text-align:center;cursor:pointer;list-style:none;font-weight:500}
+.explore-title::-webkit-details-marker{display:none}
+.explore-title::after{content:' ▾';opacity:.5}
+details[open] .explore-title::after{content:' ▴'}
+.explore-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.explore-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-pill);cursor:pointer;font-size:13px;font-weight:500;color:var(--text-sec);transition:all .2s var(--ease)}
+.explore-btn:hover,.explore-btn:focus-visible{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);outline:none}
+
+/* ── Browse / facet ── */
+.browse-stat{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+.browse-stat b{color:var(--accent)}
+.facet-axis{margin-bottom:12px}
+.facet-axis-label{font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px}
+.facet-chips{display:flex;flex-wrap:wrap;gap:6px}
+.facet-chip{display:inline-flex;align-items:center;gap:3px;padding:5px 11px;border-radius:var(--radius-pill);background:var(--surface);border:1px solid var(--line);font-size:12px;cursor:pointer;color:var(--text-sec);transition:all .15s}
+.facet-chip:hover{border-color:var(--accent);color:var(--accent)}
+.facet-chip.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.facet-chip .cnt{opacity:.6;font-size:11px}
+.facet-chip.on .cnt{opacity:.85}
+.compare-diff{background:#FEF3C7 !important}
+
+/* ── 결과 그룹 헤더 ── */
+.group-head{font-size:13px;font-weight:700;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+.group-head.g1{color:var(--up)}
+.group-head.g2{color:var(--warn)}
+.group-head.g3{color:var(--muted)}
+.group-sub{font-size:11.5px;font-weight:400;color:var(--subtle)}
+.final-note{font-size:11.5px;color:var(--subtle);margin-top:10px;padding:8px 10px;background:var(--bg-soft);border-radius:8px;line-height:1.5}
+.card-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.card-act{font-size:12px;padding:6px 11px;border-radius:var(--radius-pill);border:1px solid var(--line);background:var(--surface);color:var(--text-sec);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.card-act:hover{border-color:var(--accent);color:var(--accent)}
+.card-act.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.data-source{font-size:11px;color:var(--subtle);text-align:center;padding:10px 16px 4px;line-height:1.5}
+
+/* ── Chat rows ── */
+.chat-row{display:flex;gap:10px;max-width:680px;animation:chatIn .35s ease-out both}
+@keyframes chatIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chat-row.user{align-self:flex-end;flex-direction:row-reverse}
+
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.avatar.bot{background:linear-gradient(135deg,#E1E8E4,#d4eae0);color:var(--accent)}
+.avatar.user{background:linear-gradient(135deg,#f8efe1,#f0e2cc);color:#7a6540}
+
+.bubble{padding:14px 18px;font-size:14px;line-height:1.6;word-break:keep-all}
+.bubble.user{background:var(--accent);color:#fff;border-radius:18px 18px 4px 18px;font-weight:500;max-width:70%;box-shadow:0 2px 12px rgba(24,96,73,.12)}
+.bubble.bot{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:4px 18px 18px 18px;box-shadow:var(--shadow-sm)}
+
+/* ── Bot meta ── */
+.bot-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted)}
+.meta-dot{width:7px;height:7px;border-radius:50%;background:var(--up);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(79,122,94,.1)}50%{box-shadow:0 0 0 6px rgba(79,122,94,.18)}}
+.meta-badge{padding:2px 8px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:11px}
+
+.bot-narrative{color:var(--text-sec);margin-bottom:14px;font-size:14px}
+
+/* ── Result cards (균일 높이) ── */
+.card{background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;transition:all .2s var(--ease)}
+.card:hover{border-color:var(--line-strong);box-shadow:var(--shadow-sm)}
+.card-title{font-size:14.5px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:8px;cursor:pointer;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:40px}
+.card-title:hover{color:var(--accent)}
+.card-summary{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:10px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:40px}
+
+.card-glance{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px;min-height:48px;align-content:start}
+.glance-item{display:flex;align-items:baseline;gap:6px;font-size:13px;min-width:0}
+.glance-icon{font-size:14px;flex-shrink:0;width:18px;text-align:center}
+.glance-label{color:var(--muted);font-size:11.5px;flex-shrink:0}
+.glance-val{color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.glance-val.highlight{color:var(--accent);font-weight:600}
+.glance-val.warn{color:var(--down);font-weight:600}
+
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;height:50px;overflow:hidden;align-content:flex-start}
+.tag{display:inline-flex;padding:3px 8px;border-radius:var(--radius-pill);font-size:11px;font-weight:500}
+.tag-cat{background:#E8F0ED;color:#2D5545}
+.tag-period{background:#FEF3C7;color:#92400E}
+.tag-deadline{background:#FDE2E1;color:#A84B40;font-weight:600}
+.tag-budget{background:#E0ECF4;color:#2D5090}
+.tag-open{background:#E8F0ED;color:#2D5545}
+.tag-purpose{background:#F0EDE5;color:#7A756C}
+.tag-purpose-active{background:var(--accent);color:#fff;font-weight:600}
+.tag-warn-grade{background:#FDF0E0;color:#92400e}
+
+.card-toggle{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--accent);cursor:pointer;font-weight:500;border:none;background:none;padding:4px 0}
+.card-toggle:hover{text-decoration:underline}
+.card-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.card-toggle .arrow{transition:transform .2s;display:inline-block}
+.card-toggle.open .arrow{transform:rotate(180deg)}
+
+.card-detail{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s var(--ease),opacity .2s;opacity:0}
+.card-detail.open{grid-template-rows:1fr;opacity:1;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.card-detail-inner{overflow:hidden}
+.detail-section{margin-bottom:12px}
+.detail-q{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.detail-a{font-size:13px;color:var(--text-sec);line-height:1.6;white-space:pre-line}
+.detail-src{font-size:10px;padding:1px 5px;border-radius:3px;background:#FEF3C7;color:#92400E;margin-left:4px}
+.card-link{display:inline-block;margin-top:8px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:500}
+.card-link:hover{text-decoration:underline}
+
+.more-btn{display:block;width:100%;padding:10px;border:1px dashed var(--line);border-radius:var(--radius-sm);background:none;cursor:pointer;font-size:13px;color:var(--muted);text-align:center;margin-top:4px;transition:all .15s}
+.more-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Follow-up chips ── */
+.followups{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,.04)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border-radius:var(--radius-pill);background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--text-sec);cursor:pointer;transition:all .15s var(--ease)}
+.chip:hover,.chip:focus-visible{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);outline:none}
+
+/* ── Input area ── */
+.input-area{padding:12px 16px 20px;background:var(--bg-warm);position:sticky;bottom:0}
+.input-row{display:flex;gap:8px;align-items:flex-end;max-width:680px;margin:0 auto}
+.input-row input{flex:1;min-height:48px;padding:12px 18px;border:1.5px solid var(--line-strong);border-radius:var(--radius-lg);background:var(--surface);font-size:14.5px;font-weight:450;font-family:inherit;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+.input-row input:focus{border-color:var(--accent);box-shadow:var(--shadow-sm),0 0 0 3px rgba(45,69,64,.06)}
+.input-row input::placeholder{color:var(--subtle)}
+.send-btn{width:44px;height:44px;border-radius:var(--radius-pill);background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s var(--ease);flex-shrink:0}
+.send-btn:hover:not(:disabled){transform:scale(1.04);box-shadow:0 4px 16px rgba(45,69,64,.2)}
+.send-btn:active:not(:disabled){transform:scale(.96)}
+.send-btn:disabled{background:#94a3b8;cursor:not-allowed;transform:none}
+.send-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.send-btn svg{width:20px;height:20px}
+
+/* ── Loading dots ── */
+.thinking{display:flex;gap:5px;padding:8px 0}
+.thinking span{width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.3;animation:dot 1.4s ease-in-out infinite}
+.thinking span:nth-child(2){animation-delay:.16s}
+.thinking span:nth-child(3){animation-delay:.32s}
+@keyframes dot{0%,80%,100%{opacity:.3;transform:scale(1)}40%{opacity:1;transform:scale(1.15)}}
+
+/* ── Compare table ── */
+.compare-table{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.compare-col{background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 12px;display:flex;flex-direction:column;gap:6px;min-height:180px}
+.compare-header{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;padding-bottom:8px;border-bottom:1px solid var(--line);min-height:48px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.compare-row{font-size:12.5px;color:var(--text-sec);display:flex;align-items:center;gap:5px}
+.compare-row .ci{flex-shrink:0;width:16px;text-align:center;font-size:13px}
+.compare-row .cv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.compare-row .cv.hl{color:var(--accent);font-weight:600}
+.compare-row .cv.warn{color:var(--down);font-weight:600}
+.compare-detail{font-size:12px;color:var(--accent);cursor:pointer;border:none;background:none;padding:4px 0;margin-top:auto;font-weight:500;text-align:left}
+.compare-detail:hover{text-decoration:underline}
+.compare-best{position:relative}
+.compare-best::before{content:'추천';position:absolute;top:-8px;right:8px;font-size:10px;padding:1px 6px;border-radius:var(--radius-pill);background:var(--accent);color:#fff;font-weight:600}
+
+/* ── Slot badges ── */
+.slot-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.slot-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:600}
+.slot-remove{border:none;background:none;color:var(--accent);cursor:pointer;font-size:14px;padding:0 0 0 2px;opacity:.6}
+.slot-remove:hover{opacity:1}
+
+/* ── Gathering message ── */
+.gather-q{font-size:14.5px;color:var(--text);font-weight:500;margin-bottom:12px}
+.gather-progress{margin-left:auto;font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 8px;border-radius:var(--radius-pill)}
+.chip-nav{background:transparent;border-color:var(--line);color:var(--muted);font-size:12px;padding:5px 11px}
+.slot-chips{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .scenario-grid{grid-template-columns:1fr}
+  .bubble.user{max-width:85%}
+  .welcome{padding:32px 12px 24px}
+  .welcome h1{font-size:28px}
+  .card-glance{grid-template-columns:1fr}
+  .compare-table{grid-template-columns:1fr;gap:8px}
+  .compare-best::before{top:-6px;right:6px}
+}
+@media print{.input-area,.followups,.welcome{display:none}.card-detail{grid-template-rows:1fr;opacity:1}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <span class="brand-mark">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 18 C7 14,12 9,16 7 C19 5.5,20 5,20 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="5" r="2.2" fill="#fff" opacity=".9"/></svg>
+    </span>
+    <span class="top-title">정책공고 <span class="top-ai">ai</span></span>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="welcome" id="welcome">
+      <div class="welcome-bg"></div>
+      <div class="welcome-inner">
+        <h1>내 상황에 맞는 <span class="ai">지원사업</span>과<br>준비할 일을 찾아드려요</h1>
+        <p class="desc">공식 공고를 바탕으로 신청 조건·서류·마감일을 쉽게 정리해 드려요.</p>
+        <div class="scenario-grid" id="scenarios"></div>
+        <details class="explore-section" id="exploreDetails">
+          <summary class="explore-title">다른 조건으로 둘러보기</summary>
+          <div class="explore-grid" id="exploreEntries"></div>
+        </details>
+        <p class="data-source" id="dataSource">출처: 기업마당(bizinfo.go.kr) 공식 공고 · 수집 2026-06-01 기준 795건</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <label for="qInput" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">지원사업 검색</label>
+      <input type="text" id="qInput" placeholder="어떤 지원을 찾고 계세요?" disabled autocomplete="off">
+      <button class="send-btn" id="sendBtn" disabled aria-label="검색">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// Module 1: SCENARIOS (슬롯 기반)
+// ═══════════════════════════════════════════
+// 핵심 진입 3개 (첫 화면 단순화)
+const SCENARIOS = [
+  {icon:'💰', label:'사업 자금 찾기', sub:'운영비·시설·대출·보조금', slots:{category:'금융',need:'자금'}},
+  {icon:'🛒', label:'매출·판로 지원 찾기', sub:'온라인·마케팅·수출', slots:{category:'내수',need:'판로'}},
+  {icon:'🚀', label:'창업 지원 찾기', sub:'예비·초기창업·사업화', slots:{category:'창업',need:'창업'}},
+];
+
+// 입력창 예시 (회전)
+const INPUT_EXAMPLES = [
+  '서울에서 카페 시설을 고치고 싶어요',
+  '온라인 판매를 시작하려는 소상공인이에요',
+  '사업계획서 없이 신청 가능한 사업이 있나요?',
+  '경기도에서 직원 인건비 지원받고 싶어요',
+];
+
+const CATEGORY_NARRATIVES = {
+  '금융': {emoji:'💰', verb:'자금 지원'},
+  '내수': {emoji:'🛒', verb:'판로·마케팅 지원'},
+  '창업': {emoji:'🚀', verb:'창업 지원'},
+  '경영': {emoji:'📋', verb:'경영·컨설팅 지원'},
+};
+
+let NOTICES = [];
+let lastCategory = '';
+let _busy = false;
+let _lastQuery = '';
+let _cardSeq = 0;
+
+// ═══════════════════════════════════════════
+// Module 2: CONVERSATION STATE (대화 맥락)
+// ═══════════════════════════════════════════
+const STATE = {
+  phase: 'greeting', // greeting→gathering→recommending→drilling
+  mode: 'advisor',   // 'advisor'(상담) | 'explore'(탐색)
+  slots: {target:null, need:null, region:null, category:null, purpose:null, fundType:null},
+  facets: {target:null, region:null, category:null, purpose:null, fundType:null, period:null}, // 자유 탐색용
+  filled: [],  // 슬롯 채운 순서 (이전 단계용)
+  lastResults: [],
+  turnCount: 0,
+  reset() { this.phase='greeting'; this.mode='advisor'; this.slots={target:null,need:null,region:null,category:null,purpose:null,fundType:null}; this.facets={target:null,region:null,category:null,purpose:null,fundType:null,period:null}; this.filled=[]; this.lastResults=[]; this.turnCount=0; }
+};
+
+// ═══════════════════════════════════════════
+// Module 3: INTENT PARSER (상황 인식)
+// ═══════════════════════════════════════════
+const INDUSTRY_TO_TARGET = {
+  // 소상공인 업종
+  '카페':'소상공인','음식점':'소상공인','식당':'소상공인','빵집':'소상공인','베이커리':'소상공인',
+  '미용실':'소상공인','네일':'소상공인','세탁':'소상공인','편의점':'소상공인','슈퍼':'소상공인',
+  '꽃집':'소상공인','약국':'소상공인','문구점':'소상공인','철물점':'소상공인','반찬가게':'소상공인',
+  '치킨집':'소상공인','피자':'소상공인','분식':'소상공인','고깃집':'소상공인','술집':'소상공인',
+  '호프':'소상공인','주점':'소상공인','노래방':'소상공인','pc방':'소상공인','당구장':'소상공인',
+  '세차':'소상공인','수선':'소상공인','인쇄':'소상공인','학원':'소상공인',
+  '외식':'소상공인','요식업':'소상공인','소매':'소상공인','도소매':'소상공인','자영업':'소상공인',
+  // 중소기업
+  'it':'중소기업','소프트웨어':'중소기업','제조':'중소기업','공장':'중소기업','건설':'중소기업',
+  '무역':'중소기업','물류':'중소기업','운송':'중소기업','바이오':'중소기업','의료기기':'중소기업',
+  '전자':'중소기업','기계':'중소기업','화학':'중소기업','섬유':'중소기업','자동차':'중소기업',
+  // 창업
+  '스타트업':'창업벤처','예비창업':'창업벤처','창업':'창업벤처','벤처':'창업벤처','기술창업':'창업벤처',
+};
+
+const NEED_TO_CATEGORY = {
+  '자금':'금융','돈':'금융','대출':'금융','융자':'금융','보증':'금융','보조금':'금융','투자':'금융',
+  '인테리어':'금융','시설':'금융','설비':'금융','리모델링':'금융','운전자금':'금융','운영자금':'금융',
+  '컨설팅':'경영','진단':'경영','멘토링':'경영','자문':'경영','교육':'경영','연수':'경영','코칭':'경영',
+  '경영개선':'경영','인력':'경영','채용':'경영','고용':'경영','특허':'경영','인증':'경영','디자인':'경영',
+  '판로':'내수','판매':'내수','마케팅':'내수','홍보':'내수','광고':'내수','전시':'내수','박람회':'내수',
+  '온라인':'내수','쇼핑몰':'내수','입점':'내수','라이브커머스':'내수',
+  '수출':'내수','해외':'내수','글로벌':'내수','무역':'내수','바이어':'내수',
+  '창업':'창업','사업화':'창업','아이디어':'창업','시제품':'창업','프로토타입':'창업',
+};
+
+// 목적 축: 사용자 표현 → 14개 목적 태그 (벤치마크 다축 구조 적용)
+const NEED_TO_PURPOSE = {
+  '인테리어':'시설개보수','시설':'시설개보수','설비':'시설개보수','리모델링':'시설개보수','개보수':'시설개보수','점포환경':'시설개보수','인테리어비용':'시설개보수',
+  '운영비':'운전자금','운전자금':'운전자금','운영자금':'운전자금','유동성':'운전자금','경영안정':'운전자금','자금난':'운전자금',
+  '마케팅':'마케팅비','홍보':'마케팅비','광고':'마케팅비','판촉':'마케팅비','전시':'마케팅비','박람회':'마케팅비',
+  '컨설팅':'컨설팅','진단':'컨설팅','멘토링':'컨설팅','자문':'컨설팅','코칭':'컨설팅',
+  '인건비':'인건비','직원':'인건비','채용':'인건비','고용':'인건비','급여':'인건비',
+  '재료비':'재료비','원자재':'재료비','원부자재':'재료비',
+  '사업화':'사업화','시제품':'사업화','프로토타입':'사업화','연구개발':'사업화','기술개발':'사업화',
+  '교육':'교육훈련','훈련':'교육훈련','연수':'교육훈련','역량강화':'교육훈련',
+  '디자인':'디자인·브랜딩','브랜드':'디자인·브랜딩','패키징':'디자인·브랜딩','포장':'디자인·브랜딩',
+  '인증':'인증취득','특허':'인증취득','지식재산':'인증취득','haccp':'인증취득',
+  '수출':'수출','해외':'수출','글로벌':'수출','바이어':'수출','해외진출':'수출',
+  '온라인':'온라인판로','쇼핑몰':'온라인판로','입점':'온라인판로','라이브커머스':'온라인판로','전자상거래':'온라인판로',
+  '이자':'이자보전','이차보전':'이자보전','금리':'이자보전','대출이자':'이자보전',
+  '보증':'보증지원','신용보증':'보증지원','기술보증':'보증지원',
+};
+
+const REGION_NORMALIZE = {
+  '서울시':'서울','서울특별시':'서울','부산시':'부산','부산광역시':'부산',
+  '대구시':'대구','대구광역시':'대구','인천시':'인천','인천광역시':'인천',
+  '광주시':'광주','광주광역시':'광주','대전시':'대전','대전광역시':'대전',
+  '울산시':'울산','울산광역시':'울산','세종시':'세종','세종특별자치시':'세종',
+  '경기도':'경기','강원도':'강원','강원특별자치도':'강원',
+  '충청북도':'충북','충북':'충북','충청남도':'충남','충남':'충남',
+  '전라북도':'전북','전북특별자치도':'전북','전북':'전북',
+  '전라남도':'전남','전남':'전남','경상북도':'경북','경북':'경북',
+  '경상남도':'경남','경남':'경남','제주도':'제주','제주특별자치도':'제주',
+};
+const REGIONS = ['서울','부산','대구','인천','광주','대전','울산','세종','경기','강원','충북','충남','전북','전남','경북','경남','제주'];
+
+function parseIntent(text) {
+  const lower = text.toLowerCase();
+  const intent = {target:null, need:null, region:null, category:null, purpose:null, fundType:null, raw:text};
+
+  // 1) 지역 추출
+  for (const [alias, norm] of Object.entries(REGION_NORMALIZE)) {
+    if (lower.includes(alias)) { intent.region = norm; break; }
+  }
+  if (!intent.region) {
+    for (const r of REGIONS) { if (lower.includes(r)) { intent.region = r; break; } }
+  }
+
+  // 2) 업종 → 대상 추출
+  for (const [industry, target] of Object.entries(INDUSTRY_TO_TARGET)) {
+    if (lower.includes(industry)) { intent.target = target; break; }
+  }
+  // 직접 언급
+  if (lower.includes('소상공인')) intent.target = '소상공인';
+  if (lower.includes('중소기업')) intent.target = '중소기업';
+  if (lower.includes('창업') || lower.includes('스타트업')) intent.target = '창업벤처';
+
+  // 3) 필요 → 카테고리 추출
+  for (const [need, cat] of Object.entries(NEED_TO_CATEGORY)) {
+    if (lower.includes(need)) { intent.need = need; intent.category = cat; break; }
+  }
+  // 직접 카테고리 언급
+  if (lower.includes('금융')) intent.category = '금융';
+  if (lower.includes('경영')) intent.category = '경영';
+  if (lower.includes('내수')) intent.category = '내수';
+  if (lower.includes('창업') && !intent.category) intent.category = '창업';
+
+  // 4) 목적(用途) 축 추출 — 벤치마크 다축 구조의 핵심
+  for (const [kw, purpose] of Object.entries(NEED_TO_PURPOSE)) {
+    if (lower.includes(kw)) { intent.purpose = purpose; break; }
+  }
+
+  // 5) 융자 vs 보조금 구분 (가장 명확한 축)
+  if (/융자|대출|빌리|빌려|상환|갚/.test(lower)) intent.fundType = '융자';
+  else if (/보조금|지원금|받는|무상|출연/.test(lower)) intent.fundType = '보조금';
+
+  return intent;
+}
+
+// ═══════════════════════════════════════════
+// Module 4: DATA INDEX (사전 인덱싱)
+// ═══════════════════════════════════════════
+const IDX = {byTarget:{}, byRegion:{}, byCategory:{}, byPurpose:{}, byInstitution:{}, byFamily:{}};
+
+function buildIndex() {
+  // #4: 동일 공고명 변경 공고 → 최신본만 유지 (chatbot-db엔 registeredAt이 없으므로 제목순 마지막 유지)
+  const titleMap = new Map();
+  for (let i = 0; i < NOTICES.length; i++) {
+    const n = NOTICES[i];
+    const baseTitle = n.title?.replace(/\s*(변경|수정|정정|재)\s*공고\s*$/,'').replace(/\s*\d+차\s*/,'').trim() || '';
+    if (baseTitle && titleMap.has(baseTitle)) {
+      NOTICES[titleMap.get(baseTitle)]._hidden = true;
+      titleMap.set(baseTitle, i);
+    } else if (baseTitle) {
+      titleMap.set(baseTitle, i);
+    }
+  }
+
+  for (let i = 0; i < NOTICES.length; i++) {
+    const n = NOTICES[i];
+    if (n._hidden) continue;
+    // 대상 축
+    const t = n.target || '';
+    const targetKey = t.includes('소상공인') ? '소상공인' : (t.includes('창업') || t.includes('벤처')) ? '창업벤처' : '중소기업';
+    (IDX.byTarget[targetKey] ??= []).push(i);
+    // 지역 축 (chatbot-db는 region 필드 사용)
+    const region = n.region || '공통';
+    (IDX.byRegion[region] ??= []).push(i);
+    // 형태 축
+    if (n.category) (IDX.byCategory[n.category] ??= []).push(i);
+    // 목적 축 (신규 — 다축 핵심)
+    for (const p of (n.purposes || [])) {
+      (IDX.byPurpose[p] ??= []).push(i);
+    }
+    // 기관 축 (둘러보기)
+    if (n.institution) (IDX.byInstitution[n.institution] ??= []).push(i);
+    // 사업군 축 (지역별 비교)
+    if (n.familyId && (n.familySize||1) > 1) (IDX.byFamily[n.familyId] ??= []).push(i);
+  }
+}
+
+// ═══════════════════════════════════════════
+// Module 5: POLICY MATCHER (구조화 필터링)
+// ═══════════════════════════════════════════
+// #5: 사용자 필요(need)와 공고 내용 실제 매칭 키워드
+const NEED_CONTENT_MATCH = {
+  '자금': ['자금','융자','대출','운전자금','운영자금','경영안정자금','이차보전'],
+  '인테리어': ['인테리어','시설','설비','개보수','리모델링','시설개선','시설개보수','점포'],
+  '컨설팅': ['컨설팅','진단','멘토링','자문','코칭','경영개선'],
+  '판로': ['판로','판매','마케팅','홍보','입점','전시','박람회','온라인 판매'],
+  '수출': ['수출','해외','글로벌','무역','바이어','해외진출'],
+  '창업': ['창업','사업화','예비창업','초기창업','시제품','프로토타입'],
+  '교육': ['교육','연수','훈련','양성','아카데미'],
+  '고용': ['고용','채용','인력','일자리','근로자'],
+  '디자인': ['디자인','브랜드','패키징','포장','상표'],
+  '특허': ['특허','지식재산','지적재산','발명','실용신안'],
+  '인증': ['인증','ISO','HACCP','인증취득','규격'],
+};
+
+// 기관 위계: 1=중앙부처·산하기관, 2=지자체, 3=지자체 산하기관
+const LOCAL_AGENCY_RE = /테크노파크|진흥원|진흥회|진흥공사|신용보증재단|보증재단|경제진흥|일자리경제|창조경제|문화재단|복지재단|디자인진흥|콘텐츠진흥|관광공사|개발공사|시설관리공단|출연|연구원|센터|TP$/;
+function institutionTier(n) {
+  // 전국 단위(지역 태그 없음) = 중앙부처 및 부처 산하기관(소상공인시장진흥공단 등)
+  if (n.region === '공통' || !n.region) return 1;
+  // 지역 단위: 수행기관이 지자체 산하기관이면 3, 아니면(지자체 직접) 2
+  const ex = n.executor || '';
+  if (LOCAL_AGENCY_RE.test(ex)) return 3;
+  return 2;
+}
+
+// 빌리는 돈(융자·보증·카드) 여부 — 보조금과 구분
+function isLoanType(n) {
+  const t = (n.type || '') + ' ' + (n.subcategory || '');
+  return /융자|대출|보증|카드|이차보전|특례보증|신용/.test(t);
+}
+
+function matchPolicies(slots) {
+  let pool = null;
+  function intersect(arr) {
+    if (!pool) { pool = new Set(arr); return; }
+    const s = new Set(arr);
+    for (const v of pool) { if (!s.has(v)) pool.delete(v); }
+  }
+  if (slots.target && IDX.byTarget[slots.target]) intersect(IDX.byTarget[slots.target]);
+  // #1,#2: 지역 = 해당 지역 + 공통(중앙정부). "공통" 선택 시 공통만.
+  if (slots.region) {
+    const regionIds = IDX.byRegion[slots.region] || [];
+    const commonIds = slots.region !== '공통' ? (IDX.byRegion['공통'] || []) : [];
+    intersect([...regionIds, ...commonIds]);
+  }
+  if (slots.category && IDX.byCategory[slots.category]) intersect(IDX.byCategory[slots.category]);
+  // 목적 축 교차 (다축 핵심) — "인테리어 비용" 문제 정확 해결
+  if (slots.purpose && slots.purpose !== '_any' && IDX.byPurpose[slots.purpose]) intersect(IDX.byPurpose[slots.purpose]);
+  if (!pool) pool = new Set(Array.from({length:NOTICES.length},(_,i)=>i));
+
+  // 점수 + 이유 태그
+  const scored = [];
+  for (const idx of pool) {
+    const n = NOTICES[idx];
+    if (n._hidden) continue;
+
+    // 융자/보조금 하드 필터 — 보조금 선택 시 카드·보증 제외 (P0-3)
+    if (slots.fundType && slots.fundType !== '_any') {
+      const loan = isLoanType(n);
+      if (slots.fundType === '융자' && !loan) continue;
+      if (slots.fundType === '보조금' && loan) continue;
+    }
+
+    let score = 0;
+    const reasons = [];
+
+    // 목적 적합성 — 실제 목적 태그로 검증
+    if (slots.purpose && slots.purpose !== '_any') {
+      if ((n.purposes || []).includes(slots.purpose)) { score += 10; reasons.push(`✅ ${slots.purpose}에 사용 가능`); }
+      else { score -= 5; }
+    }
+    if (slots.fundType === '융자') reasons.push('💵 융자(빌린 뒤 갚는 자금)');
+    else if (slots.fundType === '보조금') reasons.push('🎁 보조금(상환 부담 적음)');
+
+    if (n.amount) { score += 3; reasons.push('💰 ' + n.amount); }
+    const dl = deadlineBadge(n);
+    if (dl?.cls === 'tag-deadline') { score += 5; reasons.push('⏰ ' + dl.text); }
+    else if (dl?.cls === 'tag-open') { score += 2; reasons.push('📅 ' + dl.text); }
+    if (n.online) { score += 2; reasons.push('📝 온라인 접수'); }
+    // detailed 등급 가산 (정보 충실)
+    if (n.grade === 'detailed') score += 1;
+
+    scored.push({notice:n, score, reasons, money: n.amount, dl, tier: institutionTier(n)});
+  }
+  // 정렬: 기관 위계(중앙→지자체→지자체산하) 우선, 같은 위계 내 관련도 점수 순
+  scored.sort((a,b) => a.tier - b.tier || b.score - a.score);
+  return scored;
+}
+
+// P0-4: 결과를 신뢰도 기반 3그룹으로 분리
+function groupResults(slots, results) {
+  const strong = [], check = [];
+  for (const r of results) {
+    const n = r.notice;
+    const closed = r.dl && r.dl.cls === 'tag-deadline' && r.dl.text === '마감';
+    const lowInfo = n.grade === 'vague' || !n.amount;
+    if (!closed && !lowInfo) strong.push(r); else if (!closed) check.push(r);
+  }
+  // 관련(인접) 사업: 가장 구체적 조건 하나를 완화
+  const ids = new Set(results.map(r => r.notice.id));
+  let related = [];
+  if (slots.purpose && slots.purpose !== '_any') related = matchPolicies({...slots, purpose:null});
+  else if (slots.fundType && slots.fundType !== '_any') related = matchPolicies({...slots, fundType:null});
+  else if (slots.region && slots.region !== '공통') related = matchPolicies({...slots, region:'공통'});
+  related = related.filter(r => !ids.has(r.notice.id));
+  return { strong: strong.slice(0,3), check: check.slice(0,2), related: related.slice(0,2) };
+}
+
+// ═══════════════════════════════════════════
+// Module 6: NARRATIVE BUILDER (요약 합성)
+// ═══════════════════════════════════════════
+function buildAdvisoryNarrative(slots, results) {
+  const parts = [];
+  // 상황 인식 확인 (다축)
+  const purpose = (slots.purpose && slots.purpose !== '_any') ? slots.purpose : null;
+  const fundType = (slots.fundType && slots.fundType !== '_any') ? slots.fundType : null;
+  if (slots.target || slots.region || purpose || fundType || slots.category) {
+    const bits = [];
+    if (slots.region) bits.push(slots.region + ' 지역');
+    if (slots.target) bits.push(slots.target);
+    if (purpose) bits.push(purpose + ' 용도');
+    if (fundType) bits.push(fundType);
+    if (!purpose && slots.category) bits.push(slots.category);
+    parts.push(bits.join(' · ') + ' 지원을 찾고 계시네요.');
+  }
+
+  if (results.length === 0) {
+    parts.push('조건에 맞는 프로그램을 찾지 못했어요.');
+    return parts.join(' ');
+  }
+
+  parts.push(`${results.length}건의 프로그램을 찾았어요.`);
+
+  // 위계 안내: 여러 위계가 섞이면 순서 설명
+  const tiers = new Set(results.map(r => r.tier).filter(Boolean));
+  if (tiers.size > 1) {
+    parts.push('중앙부처·산하기관 → 지자체 → 지자체 산하기관 순으로 보여드릴게요.');
+  }
+
+  // Top 3 차별점 분석
+  const top3 = results.slice(0,3);
+  const withMoney = top3.filter(r => r.money);
+  const withDeadline = top3.filter(r => r.dl?.cls === 'tag-deadline');
+  const withOnline = top3.filter(r => r.reasons.some(r=>r.includes('온라인')));
+
+  if (top3.length >= 2) {
+    // 목적 적합성 안내 (목적 태그 기반)
+    if (slots.purpose && slots.purpose !== '_any') {
+      const fitCount = top3.filter(r => (r.notice.purposes || []).includes(slots.purpose)).length;
+      if (fitCount > 0) {
+        parts.push(`이 중 ${fitCount}건이 "${slots.purpose}" 용도에 실제로 사용 가능한 프로그램이에요.`);
+      } else {
+        parts.push(`⚠️ "${slots.purpose}" 용도에 정확히 맞는 프로그램은 못 찾았어요. 아래 공고의 지원 내용을 직접 확인해 보세요.`);
+      }
+    }
+    parts.push('추천 포인트:');
+    if (withMoney.length > 0) {
+      const best = withMoney.sort((a,b) => (b.money||'').length - (a.money||'').length)[0];
+      parts.push(`• 지원금이 큰 건: ${best.notice.title.replace(/^\[[^\]]+\]\s*/,'').slice(0,25)}… (${best.money})`);
+    }
+    if (withDeadline.length > 0) {
+      parts.push(`• 마감 임박: ${withDeadline[0].notice.title.replace(/^\[[^\]]+\]\s*/,'').slice(0,25)}… (${withDeadline[0].dl.text})`);
+    }
+    if (withOnline.length > 0 && parts.length < 6) {
+      parts.push(`• 온라인 접수 가능: ${withOnline[0].notice.title.replace(/^\[[^\]]+\]\s*/,'').slice(0,25)}…`);
+    }
+  }
+
+  return parts.join('\n');
+}
+
+// ═══════════════════════════════════════════
+// Module 7: COMPARE TABLE RENDERER
+// ═══════════════════════════════════════════
+function renderCompareTable(items) {
+  if (items.length < 2) return '';
+  const top3 = items.slice(0,3);
+  const cols = top3.map((r,i) => {
+    const n = r.notice;
+    const money = n.amount || '-';
+    const period = trunc(n.period || '-', 20);
+    const target = trunc(n.target || '-', 12);
+    const method = trunc(n.method || '-', 15);
+    const dlCls = r.dl?.cls === 'tag-deadline' ? ' warn' : '';
+    const best = i === 0 ? ' compare-best' : '';
+    return `<div class="compare-col${best}">
+      <div class="compare-header">${esc(trunc(n.title,30))}</div>
+      <div class="compare-row"><span class="ci">💰</span><span class="cv hl">${esc(money)}</span></div>
+      <div class="compare-row"><span class="ci">📅</span><span class="cv${dlCls}">${esc(period)}</span></div>
+      <div class="compare-row"><span class="ci">👤</span><span class="cv">${esc(target)}</span></div>
+      <div class="compare-row"><span class="ci">📝</span><span class="cv">${esc(method)}</span></div>
+    </div>`;
+  });
+  return `<div class="compare-table">${cols.join('')}</div>`;
+}
+
+function renderSlotBadges(slots) {
+  const show = ['target','region','category','purpose','fundType'];
+  let html = '';
+  for (const key of show) {
+    const val = slots[key];
+    if (!val || val === '_any') continue;
+    html += `<span class="slot-badge">${esc(val)} <button class="slot-remove" data-slot="${key}">×</button></span>`;
+  }
+  return html ? `<div class="slot-badges">${html}</div>` : '';
+}
+
+// ═══════════════════════════════════════════
+// Module 8: CHIP GENERATOR (단계별)
+// ═══════════════════════════════════════════
+// 카테고리별 주요 목적 칩 (다축)
+const CATEGORY_PURPOSES = {
+  '금융': ['운전자금','시설개보수','이자보전','보증지원'],
+  '경영': ['컨설팅','교육훈련','인증취득','인건비'],
+  '창업': ['사업화','시설개보수','마케팅비'],
+  '내수': ['마케팅비','온라인판로','수출','디자인·브랜딩'],
+};
+
+function buildGatheringChips(slots) {
+  if (!slots.category) {
+    return {
+      question: '어떤 분야의 지원이 필요하세요?',
+      chips: [
+        {label:'💰 자금·금융 지원', slot:'category', value:'금융'},
+        {label:'📋 경영·컨설팅', slot:'category', value:'경영'},
+        {label:'🚀 창업 지원', slot:'category', value:'창업'},
+        {label:'🛒 판로·마케팅', slot:'category', value:'내수'},
+      ]
+    };
+  }
+  // 금융이면 융자/보조금 먼저 구분 (가장 명확한 축)
+  if (slots.category === '금융' && !slots.fundType) {
+    return {
+      question: '돈을 어떻게 받고 싶으세요?',
+      chips: [
+        {label:'💵 융자 (빌려서 갚는 것)', slot:'fundType', value:'융자'},
+        {label:'🎁 보조금 (안 갚는 것)', slot:'fundType', value:'보조금'},
+        {label:'상관없어요', slot:'fundType', value:'_any'},
+      ]
+    };
+  }
+  // 목적(用途) 질문 — 다축의 핵심
+  if (!slots.purpose) {
+    const purposeChips = (CATEGORY_PURPOSES[slots.category] || []).map(p => ({label:p, slot:'purpose', value:p}));
+    purposeChips.push({label:'잘 모르겠어요', slot:'purpose', value:'_any'});
+    return {
+      question: '어떤 용도로 쓰실 건가요?',
+      chips: purposeChips,
+    };
+  }
+  if (!slots.region) {
+    return {
+      question: '어느 지역에서 사업하세요? (공통=중앙정부)',
+      chips: [
+        {label:'공통(중앙)', slot:'region', value:'공통'},
+        {label:'서울', slot:'region', value:'서울'},
+        {label:'경기', slot:'region', value:'경기'},
+        {label:'부산', slot:'region', value:'부산'},
+        {label:'대전', slot:'region', value:'대전'},
+        {label:'대구', slot:'region', value:'대구'},
+        {label:'인천', slot:'region', value:'인천'},
+        {label:'광주', slot:'region', value:'광주'},
+      ]
+    };
+  }
+  return null; // 충분한 슬롯
+}
+
+function buildDrillingChips(slots, results) {
+  const chips = [];
+  if (results.length > 3) chips.push({label:'더 많은 결과 보기', action:'more'});
+  chips.push({label:'⏰ 마감 임박한 것만', action:'deadline'});
+  if (slots.region && slots.region !== '공통') chips.push({label:'🌐 공통(중앙정부)만 보기', action:'nationwide'});
+  const cats = ['금융','경영','창업','내수'].filter(c => c !== slots.category);
+  if (cats.length > 0) chips.push({label:`${cats[0]} 분야도 보기`, action:'switchCat', value:cats[0]});
+  chips.push({label:'🔄 처음부터 다시', action:'reset'});
+  return chips.slice(0, 4);
+}
+
+// ── 유사어 사전 (#28-30: 오타 포함) ──
+const SYNONYMS = {
+  '베리어프리':['장애인','편의시설','접근성','유니버설','무장애'],
+  '배리어프리':['장애인','편의시설','접근성','유니버설','무장애'],
+  '바우처':['이용권','바우처','쿠폰','지원금'],
+  '인건비':['고용','인력','채용','일자리','급여'],
+  '임대료':['임차','임대','월세','사업장'],
+  '세금':['세제','조세','감면','공제'],
+  '대출':['융자','자금','대출금','차입'],
+  '보조금':['지원금','보조','출연금'],
+  '특허':['지식재산','특허','지적재산','발명'],
+  '디자인':['디자인','브랜드','패키징','포장'],
+  '온라인':['온라인','전자상거래','이커머스','플랫폼'],
+  '수출':['수출','해외','글로벌','무역','바이어'],
+  '친환경':['친환경','녹색','탄소','ESG','에너지'],
+  '스마트':['스마트','디지털','ICT','AI','로봇','자동화'],
+  '여성':['여성','여성기업','여성창업'],
+  '청년':['청년','청년창업','MZ'],
+  '시니어':['시니어','고령','노인','중장년'],
+  '사회적기업':['사회적기업','사회적경제','협동조합','마을기업'],
+  '프랜차이즈':['프랜차이즈','가맹','체인'],
+  '식품':['식품','식당','외식','요식','농식품','HACCP'],
+  '제조':['제조','생산','공장','스마트공장'],
+  '관광':['관광','여행','숙박','체험'],
+  '돈':['자금','융자','대출','지원금','보조금'],
+  '집':['주거','임대','임차','사업장'],
+  '차':['차량','운송','물류','운수'],
+};
+
+// #28-30: 오타 교정 사전
+const TYPO_MAP = {
+  '소상공이':'소상공인','소상공인자금':'소상공인 자금','창엽':'창업',
+  '마게팅':'마케팅','컨설팅이':'컨설팅','수출지원':'수출 지원',
+  '판매지원':'판매 지원','보증서류':'보증 서류','경영안정':'경영 안정',
+  '사업화지원':'사업화 지원','온라인판로':'온라인 판로',
+};
+
+function correctTypos(text) {
+  let result = text;
+  for (const [typo, fix] of Object.entries(TYPO_MAP)) {
+    if (result.includes(typo)) result = result.replace(typo, fix);
+  }
+  return result;
+}
+
+function expandQuery(tokens) {
+  const expanded = new Set(tokens);
+  for (const tok of tokens) {
+    const syns = SYNONYMS[tok];
+    if (syns) syns.forEach(s => expanded.add(s));
+    for (const [key, vals] of Object.entries(SYNONYMS)) {
+      if (key.includes(tok) || tok.includes(key)) vals.forEach(s => expanded.add(s));
+    }
+  }
+  return [...expanded];
+}
+
+// ── Data loading ──
+async function init() {
+  const grid = document.getElementById('scenarios');
+  SCENARIOS.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'scenario-btn';
+    btn.innerHTML = `<span class="scenario-icon">${s.icon}</span><span class="scenario-text"><span class="scenario-label">${s.label}</span>${s.sub?`<span class="scenario-sub">${s.sub}</span>`:''}</span>`;
+    // 슬롯 기반 시나리오
+    btn.addEventListener('click', () => {
+      if (s.slots._special) { doQuery(s.slots._special); return; }
+      Object.assign(STATE.slots, s.slots);
+      STATE.phase = 'gathering';
+      document.getElementById('welcome').classList.add('hidden');
+      addUserBubble(s.label);
+      processConversation();
+    });
+    grid.appendChild(btn);
+  });
+
+  // 탐색 진입점 (보조)
+  const EXPLORE_ENTRIES = [
+    {icon:'📋', label:'경영·컨설팅', q:'__seed:경영'},
+    {icon:'🌏', label:'수출 지원', q:'__seed:수출'},
+    {icon:'⏰', label:'마감 임박', q:'__deadline__'},
+    {icon:'🏛️', label:'부처별 보기', q:'__browse:ministry'},
+    {icon:'📍', label:'우리 동네', q:'__browse:region'},
+    {icon:'🔀', label:'지역별 비교', q:'__browse:family'},
+    {icon:'📄', label:'서류로 찾기', q:'__docsearch'},
+    {icon:'🎛️', label:'자유 탐색', q:'__facet:open'},
+  ];
+  const eg = document.getElementById('exploreEntries');
+  EXPLORE_ENTRIES.forEach(e => {
+    const btn = document.createElement('button');
+    btn.className = 'explore-btn';
+    btn.innerHTML = `<span>${e.icon}</span>${e.label}`;
+    btn.addEventListener('click', () => doQuery(e.q));
+    eg.appendChild(btn);
+  });
+
+  // 입력창 예시 회전
+  const qi = document.getElementById('qInput');
+  let exIdx = 0;
+  qi.placeholder = '예: ' + INPUT_EXAMPLES[0];
+  setInterval(() => {
+    if (document.activeElement === qi || qi.value) return;
+    exIdx = (exIdx + 1) % INPUT_EXAMPLES.length;
+    qi.placeholder = '예: ' + INPUT_EXAMPLES[exIdx];
+  }, 3500);
+
+  try {
+    const r = await fetch('chatbot-db.json');
+    NOTICES = await r.json();
+    buildIndex();
+    document.getElementById('qInput').disabled = false;
+    document.getElementById('sendBtn').disabled = false;
+  } catch(e) {
+    addBotTurn('데이터를 불러올 수 없습니다. chatbot-db.json이 같은 폴더에 있는지 확인해 주세요.',
+      [], [{label:'새로고침', q:'__reset__'}]);
+  }
+}
+
+// ── Search ──
+// #1,#2: 한글 1글자 허용 (영문은 2글자 이상)
+function tokenize(t) {
+  return t.toLowerCase().replace(/[^\w가-힣ㄱ-ㅎㅏ-ㅣ\s]/g,' ')
+    .split(/\s+/)
+    .filter(w => /[가-힣]/.test(w) ? w.length >= 1 : w.length >= 2);
+}
+
+function parseDeadline(text) {
+  if (!text) return null;
+  const m = text.match(/(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
+  if (!m) return null;
+  const d = new Date(+m[1], +m[2]-1, +m[3]);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function search(query) {
+  const isDeadline = query === '__deadline__';
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  if (isDeadline) {
+    const withDates = NOTICES.filter(n => !n._hidden).map(n => {
+      const period = n.period || '';
+      const dl = parseDeadline(period.split('~').pop());
+      return {notice: n, deadline: dl};
+    }).filter(x => x.deadline && x.deadline >= today);
+    withDates.sort((a,b) => a.deadline - b.deadline);
+    return {items: withDates.slice(0, 8).map(x => ({notice: x.notice, score: 100, reasons: [], dl: deadlineBadge(x.notice)})), total: withDates.length, expanded: false};
+  }
+
+  // #28-30: 오타 교정 적용
+  const corrected = correctTypos(query);
+  const tokens = tokenize(corrected);
+  if (!tokens.length) return {items: [], total: 0, expanded: false};
+
+  function scoreWith(toks) {
+    const scored = [];
+    const seen = new Set(); // #19: dedup
+    for (const n of NOTICES) {
+      if (n._hidden || seen.has(n.id)) continue;
+      let score = 0;
+      const title = (n.title||'').toLowerCase();
+      const cat = (n.category||'').toLowerCase();
+      const sub = (n.subcategory||'').toLowerCase();
+      const purposes = (n.purposes||[]).join(' ').toLowerCase();
+      const body = ((n.summary||'') + ' ' + (n.target||'') + ' ' + (n.method||'')).toLowerCase();
+      for (const tok of toks) {
+        if (title.includes(tok)) score += 5;
+        if (purposes.includes(tok)) score += 3;
+        if (cat.includes(tok) || sub.includes(tok)) score += 2;
+        if (body.includes(tok)) score += 1;
+      }
+      if (score > 0) { scored.push({notice:n, score, reasons: [], dl: deadlineBadge(n)}); seen.add(n.id); }
+    }
+    scored.sort((a,b) => b.score - a.score);
+    return scored;
+  }
+
+  // 1차: 원본
+  let results = scoreWith(tokens);
+  if (results.length > 0) return {items: results.slice(0, 5), total: results.length, expanded: false, corrected: corrected !== query ? corrected : null};
+
+  // 2차: 유사어 확장
+  const expanded = expandQuery(tokens);
+  if (expanded.length > tokens.length) {
+    results = scoreWith(expanded);
+    if (results.length > 0) {
+      return {items: results.slice(0, 5), total: results.length, expanded: true,
+        expandedTerms: expanded.filter(t => !tokens.includes(t)).slice(0, 4),
+        corrected: corrected !== query ? corrected : null};
+    }
+  }
+  return {items: [], total: 0, expanded: false, corrected: corrected !== query ? corrected : null};
+}
+
+// ── Extract helpers ──
+// #4,#32: 금액 추출 개선 + 중복 제거
+function extractMoney(text) {
+  if (!text) return null;
+  const matches = [...text.matchAll(/(\d[\d,]*)\s*(억원|억|천만원|백만원|만원|만)/g)];
+  if (!matches.length) return null;
+  const unique = [...new Set(matches.map(m => m[0]))];
+  if (unique.length === 1) return unique[0];
+  return unique.slice(0, 2).join(' ~ ');
+}
+
+// #5: cleanSummary 강화
+function cleanSummary(text) {
+  if (!text) return '';
+  let s = text.replace(/<[^>]+>/g,' ').replace(/&\w+;/g,' ').replace(/\s+/g,' ').trim();
+  const parts = s.split(/\s*[☞○◎▶]\s*/).filter(p => p.length > 5);
+  const isLegal = p => /[「『\[][^」』\]]+[」』\]]|제\d+조|조례|규정에\s*의[하거]/.test(p);
+  const isBureaucratic = p => /(공고합니다|안내합니다|알려드립니다|다음과\s*같이|시행합니다)/.test(p);
+  let pick = parts.find(p => !isLegal(p) && !isBureaucratic(p));
+  if (!pick) pick = parts.find(p => !isBureaucratic(p));
+  if (!pick) pick = parts[0] || s;
+  pick = pick.replace(/[「『][^」』]*[」』]\s*(제\d+조[의의]\d*[^,.)\s]*)?/g, '').replace(/제\d+조[^,.)]*[,.)]?\s*/g, '').replace(/[「『][^」』]*[」』]/g, '');
+  pick = pick.replace(/^[\s\-·]+/,'').trim();
+  if (pick.length < 10) pick = s.replace(/<[^>]+>/g,' ').replace(/&\w+;/g,' ').replace(/\s+/g,' ').trim();
+  // 최종 정리: 잔여 법률 마커 강제 제거
+  pick = pick.replace(/[「『][^」』]*[」』]\s*/g, '').replace(/제\d+조[^\s,.)]{0,10}\s*/g, '').replace(/\s{2,}/g,' ').trim();
+  const sentences = pick.split(/(?<=[.다요])\s/);
+  const first = sentences[0] || pick;
+  return first.length > 100 ? first.slice(0,100)+'…' : first;
+}
+
+// ── 톤 정규화 (#23,#24 수정) ──
+function normalizeTone(text) {
+  if (!text) return '';
+  let s = text.replace(/<[^>]+>/g,' ').replace(/&\w+;/g,' ');
+  s = s.replace(/[「『][^」』]+[」』]\s*(제\d+조[^)]*\))?\s*(에\s*(의한|따른|따라|의거한?|근거한?))/g, '관련 법률에 따른');
+  s = s.replace(/[「『][^」』]+[」』]/g, '');
+  // #23: "~하오니 많은 신청 바랍니다" 전체를 한번에 제거
+  s = s.replace(/[,.]?\s*하오니[^.]*바랍니다\.?\s*/g, '. ');
+  s = s.replace(/다음과\s*같이\s*(공고|안내|알려|시행)\S*/g, '');
+  s = s.replace(/(이에|이를)\s*(다음과\s*같이|아래와\s*같이)\s*/g, '');
+  s = s.replace(/많은\s*(관심과\s*)?(참여|신청|응모)\s*바랍니다\.?/g, '');
+  s = s.replace(/[☞◎▶■▷△□●○]\s*/g, '· ');
+  // #24: 연속 마커 정리
+  s = s.replace(/(·\s*){2,}/g, '· ');
+  s = s.replace(/※\s*자세한\s*[^\n※]{0,30}(공고문|붙임|첨부)\s*(참[조고]|확인)\.?/g, '');
+  s = s.replace(/※\s*세부.*?(공고문|붙임)\s*참[조고]\.?/g, '');
+  s = s.replace(/\(?\s*자세한\s*[^\n)]{0,20}(공고문|붙임)\s*참[조고]\s*\)?\.?/g, '');
+  s = s.replace(/바랍니다\.?\s*/g, '. ');
+  s = s.replace(/안내드립니다\.?\s*/g, '. ');
+  s = s.replace(/알려\s*드립니다\.?\s*/g, '. ');
+  s = s.replace(/\.\s*\./g, '.');
+  s = s.replace(/\s{2,}/g, ' ');
+  s = s.replace(/^\s*[·\-]\s*/, '');
+  return s.trim();
+}
+
+function getTopCategory(results) {
+  const counts = {};
+  results.forEach(r => { const c=r.notice.category||'기타'; counts[c]=(counts[c]||0)+1; });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '';
+}
+
+function buildNarrative(query, searchResult) {
+  const {items, total, expanded, expandedTerms, corrected} = searchResult;
+  if (query === '__deadline__') {
+    return `마감이 가까운 공고를 찾아봤어요. 신청 마감일이 빠른 순으로 ${items.length}건을 보여드릴게요.`;
+  }
+  const cat = getTopCategory(items);
+  const info = CATEGORY_NARRATIVES[cat] || {emoji:'📌', verb:'지원'};
+  lastCategory = cat;
+  const keywords = tokenize(query).slice(0,3).join(', ');
+  let prefix = corrected ? `"${corrected}"(으)로 검색했어요. ` : '';
+
+  if (expanded && items.length > 0) {
+    const terms = expandedTerms?.join(', ') || '';
+    return `${prefix}"${keywords}"을 직접 찾지는 못했지만, 관련 키워드(${terms})로 ${items.length}건을 찾았어요. 혹시 이런 사업을 찾으셨나요?`;
+  }
+  if (total >= 100) {
+    return `${prefix}"${keywords}" 관련 ${info.verb} 프로그램을 찾아봤어요. 총 ${total}건 중 가장 관련 높은 ${items.length}건을 추천해 드릴게요.`;
+  } else if (total > 0) {
+    return `${prefix}"${keywords}" 관련 프로그램 ${total}건을 찾았어요. 그중 추천 ${items.length}건이에요.`;
+  }
+  return `${prefix}"${keywords}"에 정확히 맞는 프로그램을 찾지 못했어요. 아래 키워드로 다시 찾아볼까요?`;
+}
+
+// #21,#22: follow-up 맥락 반영 개선
+function buildFollowups(query, searchResult) {
+  const {items, expanded} = searchResult;
+  const chips = [];
+  const cat = getTopCategory(items);
+
+  if (items.length === 0) {
+    chips.push({label:'💰 자금 지원', q:'소상공인 자금 지원 융자 대출'});
+    chips.push({label:'🚀 창업 지원', q:'창업 초기 예비창업 스타트업 사업화'});
+    chips.push({label:'📋 컨설팅', q:'경영 컨설팅 진단 멘토링 자문'});
+    chips.push({label:'🛒 판로 지원', q:'온라인 판로 판매 마케팅 홍보 수출'});
+    return chips;
+  }
+
+  // #22: 확장 검색이면 "아니에요" 칩
+  if (expanded) {
+    chips.push({label:'원하는 결과가 아니에요', q:'__show_categories__'});
+  }
+
+  if (query !== '__deadline__') chips.push({label:'⏰ 마감 임박한 것만', q:'__deadline__'});
+
+  // 맥락별 추천
+  const keywords = tokenize(query);
+  if (cat === '금융' && !keywords.includes('창업')) chips.push({label:'🚀 창업 지원도 볼래요', q:'창업 초기 예비창업 지원'});
+  else if (cat === '창업' && !keywords.includes('자금')) chips.push({label:'💰 자금 지원도 볼래요', q:'소상공인 자금 융자 대출'});
+  else if (cat === '경영') chips.push({label:'💰 자금 지원 보기', q:'소상공인 자금 지원 융자'});
+  else if (cat === '내수') chips.push({label:'🌏 수출 지원 보기', q:'수출 해외 글로벌 무역 바이어'});
+  else chips.push({label:'💰 자금 지원 보기', q:'소상공인 자금 지원 융자'});
+
+  if (cat) chips.push({label:`${cat} 분야 더 보기`, q:`${cat} 지원 프로그램`});
+  return chips.slice(0, 4);
+}
+
+// #20: 비정형 기간 배지
+function deadlineBadge(notice) {
+  const period = notice.period || '';
+  if (/예산\s*소진/i.test(period)) return {text:'예산소진시', cls:'tag-budget'};
+  if (/상시\s*(접수|모집)?/i.test(period)) return {text:'상시접수', cls:'tag-open'};
+  if (/선착순/i.test(period)) return {text:'선착순', cls:'tag-deadline'};
+  if (/수시/i.test(period)) return {text:'수시접수', cls:'tag-open'};
+  const parts = period.split('~');
+  const end = parseDeadline(parts.length > 1 ? parts[1] : parts[0]);
+  if (!end) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.ceil((end - today) / 86400000);
+  if (diff < 0) return {text:'마감', cls:'tag-deadline'};
+  if (diff <= 30) return {text:`D-${diff}`, cls:'tag-deadline'};
+  return {text: `~${end.getMonth()+1}.${end.getDate()}`, cls:'tag-period'};
+}
+
+// ── Rendering ──
+function esc(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+function trunc(t,n) { return !t ? '' : t.length<=n ? t : t.slice(0,n)+'…'; }
+
+// ── P1-3: 이벤트 측정 (분석 훅) ──
+window.__analytics = [];
+window.__analyticsDebug = false; // console.debug 보려면 true
+function track(name, data) {
+  const e = { t: new Date().toISOString(), name, ...(data || {}) };
+  window.__analytics.push(e);
+  if (window.__analyticsDebug) console.debug('[track]', name, data || {});
+  // 실서비스 연결 지점: navigator.sendBeacon('/collect', JSON.stringify(e))
+}
+let _officialClicked = false;
+window.addEventListener('beforeunload', () => {
+  // 이탈: 추천을 봤지만 원문을 한 번도 안 누른 경우
+  if (STATE.lastResults.length && !_officialClicked) track('session_abandoned', {turns: STATE.turnCount});
+});
+
+// 금액 문자열 → 숫자 (정렬용)
+function amountValue(s) {
+  if (!s) return 0;
+  const m = String(s).match(/(\d[\d,]*)\s*(억원|천만원|백만원|만원|만)/);
+  if (!m) return 0;
+  const unit = {'억원':1e8,'천만원':1e7,'백만원':1e6,'만원':1e4,'만':1e4}[m[2]] || 1;
+  return parseInt(m[1].replace(/,/g,'')) * unit;
+}
+
+// P0-6: 서류 추출 불완전 문구 정제 ("6 -", "❍ 제출서류", 단일 글자 등 제거)
+function cleanDocs(docs) {
+  if (!Array.isArray(docs)) return [];
+  return docs.map(d => (d||'')
+      .replace(/^[\s\d]+\s*[-.)]\s*/,'')      // "6 -", "1." 제거
+      .replace(/^[❍○◦▪□■※*·\-]+\s*/,'')      // 글머리 기호 제거
+      .replace(/^제출\s*서류\s*[:：]?\s*/,'')   // "제출서류:" 머리말 제거
+      .replace(/\s+/g,' ').trim())
+    .filter(d => d.length >= 3 && /[가-힣A-Za-z]/.test(d));  // 의미있는 항목만
+}
+
+// 준비 체크리스트 텍스트 생성 (복사용)
+function buildChecklist(n) {
+  const lines = [`[${n.title}]`];
+  if (n.amount) lines.push(`· 지원금: ${n.amount}`);
+  if (n.period) lines.push(`· 신청기한: ${n.period}`);
+  if (n.target) lines.push(`· 지원대상: ${n.target}`);
+  const docs = cleanDocs(n.documents);
+  if (docs.length) { lines.push('· 준비 서류:'); docs.forEach(d => lines.push(`   - ${d}`)); }
+  else lines.push('· 준비 서류: 공고문에서 확인 필요');
+  const c = n.contact || {};
+  const contact = [c.name, c.phone].filter(Boolean).join(' ');
+  if (contact) lines.push(`· 문의: ${contact}`);
+  if (n.url) lines.push(`· 공식 공고: ${n.url}`);
+  lines.push('※ 신청 가능 여부는 공식 공고에서 최종 확인하세요.');
+  return lines.join('\n');
+}
+window._checklists = {};
+window.copyChecklist = function(id, btn) {
+  const text = window._checklists[id] || '';
+  track('checklist_copied', {id});
+  navigator.clipboard?.writeText(text).then(() => {
+    const orig = btn.textContent; btn.textContent = '✓ 복사됨';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }).catch(()=>{ btn.textContent='복사 실패'; });
+};
+
+function renderCard(item, activePurpose) {
+  const idx = ++_cardSeq; // #26: 안전한 ID
+  const n = item.notice;
+  const summary = n.summary || '';
+  const money = n.amount;
+  const dl = deadlineBadge(n);
+  const period = trunc(n.period, 30);
+  const target = trunc(n.target, 25);
+
+  let glance = '';
+  if (money) glance += `<div class="glance-item"><span class="glance-icon">💰</span><span class="glance-label">지원금</span><span class="glance-val highlight">${esc(money)}</span></div>`;
+  if (period) glance += `<div class="glance-item"><span class="glance-icon">📅</span><span class="glance-label">기한</span><span class="glance-val${dl?.cls==='tag-deadline'?' warn':''}">${esc(period)}</span></div>`;
+  if (target) glance += `<div class="glance-item"><span class="glance-icon">👤</span><span class="glance-label">자격</span><span class="glance-val">${esc(target)}</span></div>`;
+  const executor = n.executor || n.institution || '';
+  if (executor) glance += `<div class="glance-item"><span class="glance-icon">🏢</span><span class="glance-label">수행</span><span class="glance-val">${esc(trunc(executor,20))}</span></div>`;
+  // 준비 난이도 (서류 수)
+  const cleanedDocs = cleanDocs(n.documents);
+  const docLabel = cleanedDocs.length ? `서류 ${cleanedDocs.length}종` : '서류 정보 미상';
+  glance += `<div class="glance-item"><span class="glance-icon">📄</span><span class="glance-label">준비</span><span class="glance-val">${esc(docLabel)}</span></div>`;
+
+  // 태그: 분야 + 마감 + 목적 태그(다축 시각화) — 균일 높이 위해 목적은 최대 3개
+  let tags = '';
+  if (n.category) tags += `<span class="tag tag-cat">${esc(n.category)}</span>`;
+  if (dl) tags += `<span class="tag ${dl.cls}">${dl.text}</span>`;
+  // 요청 목적을 맨 앞으로 정렬 후 상위 3개만
+  const allPurposes = (n.purposes || []);
+  const ordered = activePurpose
+    ? [...allPurposes.filter(p => p === activePurpose), ...allPurposes.filter(p => p !== activePurpose)]
+    : allPurposes;
+  for (const p of ordered.slice(0, 3)) {
+    const active = activePurpose && p === activePurpose;
+    tags += `<span class="tag ${active ? 'tag-purpose-active' : 'tag-purpose'}">${esc(p)}</span>`;
+  }
+  if (ordered.length > 3) tags += `<span class="tag tag-purpose">+${ordered.length - 3}</span>`;
+  // 정보 부족 정직 표시
+  if (n.grade === 'vague') tags += `<span class="tag tag-warn-grade">⚠️ 확인 필요</span>`;
+
+  // 상세: 구조화된 필드 직접 사용 (서류는 정제본 사용)
+  const docText = cleanedDocs.length ? cleanedDocs.map(d=>'· '+d).join('\n') : '공고문에서 세부 서류를 확인해 주세요.';
+  const exclText = cleanDocs(n.exclusions).length ? cleanDocs(n.exclusions).map(d=>'· '+d).join('\n') : '';
+  const QA = [
+    ['어떤 사업인가요?', n.summary],
+    ['누가 신청할 수 있나요?', n.target],
+    ['언제까지 신청하나요?', n.period],
+    ['어떻게 신청하나요?', n.method],
+    ['필요한 서류는?', docText],
+    ['제외 조건이 있나요?', exclText],
+  ];
+  let detailHtml = '';
+  for (const [question, value] of QA) {
+    if (!value) continue;
+    detailHtml += `<div class="detail-section"><div class="detail-q">${question}</div><div class="detail-a">${esc(trunc(value, 400))}</div></div>`;
+  }
+  // 문의처
+  const c = n.contact || {};
+  const contactStr = [c.name, c.phone, c.email].filter(Boolean).join(' · ');
+  if (contactStr) detailHtml += `<div class="detail-section"><div class="detail-q">누구에게 물어보나요?</div><div class="detail-a">${esc(contactStr)}</div></div>`;
+
+  // P0-7: 행동 버튼 (원문/문의/체크리스트 복사)
+  window._checklists[n.id] = buildChecklist(n);
+  let actions = '';
+  if (n.url) actions += `<a class="card-act primary" href="${esc(n.url)}" target="_blank" rel="noopener" onclick="_officialClicked=true;track('official_click',{id:'${esc(n.id)}'})">📄 공식 공고 보기</a>`;
+  if (c.phone) actions += `<a class="card-act" href="tel:${esc(c.phone)}" onclick="track('contact_click',{id:'${esc(n.id)}'})">📞 문의 ${esc(c.phone)}</a>`;
+  actions += `<button class="card-act" onclick="copyChecklist('${esc(n.id)}', this)">📋 준비 체크리스트 복사</button>`;
+  detailHtml += `<div class="card-actions">${actions}</div>`;
+
+  // 사업군 비교 칩 (같은 사업이 여러 지역에)
+  let famChip = '';
+  if ((n.familySize||1) > 1) {
+    famChip = `<button class="chip" data-q="__family:${esc(n.familyId)}" style="margin-top:6px">🔀 다른 지역 ${n.familySize-1}곳과 비교</button>`;
+  }
+
+  return `<div class="card">
+    <div class="card-title" onclick="toggleDetail(${idx})">${esc(n.title)}</div>
+    <div class="card-summary">${esc(summary)}</div>
+    <div class="card-glance">${glance}</div>
+    <div class="card-tags">${tags}</div>
+    <button class="card-toggle" id="tog${idx}" onclick="toggleDetail(${idx})" aria-expanded="false"><span class="arrow">▾</span> 자세히 보기</button>
+    <div class="card-detail" id="det${idx}"><div class="card-detail-inner">${detailHtml}</div></div>
+    ${famChip}
+  </div>`;
+}
+
+window.toggleDetail = function(idx) {
+  const det = document.getElementById('det'+idx);
+  const tog = document.getElementById('tog'+idx);
+  const open = det.classList.toggle('open');
+  if (open) track('card_expanded');
+  tog.classList.toggle('open', open);
+  tog.setAttribute('aria-expanded', open); // #9
+  tog.querySelector('.arrow').textContent = open ? '▴' : '▾';
+  tog.childNodes[1].textContent = open ? ' 접기' : ' 자세히 보기';
+};
+
+function addUserBubble(text) {
+  const row = document.createElement('div');
+  row.className = 'chat-row user';
+  row.innerHTML = `<div class="avatar user">나</div><div class="bubble user">${esc(text)}</div>`;
+  document.getElementById('chatArea').appendChild(row);
+  scrollBottom();
+}
+
+function addBotTurn(narrative, results, followups) {
+  const cat = getTopCategory(results);
+  const badge = cat ? `<span class="meta-badge">${cat}</span>` : '';
+
+  const ap = (STATE.slots.purpose && STATE.slots.purpose !== '_any') ? STATE.slots.purpose : null;
+  let cards = results.map(r => renderCard(r, ap)).join('');
+
+  // #33: chip에 이벤트 위임 사용 (innerHTML injection 방지)
+  let chipsHtml = '';
+  if (followups.length) {
+    chipsHtml = '<div class="followups">' + followups.map((f, i) =>
+      `<button class="chip" data-q="${esc(f.q)}">${esc(f.label)}</button>`
+    ).join('') + '</div>';
+  }
+
+  const row = document.createElement('div');
+  row.className = 'chat-row';
+  row.innerHTML = `
+    <div class="avatar bot">AI</div>
+    <div class="bubble bot">
+      <div class="bot-meta"><span class="meta-dot"></span>검색 완료 ${badge}</div>
+      <div class="bot-narrative">${esc(narrative)}</div>
+      ${cards}
+      ${chipsHtml}
+    </div>`;
+
+  // #33: 이벤트 위임
+  row.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => doQuery(btn.dataset.q));
+  });
+
+  document.getElementById('chatArea').appendChild(row);
+  scrollBottom();
+}
+
+function showThinking() {
+  const row = document.createElement('div');
+  row.className = 'chat-row';
+  row.id = 'thinking';
+  row.innerHTML = `<div class="avatar bot">AI</div><div class="bubble bot"><div class="thinking"><span></span><span></span><span></span></div></div>`;
+  document.getElementById('chatArea').appendChild(row);
+  scrollBottom();
+}
+function hideThinking() { document.getElementById('thinking')?.remove(); }
+
+// #11: 스크롤 정책 — 이미 하단에 있을 때만 자동 스크롤
+function scrollBottom() {
+  const a = document.getElementById('chatArea');
+  requestAnimationFrame(() => {
+    const isNearBottom = a.scrollHeight - a.scrollTop - a.clientHeight < 200;
+    if (isNearBottom || a.scrollTop === 0) a.scrollTop = a.scrollHeight;
+  });
+}
+
+// ═══════════════════════════════════════════
+// EXPLORE MODE — 자유 탐색 모듈
+// ═══════════════════════════════════════════
+
+// 봇 버블에 임의 HTML + 칩을 붙이는 공통 헬퍼
+function addBotPanel(innerHtml, chips) {
+  const row = document.createElement('div');
+  row.className = 'chat-row';
+  let chipsHtml = '';
+  if (chips && chips.length) {
+    chipsHtml = '<div class="followups">' + chips.map(c => `<button class="chip" data-q="${esc(c.q)}">${esc(c.label)}</button>`).join('') + '</div>';
+  }
+  row.innerHTML = `<div class="avatar bot">AI</div><div class="bubble bot">${innerHtml}${chipsHtml}</div>`;
+  row.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => doQuery(b.dataset.q)));
+  document.getElementById('chatArea').appendChild(row);
+  scrollBottom();
+}
+
+function countActive(indices) { return indices.filter(i => !NOTICES[i]._hidden).length; }
+
+// ── 부처별 둘러보기 ──
+function browseMinistries() {
+  // 중앙(공통) 기관만
+  const central = {};
+  for (const [inst, idxs] of Object.entries(IDX.byInstitution)) {
+    const cnt = idxs.filter(i => !NOTICES[i]._hidden && NOTICES[i].region === '공통').length;
+    if (cnt > 0) central[inst] = cnt;
+  }
+  const sorted = Object.entries(central).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const chips = sorted.map(([inst,c]) => ({label:`${inst} (${c})`, q:`__inst:${inst}`}));
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>부처별 보기</div><div class="bot-narrative">중앙부처·산하기관 공고를 기관별로 모아봤어요. 궁금한 곳을 눌러보세요.</div>`, chips);
+}
+
+function showInstitution(name) {
+  const idxs = (IDX.byInstitution[name]||[]).filter(i => !NOTICES[i]._hidden);
+  const items = idxs.map(i => ({notice:NOTICES[i], score:0, reasons:[], dl:deadlineBadge(NOTICES[i]), tier:institutionTier(NOTICES[i])}));
+  items.sort((a,b)=>a.tier-b.tier);
+  STATE.lastResults = items;
+  const catDist = distLabel(items, n=>n.category);
+  const purDist = distLabel(items, n=>(n.purposes||[])[0]);
+  const stat = `<div class="browse-stat"><b>${name}</b> 공고 <b>${items.length}건</b><br>분야: ${catDist}<br>주요 목적: ${purDist}</div>`;
+  const cards = items.slice(0,5).map(r=>renderCard(r)).join('');
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>${esc(name)}</div>${stat}${cards}`,
+    items.length>5 ? [{label:'처음으로',q:'__reset__'}] : [{label:'처음으로',q:'__reset__'}]);
+}
+
+// ── 지역(우리 동네) 둘러보기 ──
+function browseRegions() {
+  const regs = ['서울','부산','대구','인천','광주','대전','울산','세종','경기','강원','충북','충남','전북','전남','경북','경남','제주'];
+  const chips = regs.map(r => {
+    const c = countActive(IDX.byRegion[r]||[]);
+    return {label:`${r} (${c})`, q:`__regbrowse:${r}`};
+  }).filter(ch => !ch.label.includes('(0)'));
+  chips.unshift({label:`공통·중앙 (${countActive(IDX.byRegion['공통']||[])})`, q:'__regbrowse:공통'});
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>우리 동네 보기</div><div class="bot-narrative">지역을 고르면 그 지역 + 중앙 지원사업을 보여드려요.</div>`, chips);
+}
+
+function showRegionOverview(region) {
+  let idxs;
+  if (region === '공통') idxs = (IDX.byRegion['공통']||[]);
+  else idxs = [...(IDX.byRegion[region]||[]), ...(IDX.byRegion['공통']||[])];
+  idxs = [...new Set(idxs)].filter(i => !NOTICES[i]._hidden);
+  const items = idxs.map(i => ({notice:NOTICES[i], score:0, reasons:[], dl:deadlineBadge(NOTICES[i]), tier:institutionTier(NOTICES[i])}));
+  items.sort((a,b)=>a.tier-b.tier);
+  STATE.lastResults = items;
+  const catDist = distLabel(items, n=>n.category);
+  const purDist = distLabel(items, n=>(n.purposes||[])[0]);
+  const localOnly = region==='공통' ? 0 : countActive(IDX.byRegion[region]||[]);
+  const stat = `<div class="browse-stat"><b>${region}</b> 지역엔 총 <b>${items.length}건</b>${region!=='공통'?` (지역 ${localOnly} + 중앙 ${items.length-localOnly})`:''}<br>분야: ${catDist}<br>자주 나오는 목적: ${purDist}</div>`;
+  const cards = items.slice(0,5).map(r=>renderCard(r)).join('');
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>${esc(region)} 지역</div>${stat}${cards}`, [{label:'다른 지역 보기',q:'__browse:region'},{label:'처음으로',q:'__reset__'}]);
+}
+
+// 분포 라벨 헬퍼
+function distLabel(items, keyFn) {
+  const c = {};
+  for (const it of items) { const k = keyFn(it.notice); if(k) c[k]=(c[k]||0)+1; }
+  return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([k,v])=>`${k} ${v}`).join(' · ') || '-';
+}
+
+// ── 사업군 비교 ──
+function browseFamilies() {
+  const fams = Object.entries(IDX.byFamily).map(([fid,idxs]) => {
+    const live = idxs.filter(i=>!NOTICES[i]._hidden);
+    return {fid, size:live.length, title:(NOTICES[live[0]]?.title||'').replace(/^\[[^\]]+\]\s*/,'')};
+  }).filter(f=>f.size>1).sort((a,b)=>b.size-a.size);
+  const chips = fams.slice(0,12).map(f => ({label:`${trunc(f.title,22)} (${f.size}곳)`, q:`__family:${f.fid}`}));
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>지역별 비교</div><div class="bot-narrative">여러 지역에서 같이 운영하는 사업이에요. 고르면 지역별 금액·기한 차이를 비교해 드려요.</div>`, chips);
+}
+
+function showFamilyCompare(fid) {
+  const idxs = (IDX.byFamily[fid]||[]).filter(i=>!NOTICES[i]._hidden);
+  if (idxs.length < 2) { addBotPanel('<div class="bot-narrative">비교할 공고가 부족해요.</div>', [{label:'처음으로',q:'__reset__'}]); return; }
+  const notices = idxs.map(i=>NOTICES[i]);
+  addUserBubble(`${(notices[0].title||'').replace(/^\[[^\]]+\]\s*/,'').slice(0,20)} 비교`);
+  // 비교 행: 지역/지원금/금리/기한/대상
+  const rows = [
+    ['지역', n=>n.region || (n.title.match(/^\[([^\]]+)\]/)?.[1]) || '-'],
+    ['지원금', n=>n.amount || '-'],
+    ['금리', n=>n.rate || '-'],
+    ['기한', n=>trunc(n.period,16) || '-'],
+    ['대상', n=>trunc(n.target,10) || '-'],
+  ];
+  // 차이 나는 행 판정
+  const cols = notices.slice(0,4);
+  let table = '<div class="compare-table" style="grid-template-columns:repeat('+cols.length+',1fr)">';
+  cols.forEach((n,i)=>{
+    const region = rows[0][1](n);
+    let cell = `<div class="compare-col${i===0?' compare-best':''}"><div class="compare-header">${esc(region)}</div>`;
+    for (let r=1;r<rows.length;r++){
+      const vals = cols.map(x=>rows[r][1](x));
+      const diff = new Set(vals).size > 1;
+      cell += `<div class="compare-row${diff?' compare-diff':''}"><span class="ci">${['','💰','📊','📅','👤'][r]}</span><span class="cv">${esc(rows[r][1](n))}</span></div>`;
+    }
+    cell += `<a class="compare-detail" href="${esc(n.url||'#')}" target="_blank">원문 →</a></div>`;
+    table += cell;
+  });
+  table += '</div>';
+  const diffRows = rows.slice(1).filter(r=>{ const vals=cols.map(x=>r[1](x)); return new Set(vals).size>1; }).map(r=>r[0]);
+  const note = diffRows.length ? `노란색으로 표시된 <b>${diffRows.join(', ')}</b>이(가) 지역마다 달라요.` : '핵심 조건은 지역별로 거의 같아요.';
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>지역별 비교 (${cols.length}곳)</div><div class="bot-narrative">${note}</div>${table}`, [{label:'다른 사업 비교',q:'__browse:family'},{label:'처음으로',q:'__reset__'}]);
+}
+
+// ── 서류 중심 검색 ──
+function docSearchMenu() {
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>서류로 찾기</div><div class="bot-narrative">제출 서류 기준으로 찾아드려요.</div>`, [
+    {label:'📋 서류 간단한 순', q:'__docsort'},
+    {label:'사업자등록증', q:'__docfilter:사업자등록증'},
+    {label:'신청서', q:'__docfilter:신청서'},
+    {label:'사업계획서', q:'__docfilter:사업계획서'},
+  ]);
+}
+
+function docSortSimple() {
+  const items = NOTICES.filter(n=>!n._hidden && (n.documents||[]).length>0)
+    .sort((a,b)=>a.documents.length-b.documents.length)
+    .slice(0,5)
+    .map(n=>({notice:n, score:0, reasons:[`📄 서류 ${n.documents.length}종`], dl:deadlineBadge(n)}));
+  STATE.lastResults = items;
+  const cards = items.map(r=>renderCard(r)).join('');
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>서류 간단한 순</div><div class="bot-narrative">제출 서류가 적은 공고부터 보여드려요.</div>${cards}`, [{label:'서류 메뉴',q:'__docsearch'},{label:'처음으로',q:'__reset__'}]);
+}
+
+function docFilter(kw) {
+  const items = NOTICES.filter(n=>!n._hidden && (n.documents||[]).some(d=>d.includes(kw)))
+    .slice(0,5)
+    .map(n=>({notice:n, score:0, reasons:[], dl:deadlineBadge(n)}));
+  STATE.lastResults = items;
+  if (!items.length) { addBotPanel(`<div class="bot-narrative">"${esc(kw)}" 관련 서류를 명시한 공고를 찾지 못했어요.</div>`, [{label:'서류 메뉴',q:'__docsearch'}]); return; }
+  const cards = items.map(r=>renderCard(r)).join('');
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>${esc(kw)} 필요</div><div class="bot-narrative">"${esc(kw)}"를 제출서류로 명시한 공고 ${items.length}건이에요.</div>${cards}`, [{label:'서류 메뉴',q:'__docsearch'},{label:'처음으로',q:'__reset__'}]);
+}
+
+// ── 자유 다면 탐색 (faceted) ──
+const FACET_AXES = [
+  {key:'target', label:'대상', opts:['소상공인','중소기업','창업벤처']},
+  {key:'category', label:'분야', opts:['금융','경영','창업','내수']},
+  {key:'region', label:'지역', opts:['공통','서울','경기','부산','대구','인천','경북','경남']},
+  {key:'purpose', label:'목적', opts:['운전자금','시설개보수','컨설팅','마케팅비','사업화','이자보전','보증지원']},
+];
+
+function facetFilter(facets) {
+  // 활성 facet으로 NOTICES 필터 (자유 탐색은 지역=정확히 일치)
+  let result = [];
+  for (let i=0;i<NOTICES.length;i++){
+    const n = NOTICES[i];
+    if (n._hidden) continue;
+    if (facets.target) { const t=n.target||''; const tk=t.includes('소상공인')?'소상공인':(t.includes('창업')||t.includes('벤처'))?'창업벤처':'중소기업'; if(tk!==facets.target) continue; }
+    if (facets.category && n.category!==facets.category) continue;
+    if (facets.region && (n.region||'공통')!==facets.region) continue;
+    if (facets.purpose && !(n.purposes||[]).includes(facets.purpose)) continue;
+    result.push(i);
+  }
+  return result;
+}
+
+function renderFacetPanel() {
+  const f = STATE.facets;
+  const matched = facetFilter(f);
+  // 각 옵션의 건수 = 그 옵션을 추가했을 때 결과 수
+  let axesHtml = '';
+  for (const ax of FACET_AXES) {
+    let chips = '';
+    for (const opt of ax.opts) {
+      const test = {...f, [ax.key]: f[ax.key]===opt ? null : opt};
+      const cnt = facetFilter(test).length;
+      const on = f[ax.key]===opt;
+      chips += `<button class="facet-chip${on?' on':''}" data-q="__facet:${ax.key}:${opt}">${esc(opt)} <span class="cnt">${cnt}</span></button>`;
+    }
+    axesHtml += `<div class="facet-axis"><div class="facet-axis-label">${ax.label}</div><div class="facet-chips">${chips}</div></div>`;
+  }
+  const items = matched.slice(0,3).map(i=>({notice:NOTICES[i], score:0, reasons:[], dl:deadlineBadge(NOTICES[i]), tier:institutionTier(NOTICES[i])}));
+  items.sort((a,b)=>a.tier-b.tier);
+  STATE.lastResults = matched.map(i=>({notice:NOTICES[i], score:0, reasons:[], dl:deadlineBadge(NOTICES[i]), tier:institutionTier(NOTICES[i])})).sort((a,b)=>a.tier-b.tier);
+  const cardsHtml = items.map(r=>renderCard(r)).join('');
+  const activeBits = FACET_AXES.filter(ax=>f[ax.key]).map(ax=>f[ax.key]);
+  const head = activeBits.length ? `조건: ${activeBits.join(' · ')} → <b>${matched.length}건</b>` : `조건을 누를수록 좁혀져요. 현재 <b>${matched.length}건</b>`;
+
+  const row = document.createElement('div');
+  row.className = 'chat-row';
+  row.innerHTML = `<div class="avatar bot">AI</div><div class="bubble bot">
+    <div class="bot-meta"><span class="meta-dot"></span>자유 탐색</div>
+    <div class="browse-stat">${head}</div>
+    ${axesHtml}
+    ${matched.length<=3?cardsHtml:''}
+    <div class="followups"><button class="chip" data-q="__facet:show">결과 ${Math.min(matched.length,5)}건 보기</button><button class="chip" data-q="__reset__">처음으로</button></div>
+  </div>`;
+  row.querySelectorAll('.chip, .facet-chip').forEach(b => b.addEventListener('click', () => doQuery(b.dataset.q)));
+  document.getElementById('chatArea').appendChild(row);
+  scrollBottom();
+}
+
+function toggleFacet(axis, val) {
+  if (val === 'show') {
+    const items = STATE.lastResults.slice(0,5);
+    const cards = items.map(r=>renderCard(r)).join('');
+    addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>탐색 결과</div><div class="bot-narrative">조건에 맞는 ${STATE.lastResults.length}건 중 ${items.length}건이에요.</div>${cards}`, [{label:'조건 더 좁히기',q:'__facet:open2'},{label:'처음으로',q:'__reset__'}]);
+    return;
+  }
+  if (axis === 'open2') { renderFacetPanel(); return; }
+  STATE.facets[axis] = STATE.facets[axis]===val ? null : val;
+  renderFacetPanel();
+}
+
+// ═══════════════════════════════════════════
+// MAIN QUERY FLOW — AI 조언자 파이프라인
+// ═══════════════════════════════════════════
+function doQuery(query) {
+  if (_busy) return;
+  if (query === '__reset__') { STATE.reset(); location.reload(); return; }
+
+  document.getElementById('welcome').classList.add('hidden');
+  document.getElementById('qInput').value = '';
+
+  // 특수 액션 처리
+  if (query === '__deadline__') {
+    addUserBubble('마감 임박한 공고 보기');
+    _busy = true; setInputEnabled(false); showThinking();
+    setTimeout(() => {
+      hideThinking(); _busy = false; setInputEnabled(true);
+      const sr = search('__deadline__');
+      addBotTurn('마감이 가까운 공고를 찾아봤어요.', sr.items, [{label:'🔄 처음부터', q:'__reset__'}]);
+    }, 400);
+    return;
+  }
+
+  // 슬롯 채우기 액션 (칩 클릭)
+  if (query.startsWith('__slot:')) {
+    const [,slot,value] = query.match(/__slot:(\w+):(.+)/)||[];
+    if (slot && value) {
+      STATE.slots[slot] = value;
+      if (!STATE.filled.includes(slot)) STATE.filled.push(slot);
+      addUserBubble(value === '_any' ? '상관없어요' : value);
+      processConversation();
+      return;
+    }
+  }
+
+  // 이전 질문 (P0-8)
+  if (query === '__back') {
+    const last = STATE.filled.pop();
+    if (last) STATE.slots[last] = null;
+    addUserBubble('← 이전 질문으로');
+    processConversation();
+    return;
+  }
+
+  // 드릴 액션
+  if (query === '__more__') { showMoreResults(); return; }
+  if (query === '__nationwide__') { STATE.slots.region = '공통'; addUserBubble('공통(중앙정부)만 보기'); processConversation(); return; }
+  if (query.startsWith('__switchCat:')) { const c=query.split(':')[1]; STATE.slots.category=c; addUserBubble(c+' 분야 보기'); processConversation(); return; }
+
+  // 시나리오 시드 (보조 진입)
+  if (query.startsWith('__seed:')) {
+    const cat = query.slice(7);
+    const seedMap = {'경영':{category:'경영',need:'컨설팅'}, '수출':{category:'내수',need:'수출'}};
+    Object.assign(STATE.slots, seedMap[cat] || {category:cat});
+    STATE.phase = 'gathering';
+    addUserBubble(cat === '수출' ? '수출 지원 찾기' : '경영·컨설팅 찾기');
+    processConversation();
+    return;
+  }
+
+  // ── 탐색 모드 액션 ──
+  if (query === '__browse:ministry') { addUserBubble('부처별 보기'); browseMinistries(); return; }
+  if (query === '__browse:region') { addUserBubble('우리 동네 보기'); browseRegions(); return; }
+  if (query === '__browse:family') { addUserBubble('지역별 비교'); browseFamilies(); return; }
+  if (query.startsWith('__inst:')) { const name = query.slice(7); addUserBubble(name); showInstitution(name); return; }
+  if (query.startsWith('__regbrowse:')) { const rg = query.slice(12); addUserBubble(rg + ' 지역'); showRegionOverview(rg); return; }
+  if (query.startsWith('__family:')) { const fid = query.slice(9); showFamilyCompare(fid); return; }
+  if (query === '__docsearch') { addUserBubble('서류로 찾기'); docSearchMenu(); return; }
+  if (query === '__docsort') { addUserBubble('서류 간단한 순'); docSortSimple(); return; }
+  if (query.startsWith('__docfilter:')) { const kw = query.slice(12); addUserBubble(kw + ' 필요 공고'); docFilter(kw); return; }
+  if (query === '__facet:open') { addUserBubble('자유 탐색'); STATE.mode='explore'; STATE.facets={target:null,region:null,category:null,purpose:null,fundType:null,period:null}; renderFacetPanel(); return; }
+  if (query === '__facet:show') { toggleFacet('show'); return; }
+  if (query === '__facet:open2') { renderFacetPanel(); return; }
+  if (query.startsWith('__facet:')) { const rest = query.slice(8); const ci = rest.indexOf(':'); if (ci>0) toggleFacet(rest.slice(0,ci), rest.slice(ci+1)); return; }
+
+  // 후속 대화 (현재 결과에 대한 추가 명령) — 슬롯 리셋 없이 처리
+  if (handleFollowup(query)) return;
+
+  // 자연어 입력 → 의도 파싱
+  if (query === _lastQuery) return;
+  _lastQuery = query;
+  addUserBubble(query);
+  track('search_submitted', {q: query});
+
+  const intent = parseIntent(query);
+  // 파싱된 슬롯 merge
+  if (intent.target) STATE.slots.target = intent.target;
+  if (intent.need) STATE.slots.need = intent.need;
+  if (intent.region) STATE.slots.region = intent.region;
+  if (intent.category) STATE.slots.category = intent.category;
+  if (intent.purpose) STATE.slots.purpose = intent.purpose;
+  if (intent.fundType) STATE.slots.fundType = intent.fundType;
+  STATE.turnCount++;
+
+  processConversation();
+}
+
+// 대화 흐름 결정 엔진
+function processConversation() {
+  const slots = STATE.slots;
+
+  // 슬롯이 부족하면 질문 (gathering)
+  const gq = buildGatheringChips(slots);
+  if (gq && STATE.turnCount < 3) {
+    STATE.phase = 'gathering';
+    addBotGathering(gq.question, gq.chips);
+    return;
+  }
+
+  // 충분하면 추천 (recommending)
+  STATE.phase = 'recommending';
+  _busy = true; setInputEnabled(false); showThinking();
+
+  setTimeout(() => {
+    hideThinking(); _busy = false; setInputEnabled(true);
+
+    const results = matchPolicies(slots);
+    STATE.lastResults = results;
+
+    // 결과 없음 → 실패 대응 (P0 실패 화면)
+    if (results.length === 0) {
+      track('consult_fail', {slots: {...slots}});
+      addBotFallback(slots);
+      STATE.phase = 'drilling';
+      return;
+    }
+
+    const groups = groupResults(slots, results);
+    const narrative = buildAdvisoryNarrative(slots, results);
+    const badges = renderSlotBadges(slots);
+    const ap = (slots.purpose && slots.purpose !== '_any') ? slots.purpose : null;
+
+    // 그룹별 카드 HTML
+    let body = '';
+    if (groups.strong.length) {
+      body += `<div class="group-head g1">✅ 조건에 잘 맞는 추천 <span class="group-sub">${groups.strong.length}건</span></div>`;
+      body += renderCompareTable(groups.strong);
+      body += groups.strong.map(r => renderCard(r, ap)).join('');
+    }
+    if (groups.check.length) {
+      body += `<div class="group-head g2">🔎 일부 조건을 확인해야 하는 추천 <span class="group-sub">${groups.check.length}건</span></div>`;
+      body += groups.check.map(r => renderCard(r, ap)).join('');
+    }
+    if (groups.related.length) {
+      body += `<div class="group-head g3">💡 함께 검토할 만한 관련 사업 <span class="group-sub">조건을 조금 넓혔어요</span></div>`;
+      body += groups.related.map(r => renderCard(r, ap)).join('');
+    }
+    body += `<div class="final-note">ℹ️ 신청 가능 여부와 최신 조건은 공식 공고에서 최종 확인해 주세요. AI가 공고문을 요약한 결과입니다.</div>`;
+
+    track('recommend_shown', {count: results.length, strong: groups.strong.length, slots: {...slots}});
+    const drillChips = buildDrillingChips(slots, results);
+    addBotAdvised(narrative, badges, body, drillChips);
+    STATE.phase = 'drilling';
+    document.getElementById('qInput').blur();
+  }, 400);
+}
+
+// 슬롯 질문 턴 렌더 (진행상태 + 이전/처음)
+function addBotGathering(question, chips) {
+  const slotKey = chips[0]?.slot;
+  // 진행 단계 계산 (금융이면 4단계, 아니면 3단계)
+  const seq = STATE.slots.category === '금융' ? ['category','fundType','purpose','region'] : ['category','purpose','region'];
+  const total = seq.length;
+  const step = Math.max(1, seq.indexOf(slotKey) + 1);
+  const progress = slotKey && seq.includes(slotKey) ? `<span class="gather-progress">${step}/${total}</span>` : '';
+
+  const row = document.createElement('div');
+  row.className = 'chat-row';
+  let chipsHtml = chips.map(c =>
+    `<button class="chip" data-q="__slot:${c.slot}:${c.value}">${esc(c.label)}</button>`
+  ).join('');
+  // 이전/처음 (한 단계라도 채웠으면 '이전' 노출)
+  let navHtml = '';
+  if (STATE.filled.length > 0) navHtml += `<button class="chip chip-nav" data-q="__back">← 이전 질문</button>`;
+  navHtml += `<button class="chip chip-nav" data-q="__reset__">처음부터</button>`;
+
+  row.innerHTML = `
+    <div class="avatar bot">AI</div>
+    <div class="bubble bot">
+      <div class="bot-meta"><span class="meta-dot"></span>확인 중 ${progress}</div>
+      <div class="gather-q">${esc(question)}</div>
+      <div class="slot-chips">${chipsHtml}</div>
+      <div class="slot-chips" style="margin-top:8px">${navHtml}</div>
+    </div>`;
+  row.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => doQuery(btn.dataset.q));
+  });
+  document.getElementById('chatArea').appendChild(row);
+  scrollBottom();
+}
+
+// ── P1-1: 후속 대화 (현재 결과에 대한 추가 명령) ──
+function handleFollowup(query) {
+  if (STATE.phase !== 'drilling' || !STATE.lastResults.length) return false;
+  const q = query.replace(/\s/g, '');
+  const ap = (STATE.slots.purpose && STATE.slots.purpose !== '_any') ? STATE.slots.purpose : null;
+
+  // 서류 적은/간단한 순
+  if (/(서류|준비물).*(적|간단|쉬|간편)|간단한것|서류적은/.test(q)) {
+    addUserBubble(query); track('followup', {type:'docs_simple'});
+    const sorted = [...STATE.lastResults].sort((a,b)=>cleanDocs(a.notice.documents).length - cleanDocs(b.notice.documents).length);
+    renderFilteredResults('📄 서류가 간단한 순으로 정리했어요', sorted.slice(0,5), ap);
+    return true;
+  }
+  // 지원금 큰 순
+  if (/(지원금|금액|혜택).*(큰|많|높)|많이주|제일많/.test(q)) {
+    addUserBubble(query); track('followup', {type:'amount_desc'});
+    const sorted = [...STATE.lastResults].sort((a,b)=>amountValue(b.notice.amount)-amountValue(a.notice.amount));
+    renderFilteredResults('💰 지원금이 큰 순으로 정리했어요', sorted.slice(0,5), ap);
+    return true;
+  }
+  // 마감 임박한 것만
+  if (/마감.*(임박|가까|급|곧)|곧마감|급한것/.test(q)) {
+    addUserBubble(query); track('followup', {type:'deadline'});
+    const today = new Date(); today.setHours(0,0,0,0);
+    const withDl = STATE.lastResults.map(r=>{
+      const end = parseDeadline((r.notice.period||'').split('~').pop());
+      return {r, end};
+    }).filter(x=>x.end && x.end>=today).sort((a,b)=>a.end-b.end).map(x=>x.r);
+    if (!withDl.length) { addBotPanel('<div class="bot-narrative">이 결과 중에는 마감일이 명시된 공고가 없어요. 대부분 상시·예산소진형이에요.</div>', [{label:'처음부터',q:'__reset__'}]); return true; }
+    renderFilteredResults('⏰ 마감이 가까운 순으로 정리했어요', withDl.slice(0,5), ap);
+    return true;
+  }
+  // 다른 지역 추가/비교 ("경기도도", "서울 말고 경기")
+  const REGS = ['서울','부산','대구','인천','광주','대전','울산','세종','경기','강원','충북','충남','전북','전남','경북','경남','제주'];
+  const found = REGS.find(rg => query.includes(rg));
+  if (found && /비교|도\b|말고|추가|는|은|에서|지역/.test(query)) {
+    addUserBubble(query); track('followup', {type:'region_switch', region:found});
+    STATE.slots.region = found;
+    if (!STATE.filled.includes('region')) STATE.filled.push('region');
+    processConversation();
+    return true;
+  }
+  return false;
+}
+
+// 필터링/정렬된 결과를 단순 목록으로 렌더 (후속 응답용)
+function renderFilteredResults(title, items, ap) {
+  if (!items.length) { addBotPanel('<div class="bot-narrative">해당하는 공고가 없어요.</div>', [{label:'처음부터',q:'__reset__'}]); return; }
+  const cards = items.map(r => renderCard(r, ap)).join('');
+  const chips = [
+    {label:'📄 서류 간단한 순', q:'서류 간단한 순'},
+    {label:'💰 지원금 큰 순', q:'지원금 큰 순'},
+    {label:'⏰ 마감 임박 순', q:'마감 임박한 것만'},
+    {label:'🔄 처음부터', q:'__reset__'},
+  ];
+  addBotPanel(`<div class="bot-meta"><span class="meta-dot"></span>${esc(title.replace(/^[^\s]+\s/,'추천 정렬'))}</div><div class="bot-narrative">${esc(title)}</div>${cards}`, chips);
+}
+
+// 결과 없음 → 실패 대응 (막다른 화면 금지)
+function addBotFallback(slots) {
+  const relaxChips = [];
+  if (slots.purpose && slots.purpose !== '_any') relaxChips.push({label:`용도(${slots.purpose}) 조건 빼기`, q:'__slot:purpose:_any'});
+  if (slots.fundType && slots.fundType !== '_any') relaxChips.push({label:`융자/보조금 조건 빼기`, q:'__slot:fundType:_any'});
+  if (slots.region && slots.region !== '공통') relaxChips.push({label:'공통(중앙정부)만 보기', q:'__nationwide__'});
+  relaxChips.push({label:'🎛️ 자유 탐색', q:'__facet:open'});
+  relaxChips.push({label:'🔄 처음부터', q:'__reset__'});
+  const inner = `<div class="bot-meta"><span class="meta-dot" style="background:var(--down)"></span>결과 없음</div>
+    <div class="bot-narrative">아쉽게도 지금 조건에 딱 맞는 공고를 찾지 못했어요. 아래에서 조건을 하나씩 넓혀보시거나, 직접 둘러보세요.</div>
+    <div class="final-note">📞 막막하시면 <b>중소기업 통합콜센터 1357</b>(평일 9~18시)로 문의하거나, <a href="https://www.bizinfo.go.kr" target="_blank" rel="noopener">기업마당 공식 검색</a>에서 직접 찾아보실 수 있어요.</div>`;
+  addBotPanel(inner, relaxChips);
+}
+
+// 추천 턴 렌더 (그룹 + 비교표 포함)
+function addBotAdvised(narrative, badges, bodyHtml, drillChips) {
+  const row = document.createElement('div');
+  row.className = 'chat-row';
+  let chipsHtml = drillChips.map(c => {
+    let q = '';
+    if (c.action === 'reset') q = '__reset__';
+    else if (c.action === 'deadline') q = '__deadline__';
+    else if (c.action === 'more') q = '__more__';
+    else if (c.action === 'nationwide') q = '__nationwide__';
+    else if (c.action === 'switchCat') q = `__switchCat:${c.value}`;
+    else q = c.label;
+    return `<button class="chip" data-q="${esc(q)}">${esc(c.label)}</button>`;
+  }).join('');
+
+  row.innerHTML = `
+    <div class="avatar bot">AI</div>
+    <div class="bubble bot">
+      <div class="bot-meta"><span class="meta-dot"></span>추천 완료 <span class="meta-badge">${esc(STATE.slots.category||'')}</span></div>
+      ${badges}
+      <div class="bot-narrative" style="white-space:pre-line">${esc(narrative)}</div>
+      ${bodyHtml}
+      <div class="followups">${chipsHtml}</div>
+    </div>`;
+  row.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => doQuery(btn.dataset.q));
+  });
+  row.querySelectorAll('.slot-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      STATE.slots[btn.dataset.slot] = null;
+      addUserBubble(btn.dataset.slot + ' 조건 해제');
+      processConversation();
+    });
+  });
+  document.getElementById('chatArea').appendChild(row);
+  scrollBottom();
+}
+
+function showMoreResults() {
+  const more = STATE.lastResults.slice(3, 8);
+  if (!more.length) return;
+  addUserBubble('더 보기');
+  addBotTurn(`${more.length}건을 더 보여드릴게요.`, more, [{label:'🔄 처음부터', q:'__reset__'}]);
+}
+
+// #14: 입력 활성/비활성
+function setInputEnabled(on) {
+  document.getElementById('qInput').disabled = !on;
+  document.getElementById('sendBtn').disabled = !on;
+}
+
+function submitFromInput() {
+  const v = document.getElementById('qInput').value.trim();
+  if (!v) return; // #12: 빈 입력 차단
+  doQuery(v);
+}
+
+document.getElementById('qInput').addEventListener('keydown', e => { if(e.key==='Enter') submitFromInput(); });
+document.getElementById('sendBtn').addEventListener('click', submitFromInput);
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+﻿algorithm,k,group_folds,prediction_strength_mean,prediction_strength_min
+gower_pam,8,5,0.206267,0.166667
+gower_hierarchical,5,5,0.494539,0.333333
+structured_kmeans,5,5,0.408493,0.283333
+text_tfidf_svd_kmeans,15,5,0.116032,0.095238
+sentence_embedding_kmeans,5,5,0.396646,0.266667
+lca,4,5,0.583353,0.320106

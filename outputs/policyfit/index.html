@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>정책핏 — 나에게 맞는 정책을 대화로</title>
+<meta name="description" content="검색이 아닌 진단. 몇 가지 질문에 답하면 나에게 딱 맞는 지원사업을 찾아드립니다.">
+<meta name="date" content="2026-06-04">
+
+<!-- Pretendard 폰트 -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
+<!-- CSS (디자인 시스템 P1) -->
+<link rel="stylesheet" href="policyfit.css?v=22">
+</head>
+<body>
+
+<!-- 비밀번호 게이트 (소프트 잠금 — 정적 사이트라 클라이언트 측) -->
+<div id="pf-gate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#F7F8FB;font-family:'Pretendard Variable',-apple-system,'Noto Sans KR',sans-serif">
+  <div id="pf-gate-card" style="width:min(360px,86vw);background:#fff;border:1px solid #E5E7EB;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,.08);padding:32px 24px;text-align:center">
+    <div style="font-size:30px;margin-bottom:10px">🔒</div>
+    <div style="font-size:19px;font-weight:700;color:#111827;margin-bottom:6px">정책핏</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:20px">접속하려면 비밀번호를 입력하세요</div>
+    <input id="pf-gate-input" type="password" inputmode="text" autocomplete="off" placeholder="비밀번호"
+      style="width:100%;padding:13px 14px;font-size:16px;border:1px solid #D1D5DB;border-radius:14px;outline:none;text-align:center;color:#111827;background:#F7F8FB">
+    <div id="pf-gate-err" style="height:18px;margin-top:8px;font-size:13px;color:#DC2626"></div>
+    <button id="pf-gate-btn" style="width:100%;margin-top:6px;padding:13px;font-size:16px;font-weight:600;color:#fff;background:#3182F6;border-radius:14px;border:none;cursor:pointer">입장하기</button>
+  </div>
+</div>
+<script>
+(function () {
+  var PW = "260609!", KEY = "pf_auth";
+  var gate = document.getElementById("pf-gate");
+  if (sessionStorage.getItem(KEY) === "1") { gate.remove(); return; }
+  document.body.style.overflow = "hidden";
+  var inp = document.getElementById("pf-gate-input"),
+      btn = document.getElementById("pf-gate-btn"),
+      err = document.getElementById("pf-gate-err"),
+      card = document.getElementById("pf-gate-card");
+  function fail() {
+    err.textContent = "비밀번호가 일치하지 않아요.";
+    card.style.transition = "transform .07s";
+    var seq = [-8, 8, -6, 6, -3, 0], i = 0;
+    (function shake() { if (i < seq.length) { card.style.transform = "translateX(" + seq[i++] + "px)"; setTimeout(shake, 45); } })();
+    inp.value = ""; inp.focus();
+  }
+  function submit() {
+    if (inp.value === PW) {
+      sessionStorage.setItem(KEY, "1");
+      document.body.style.overflow = "";
+      gate.style.transition = "opacity .2s"; gate.style.opacity = "0";
+      setTimeout(function () { gate.remove(); }, 200);
+    } else { fail(); }
+  }
+  btn.addEventListener("click", submit);
+  inp.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+  setTimeout(function () { inp.focus(); }, 100);
+})();
+</script>
+
+<div id="root"></div>
+
+<!--
+  파일 구조:
+  ├── index.html           ← 이 파일 (진입점 shell)
+  ├── policyfit.css         ← 전체 스타일 (P1 디자인 시스템)
+  ├── policyfit-config.js   ← 질문/유형/매칭 로직 (순수 JS)
+  ├── policyfit-ui.jsx      ← 아이콘·공통 컴포넌트 (React/JSX)
+  ├── policyfit-app.jsx     ← 화면·라우팅 (React/JSX)
+  └── ../policyfit-db.json  ← 799건 정책 데이터 (build-policyfit-db.py 산출)
+
+  실행: python -m http.server 8090 --directory outputs
+  접속: http://localhost:8090/policyfit/index.html
+-->
+
+<!-- React 18 (CDN) -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<!-- Babel (JSX → JS 변환, 프로토타입용) -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- 1. 데이터/설정 (순수 JS — Babel 불필요) -->
+<script src="policyfit-config.js?v=22"></script>
+
+<!-- 2. UI 컴포넌트 (JSX) -->
+<script type="text/babel" src="policyfit-ui.jsx?v=22" data-type="module"></script>
+
+<!-- 3. 앱 화면 + 라우팅 (JSX) -->
+<script type="text/babel" src="policyfit-app.jsx?v=22" data-type="module"></script>
+
+</body>
+</html>

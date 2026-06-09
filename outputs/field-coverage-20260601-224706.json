@@ -1,0 +1,110 @@
+{
+  "runId": "20260601-224706",
+  "totalNotices": 795,
+  "classifications": {
+    "지원대상": {
+      "grade": "always",
+      "api": 795,
+      "api_pct": 100.0,
+      "html": 0,
+      "html_pct": 0.0,
+      "attach": 660,
+      "attach_pct": 83.0,
+      "any": 795,
+      "any_pct": 100.0,
+      "struct": 795,
+      "struct_pct": 100.0
+    },
+    "지원내용": {
+      "grade": "always",
+      "api": 795,
+      "api_pct": 100.0,
+      "html": 795,
+      "html_pct": 100.0,
+      "attach": 668,
+      "attach_pct": 84.0,
+      "any": 795,
+      "any_pct": 100.0,
+      "struct": 795,
+      "struct_pct": 100.0
+    },
+    "신청기간": {
+      "grade": "always",
+      "api": 795,
+      "api_pct": 100.0,
+      "html": 795,
+      "html_pct": 100.0,
+      "attach": 515,
+      "attach_pct": 64.8,
+      "any": 795,
+      "any_pct": 100.0,
+      "struct": 795,
+      "struct_pct": 100.0
+    },
+    "신청방법": {
+      "grade": "always",
+      "api": 795,
+      "api_pct": 100.0,
+      "html": 795,
+      "html_pct": 100.0,
+      "attach": 490,
+      "attach_pct": 61.6,
+      "any": 795,
+      "any_pct": 100.0,
+      "struct": 795,
+      "struct_pct": 100.0
+    },
+    "제출서류": {
+      "grade": "attachment_only",
+      "api": 0,
+      "api_pct": 0.0,
+      "html": 0,
+      "html_pct": 0.0,
+      "attach": 511,
+      "attach_pct": 64.3,
+      "any": 511,
+      "any_pct": 64.3,
+      "struct": 0,
+      "struct_pct": 0.0
+    },
+    "제외조건": {
+      "grade": "attachment_only",
+      "api": 0,
+      "api_pct": 0.0,
+      "html": 0,
+      "html_pct": 0.0,
+      "attach": 489,
+      "attach_pct": 61.5,
+      "any": 489,
+      "any_pct": 61.5,
+      "struct": 0,
+      "struct_pct": 0.0
+    },
+    "문의처": {
+      "grade": "always",
+      "api": 794,
+      "api_pct": 99.9,
+      "html": 794,
+      "html_pct": 99.9,
+      "attach": 528,
+      "attach_pct": 66.4,
+      "any": 794,
+      "any_pct": 99.9,
+      "struct": 794,
+      "struct_pct": 99.9
+    },
+    "유의사항": {
+      "grade": "attachment_only",
+      "api": 0,
+      "api_pct": 0.0,
+      "html": 0,
+      "html_pct": 0.0,
+      "attach": 380,
+      "attach_pct": 47.8,
+      "any": 380,
+      "any_pct": 47.8,
+      "struct": 0,
+      "struct_pct": 0.0
+    }
+  }
+}

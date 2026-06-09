@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방법론 독립 검증 리포트</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:#F5F2EC;color:#1A1916;line-height:1.75}
+.w{max-width:960px;margin:0 auto;padding:32px 24px 60px}
+h1{font-size:24px;font-weight:700;color:#2D4540;margin-bottom:4px}
+h2{font-size:18px;font-weight:600;color:#2D4540;margin:32px 0 12px;padding-bottom:6px;border-bottom:2px solid #E8E3D7}
+h3{font-size:15px;font-weight:600;margin:20px 0 8px;color:#3a4540}
+p,li{font-size:14px;margin-bottom:6px}
+ul,ol{padding-left:20px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th,td{border:1px solid #E8E3D7;padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#E8F0ED;font-weight:600;color:#2D4540}
+.pass{color:#166534;font-weight:600}.fail{color:#a84b40;font-weight:600}.warn{color:#92400e;font-weight:600}
+.box{background:#fff;border:1px solid #E8E3D7;border-radius:12px;padding:18px 20px;margin:16px 0}
+.box-warn{border-left:4px solid #ca8a04;background:#fffdf8}
+.box-good{border-left:4px solid #16a34a;background:#f0fdf4}
+.box-critical{border-left:4px solid #dc2626;background:#fef2f2}
+code{background:#f4f0e6;padding:2px 6px;border-radius:4px;font-size:12px}
+.ref{font-size:12px;color:#6F6B62;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="w">
+
+<h1>정책상품 ML 분류 방법론 — 독립 검증 리포트</h1>
+<p style="color:#6F6B62">검증일: 2026-06-02 | 검증자: Claude (독립 재현 + 비판적 검토)</p>
+
+<h2>0. 재현성 검증 결과</h2>
+
+<table>
+<tr><th>검증 항목</th><th>결과</th><th>비고</th></tr>
+<tr><td>Python 환경</td><td class="pass">PASS</td><td>3.11.9 + numpy/pandas/scipy/sklearn/statsmodels</td></tr>
+<tr><td>지식DB 회귀 테스트</td><td class="pass">PASS</td><td>8 tests, 0 failures</td></tr>
+<tr><td>기존 산출물 검증</td><td class="pass">PASS</td><td>795건 ID 일치, 가중치 정확, 요약 통계 일치</td></tr>
+<tr><td>격리 폴더 재생성</td><td class="pass">PASS</td><td>동일 환경에서 재실행</td></tr>
+<tr><td>SHA-256 해시 비교</td><td class="pass">PASS</td><td>JSON·CSV 모두 완전 동일 — <strong>결정론적 재현</strong></td></tr>
+</table>
+
+<div class="box box-good">
+<strong>재현성 판정:</strong> 동일 입력(knowledge-db.json)에서 격리 폴더에 재생성한 결과가 해시까지 완전히 동일합니다. 사전 배치 로직은 결정론적이며 재현 가능합니다.
+</div>
+
+<h2>1. 중대한 문제 (0건)</h2>
+
+<p>현재 완료된 범위(지식DB 구축 + 중복·반복사업 사전 배치)에서 <strong>중대한 결함은 발견되지 않았습니다.</strong></p>
+
+<h2>2. 보완이 필요한 문제 (5건)</h2>
+
+<div class="box box-warn">
+<h3>B-1. content_repeat_group_id 기준이 지나치게 보수적</h3>
+<p>현재 795건 중 내용 반복 후보 그룹이 단 <strong>2건</strong>. 그런데 유사 제목 후보(fuzzyReviewCandidates)는 <strong>157건</strong>. 즉 제목은 매우 유사하지만 구조화 필드 비교에서 걸리지 않는 케이스가 대량 존재합니다.</p>
+<p>예: IP창출 종합패키지 공고가 17개 지역에서 거의 동일한 내용으로 나오지만 content_repeat으로 잡히지 않음.</p>
+<p><strong>권장:</strong> content_repeat 판정 시 구조화 필드 일치 외에 <code>support.summary</code> 또는 <code>support.purposes</code> 배열의 Jaccard 유사도를 추가 기준으로 사용. 임계값 0.8 이상이면 후보 포함.</p>
+<p class="ref">관련: Hao et al. (2021) — 전자상거래 상품 카테고리 매칭에서 유사 상품 식별 시 다중 필드 유사도 결합을 권장.</p>
+</div>
+
+<div class="box box-warn">
+<h3>B-2. family_weight = 1/n 민감도 분석의 한계</h3>
+<p>1/n 가중치는 가장 단순한 과대대표 보정이지만, <strong>사업군 크기 분포가 불균등</strong>합니다 (크기 2~8, 대부분 2). 이 경우:</p>
+<ul>
+<li>크기 8 사업군의 각 공고는 0.125의 가중치를 받고</li>
+<li>크기 2 사업군의 각 공고는 0.5의 가중치를 받아</li>
+<li>단독 공고(가중치 1.0)와의 상대적 영향력 격차가 큼</li>
+</ul>
+<p><strong>권장:</strong> 민감도 분석에 3가지 가중 스킴 비교: (1) 비가중, (2) 1/n, (3) 1/√n. 결론이 세 가지 모두에서 안정적인지 보고.</p>
+<p class="ref">관련: Hennig (2007) — 군집 안정성 평가에서 가중 방식에 따른 민감도를 보고하는 것이 robust한 결론을 위해 필요.</p>
+</div>
+
+<div class="box box-warn">
+<h3>B-3. 문장 임베딩 군집화의 위치 재고 필요</h3>
+<p>현재 문장 임베딩 군집화를 "민감도 분석"으로만 위치시켰는데, <strong>구조화 속성만으로는 포착하지 못하는 정책 의도의 유사성</strong>이 상당할 수 있습니다.</p>
+<p>예: "경영안정자금"과 "긴급 융자 지원"은 구조화 속성(금액, 대상)이 비슷하지만 정책 목적이 다름. 반대로 "IP창출 종합패키지"와 "브랜드 디자인 지원"은 속성이 달라도 목적이 유사.</p>
+<p><strong>권장:</strong> 문장 임베딩을 민감도 분석이 아니라 <strong>대등한 후보 방법</strong>으로 올리되, "구조화 속성 기반 vs 텍스트 의미 기반"의 일치도(ARI)를 명시적으로 보고.</p>
+<p class="ref">관련: 텍스트-구조 혼합 taxonomy는 정보검색 분야에서 활발히 연구 중. 특히 짧은 문서(short text) 군집화에서 임베딩 기반 방법이 구조화 속성보다 우수한 경우가 보고됨.</p>
+</div>
+
+<div class="box box-warn">
+<h3>B-4. Bootstrap Jaccard 기준치의 근거 명시 필요</h3>
+<p>0.75를 "권장", 0.85를 "안정적" 기준으로 두었는데, 이 수치의 출처를 명시해야 합니다.</p>
+<p><strong>사실:</strong> Hennig (2007)는 Jaccard ≥ 0.75를 "dissolved cluster"와 구분하는 기준으로 사용했고, Ben-Hur et al. (2002)는 안정성 커브의 기울기 변화점을 기준으로 제안. 고정 수치가 아니라 데이터 의존적.</p>
+<p><strong>권장:</strong> 0.75/0.85를 쓰되 "Hennig(2007) 기준에 따르며, 데이터 특성상 조정이 필요할 수 있다"고 명시.</p>
+</div>
+
+<div class="box box-warn">
+<h3>B-5. 다음 단계 평가 지표에 빠진 항목</h3>
+<p>현재 계획된 지표: Silhouette, Davies-Bouldin, Calinski-Harabasz, Bootstrap Jaccard, ARI, NMI, BIC/entropy/BLRT.</p>
+<p><strong>추가 권장:</strong></p>
+<ul>
+<li><strong>Prediction Strength</strong> (Tibshirani & Walther, 2005): 학습 데이터에서 찾은 군집이 검증 데이터에서 재현되는지 직접 측정. split_group_id를 활용한 cross-validation과 자연스럽게 결합.</li>
+<li><strong>V-measure</strong> (Rosenberg & Hirschberg, 2007): 기존 행정 분류(category/subcategory)와의 정보 이론적 비교. 전문가 라벨이 없어도 기존 분류와의 관계를 정량화.</li>
+<li><strong>군집 프로파일링 테이블</strong>: 각 군집의 주요 속성 분포를 교차표로 제시. 구조적 일관성을 정량 지표와 함께 정성적으로도 검증.</li>
+</ul>
+</div>
+
+<h2>3. 타당한 부분 (7건)</h2>
+
+<div class="box box-good">
+<h3>T-1. 삭제하지 않고 통제하는 설계가 올바름</h3>
+<p>반복 공고를 삭제하면 정보 손실이 발생하고, 삭제 기준의 정당성을 증명해야 합니다. <code>publication_group_id</code>, <code>content_repeat_group_id</code>, <code>program_family_id</code>로 관계를 보존하면서 <code>family_weight</code>로 영향을 통제하는 것은 <strong>투명하고 재현 가능한 전처리</strong>입니다.</p>
+<p class="ref">학술적으로 "data cleaning by annotation, not deletion"은 reproducible research의 원칙과 일치.</p>
+</div>
+
+<div class="box box-good">
+<h3>T-2. split_group_id = program_family_id 설계가 적절</h3>
+<p>같은 사업군의 공고가 train/validation에 동시에 들어가면 데이터 누출(data leakage)이 발생합니다. <code>split_group_id</code>를 사업군 단위로 설정하면 Group K-Fold와 동일한 효과를 얻을 수 있고, 이는 <strong>표준적인 leakage 방지 기법</strong>입니다.</p>
+<p class="ref">관련: scikit-learn의 GroupKFold와 동일한 원리. 의학/임상 연구에서 환자 단위 분할이 보편적인 것과 같은 논리.</p>
+</div>
+
+<div class="box box-good">
+<h3>T-3. 전문가 라벨 없이 구조적 일관성·재현성으로 제한한 것이 적절</h3>
+<p>비지도 학습에서 외부 라벨 없이 평가할 수 있는 것은 <strong>내부 유효성(internal validity)</strong>뿐입니다. Rousseeuw (1987), Hennig (2007)의 프레임워크는 정확히 이 상황을 위해 설계되었습니다.</p>
+<p>"행정적·법적 완전성을 주장하지 않는다"는 제한은 <strong>올바른 과학적 겸손</strong>이며, 이를 명시한 것 자체가 방법론의 신뢰도를 높입니다.</p>
+</div>
+
+<div class="box box-good">
+<h3>T-4. 복수 비지도 방법 비교 설계가 학술적으로 건전</h3>
+<p>LCA, Gower+PAM, 계층형 군집화, 문장 임베딩 군집화를 동일 데이터에서 비교하는 설계는 다음 학술적 원칙과 일치합니다:</p>
+<ul>
+<li>Nylund et al. (2007): 단일 방법의 결과를 믿지 않고 복수 기준으로 모형을 비교</li>
+<li>범주형+수치형 혼합 데이터에 Gower distance는 <strong>표준적 선택</strong> (Gower, 1971)</li>
+<li>PAM은 k-medoids로서 이상치에 robust하고, 대표 관측치(medoid)가 직접 해석 가능</li>
+</ul>
+</div>
+
+<div class="box box-good">
+<h3>T-5. 정책을 "상품"으로 프레이밍한 것이 선행연구와 연결 가능</h3>
+<p>정책공고를 속성(금액, 대상, 제외조건, 용도) 기반으로 구조화하고 taxonomy를 탐색하는 접근은 Hao et al. (2021)의 전자상거래 상품 분류 방법론과 유사합니다. 이 프레이밍이 사용자(소상공인) 관점에서 탐색·비교·추천을 설계하는 실용적 근거가 됩니다.</p>
+</div>
+
+<div class="box box-good">
+<h3>T-6. 검증 스크립트가 독립적이고 자동화됨</h3>
+<p><code>validate-ml-preallocation.py</code>는 생성 스크립트와 완전히 분리되어 있고, 모든 불변식(invariant)을 코드로 검증합니다. SHA-256 비교로 비트 수준 재현성을 확인한 것은 계산 재현성(computational reproducibility)의 최고 기준입니다.</p>
+</div>
+
+<div class="box box-good">
+<h3>T-7. 자동 병합을 하지 않은 보수적 판단이 올바름</h3>
+<p>"일반 스마트공장과 AI트랙은 추출 필드가 비슷해도 의미 차이가 있을 수 있다"는 판단으로 자동 삭제를 하지 않은 것은 올바릅니다. <strong>False negative(놓치는 것)보다 false positive(잘못 합치는 것)의 비용이 더 크기 때문</strong>입니다.</p>
+</div>
+
+<h2>4. 권장 수정안</h2>
+
+<table>
+<tr><th>#</th><th>항목</th><th>우선순위</th><th>권장 조치</th></tr>
+<tr><td>R-1</td><td>content_repeat 기준 확장</td><td>높음</td><td>purposes Jaccard ≥ 0.8 + summary cosine ≥ 0.9 → content_repeat 후보 추가</td></tr>
+<tr><td>R-2</td><td>가중 스킴 다변화</td><td>중간</td><td>1/n 외에 1/√n, binary(1 or 0.5) 3가지 비교</td></tr>
+<tr><td>R-3</td><td>임베딩 군집화 위치 상향</td><td>중간</td><td>민감도 분석 → 대등 후보로. 구조 vs 텍스트 ARI 보고</td></tr>
+<tr><td>R-4</td><td>Bootstrap Jaccard 출처 명시</td><td>낮음</td><td>Hennig(2007) 인용 + "데이터 의존적 조정 가능" 주석</td></tr>
+<tr><td>R-5</td><td>Prediction Strength 추가</td><td>중간</td><td>split_group_id 기반 cross-validation과 결합</td></tr>
+<tr><td>R-6</td><td>V-measure로 기존 분류 비교</td><td>낮음</td><td>category/subcategory와의 정보 이론적 관계 정량화</td></tr>
+<tr><td>R-7</td><td>군집 프로파일링 테이블</td><td>높음</td><td>각 군집의 속성 분포 교차표. 해석 가능성 확보</td></tr>
+</table>
+
+<h2>5. 다음 구현 우선순위</h2>
+
+<ol>
+<li><strong>[즉시]</strong> R-1: content_repeat 기준을 purposes Jaccard로 확장 → 157건 유사 후보 중 상당수가 자동 후보로 들어올 것</li>
+<li><strong>[ML 벤치마크 시]</strong> R-5: Prediction Strength를 split_group_id 기반 CV와 결합 구현</li>
+<li><strong>[ML 벤치마크 시]</strong> R-7: 군집 프로파일링 테이블 자동 생성</li>
+<li><strong>[ML 벤치마크 시]</strong> R-2: 3가지 가중 스킴 비교</li>
+<li><strong>[ML 벤치마크 시]</strong> R-3: 임베딩 군집화를 대등 후보로 구현</li>
+<li><strong>[리포트 작성 시]</strong> R-4, R-6: 기준 출처 명시, V-measure 추가</li>
+</ol>
+
+<h2>6. 학술적 인용 가능성 평가</h2>
+
+<div class="box">
+<h3>현재 주장 가능한 수준</h3>
+<p>"795건의 정책공고를 구조화하고, 중복·반복사업의 영향을 통제하는 사전 배치를 수행했으며, 그 과정이 결정론적으로 재현 가능함을 독립 검증으로 확인했다."</p>
+<p>이는 <strong>방법론 논문의 데이터 전처리 절</strong>에 해당하는 수준이며, 다음 조건이 충족되면 학술적으로 인용 가능합니다:</p>
+<ul>
+<li>✅ 재현성 확보 (SHA-256 비트 수준 일치)</li>
+<li>✅ 검증 스크립트 독립 (생성과 검증 분리)</li>
+<li>✅ 방법론 참고문헌 제시 (Rousseeuw, Hennig, Nylund 등)</li>
+<li>⚠️ 보완 필요: content_repeat 기준 확장 (B-1)</li>
+<li>⚠️ 보완 필요: 가중 스킴 다변화 (B-2)</li>
+</ul>
+</div>
+
+<div class="box">
+<h3>다음 단계 완료 후 주장 가능한 수준</h3>
+<p>"복수의 비지도 분류 방법을 동일 데이터에서 비교하고, 반복사업의 영향을 통제한 결과, 선택한 정책상품 taxonomy 후보는 응집도, 분리도, 재표집 안정성, 하위 표본 재현성 측면에서 일관된 구조를 보였다."</p>
+<p>이는 <strong>학회 발표 또는 학술지 기고</strong> 수준에 해당합니다.</p>
+</div>
+
+<h2>7. 참고문헌</h2>
+<ul style="font-size:13px;color:#3a4540">
+<li>Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. <em>Journal of Computational and Applied Mathematics</em>, 20, 53-65.</li>
+<li>Hennig, C. (2007). Cluster-wise assessment of cluster stability. <em>Computational Statistics & Data Analysis</em>, 52(1), 258-271.</li>
+<li>Ben-Hur, A., Elisseeff, A., & Guyon, I. (2002). A stability based method for discovering structure in clustered data. <em>Pacific Symposium on Biocomputing</em>, 6-17.</li>
+<li>Nylund, K. L., Asparouhov, T., & Muthén, B. O. (2007). Deciding on the number of classes in latent class analysis. <em>Structural Equation Modeling</em>, 14(4), 535-569.</li>
+<li>Hao, Y., et al. (2021). An evaluation and annotation methodology for product category matching in e-commerce. <em>Computers in Industry</em>, 131, 103487.</li>
+<li>Tibshirani, R., & Walther, G. (2005). Cluster validation by prediction strength. <em>Journal of Computational and Graphical Statistics</em>, 14(3), 511-528.</li>
+<li>Gower, J. C. (1971). A general coefficient of similarity and some of its properties. <em>Biometrics</em>, 27(4), 857-871.</li>
+<li>Rosenberg, A., & Hirschberg, J. (2007). V-Measure: A conditional entropy-based external cluster evaluation measure. <em>EMNLP-CoNLL</em>, 410-420.</li>
+</ul>
+
+</div>
+</body>
+</html>
