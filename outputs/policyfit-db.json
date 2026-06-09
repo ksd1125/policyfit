@@ -15781,12 +15781,8 @@
     "executor": "한국생명공학연구원",
     "category": "시설·환경",
     "tags": [
-      "etc",
-      "food",
       "maker",
-      "online",
-      "retail",
-      "service"
+      "etc"
     ],
     "stages": [
       "y1",
@@ -15835,7 +15831,8 @@
     "amountTargetCountValue": null,
     "amountPerApplicant": null,
     "amountPerApplicantValue": null,
-    "amountSource": "none_llm"
+    "amountSource": "none_llm",
+    "industryAll": false
   },
   {
     "id": "PBLN_000000000119038",
