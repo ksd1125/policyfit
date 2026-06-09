@@ -785,8 +785,81 @@ function composeReply(answers, text, prevTop) {
 /** 숫자 포맷 */
 const krw = n => (n || 0).toLocaleString("ko-KR");
 
+/* ════════════════════════════════════════════════════════════════
+   생성형 해설 (3단계) — 저장된 Gemini 키로 룰베이스 답변을 자연어로 보강.
+   환각방지 원칙:
+   - cites(하드필터 결과)는 절대 바꾸지 않음. Gemini는 "설명"만 다시 씀.
+   - 인용된 정책의 DB 필드만 컨텍스트로 제공(grounding 강제).
+   - 키 없음/오류/타임아웃 → 호출자가 룰베이스 텍스트 유지(graceful).
+   상권챗봇과 동일 키(gemini_api_key)·모델(gemini-2.5-flash) 규약.
+   ════════════════════════════════════════════════════════════════ */
+function geminiKey() {
+  try { return (localStorage.getItem("gemini_api_key") || "").trim(); } catch (e) { return ""; }
+}
+function geminiEnabled() { return !!geminiKey(); }
+
+// 인용 정책만 근거로 한 그라운딩 프롬프트 (없는 정보 생성 금지)
+function buildGroundingPrompt(userText, policies, baseAnswer) {
+  const ctx = (policies || []).slice(0, 3).map((p, i) => {
+    const amt = (window.amountText ? window.amountText(p) : "") || p.amountPerApplicant || p.amountLabel || "공고 확인";
+    return `${i + 1}. ${p.title}\n   - 목적: ${p.purpose || "-"}\n   - 지원규모: ${amt}\n   - 대상: ${p.targetDetail || "-"}\n   - 기간: ${p.period || "상시/공고 확인"}`;
+  }).join("\n");
+  return [
+    "당신은 소상공인 정책을 쉽게 안내하는 한국어 도우미입니다.",
+    "아래 [검색된 정책]만을 근거로, 사용자 질문에 토스처럼 친근한 존댓말로 2~3문장 답하세요.",
+    "",
+    "규칙(반드시 지킬 것):",
+    "- [검색된 정책]에 없는 정책·금액·조건·날짜를 절대 지어내지 마세요.",
+    "- 금액은 제공된 표기를 그대로 쓰세요(임의 계산·반올림 금지).",
+    "- 정책명을 1~2개 자연스럽게 언급하되 나열식이 아닌 대화체로.",
+    "- 불확실하면 '공고 원문에서 확인하세요'라고 안내.",
+    "- 2~3문장, 이모지는 최대 1개, 마크다운/목록 쓰지 마세요.",
+    "",
+    `[사용자 질문]\n${userText || "내게 맞는 지원사업 추천"}`,
+    "",
+    `[검색된 정책]\n${ctx || "(없음)"}`,
+    "",
+    `[기존 요약(어조 참고용, 사실은 위 정책에서만)]\n${baseAnswer || ""}`,
+  ].join("\n");
+}
+
+// Gemini 호출 — 성공 시 텍스트, 실패/타임아웃 시 null
+async function callGemini(prompt, opts) {
+  const key = geminiKey();
+  if (!key) return null;
+  const model = (opts && opts.model) || "gemini-2.5-flash";
+  const ctrl = new AbortController();
+  const to = setTimeout(() => ctrl.abort(), (opts && opts.timeoutMs) || 9000);
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: ctrl.signal,
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.5, maxOutputTokens: 256 },
+        }),
+      }
+    );
+    clearTimeout(to);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join("").trim();
+    return text && text.length >= 6 ? text : null;
+  } catch (e) { clearTimeout(to); return null; }
+}
+
+// 룰베이스 답변을 Gemini로 보강 — cites는 호출자가 그대로 유지
+async function enhanceReply(userText, citedPolicies, baseAnswer) {
+  if (!geminiEnabled() || !citedPolicies || !citedPolicies.length) return null;
+  return await callGemini(buildGroundingPrompt(userText, citedPolicies, baseAnswer));
+}
+
 /* ── Export to window ── */
 Object.assign(window, {
+  geminiKey, geminiEnabled, buildGroundingPrompt, callGemini, enhanceReply,
   USER_TYPES, TYPE_PROFILE, QUESTIONS, CONDLABEL, CAT_ICON, INDUSTRY_MATCH_TABLE, REGION_MATCH_TABLE,
   computeDday, questionsForType, computeMatches, optionCount, parseSeed, composeReply, krw,
   lexicalScores, hybridRank, tokenize, matchIndustry, matchRegion, buildMatchingNote, regionSpecificHit,

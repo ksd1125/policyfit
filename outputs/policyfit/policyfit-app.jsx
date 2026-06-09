@@ -137,7 +137,19 @@ function Diagnose({ userType, seed, prefill, questions, onComplete, onBack }) {
         const ranked = hybridRank(computeMatches(merged).filter(p => p.pscore > 0), text);
         const isFollowUp = !hasNew && /쉬운|쉽게|간단|바로|당장|가능|서류|준비물|구비|필요한|마감|언제|기간|급한|더|다른|또|추가|나머지|금액|얼마|지원금/.test(text);
         const r = composeReply(merged, isFollowUp ? text : "", ranked);
-        aiMsg = { type: "chatai", text: r.text, cites: r.cites || [], zero: r.zero, ans: merged };
+        const enable = window.geminiEnabled && window.geminiEnabled() && (r.cites && r.cites.length) && !r.zero;
+        const msgId = "g" + Date.now() + Math.random().toString(36).slice(2, 6);
+        aiMsg = { type: "chatai", id: msgId, text: r.text, cites: r.cites || [], zero: r.zero, ans: merged, gen: enable ? "pending" : null };
+        // 키가 있으면: 인용된 정책만 근거로 자연어 보강 (cites는 불변, 실패 시 룰베이스 유지)
+        if (enable) {
+          const cited = (r.cites || []).map(pid => (window.POLICIES || []).find(p => p.id === pid)).filter(Boolean);
+          window.enhanceReply(text, cited, r.text).then(out => {
+            setMsgs(ms => ms.map(mm => mm.id === msgId
+              ? (out ? { ...mm, text: out, gen: "done" } : { ...mm, gen: null })
+              : mm));
+            scrollDown();
+          });
+        }
       }
       setMsgs(m => [...m, aiMsg]);
       setDone(true); scrollDown();
@@ -223,7 +235,11 @@ function Diagnose({ userType, seed, prefill, questions, onComplete, onBack }) {
           if (m.type === "chatme") return <div className="bubble-row me fade" key={i}><div className="bubble me">{m.text}</div></div>;
           if (m.type === "chatai") return (
             <div className="fade" key={i}>
-              <div className="bubble-row"><Avatar /><div className="bubble ai" style={{ maxWidth: "92%" }}>{m.text}</div></div>
+              <div className="bubble-row"><Avatar /><div className="bubble ai" style={{ maxWidth: "92%" }}>
+                {m.text}
+                {m.gen === "pending" && <span style={{ marginLeft: 6, fontSize: 12, color: "var(--muted)" }}>✨ 다듬는 중…</span>}
+                {m.gen === "done" && <span style={{ display: "block", marginTop: 6, fontSize: 11, color: "var(--accent)" }}>✨ AI 생성 · 출처는 아래 카드에서 확인</span>}
+              </div></div>
               {m.cites && m.cites.length > 0 && (
                 <div className="cite-list">
                   {m.cites.map(pid => {
