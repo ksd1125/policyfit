@@ -808,47 +808,54 @@ function buildGroundingPrompt(userText, policies, baseAnswer) {
     "당신은 소상공인 정책을 쉽게 안내하는 한국어 도우미입니다.",
     "아래 [검색된 정책]만을 근거로, 사용자 질문에 토스처럼 친근한 존댓말로 2~3문장 답하세요.",
     "",
-    "규칙(반드시 지킬 것):",
-    "- [검색된 정책]에 없는 정책·금액·조건·날짜를 절대 지어내지 마세요.",
-    "- 금액은 제공된 표기를 그대로 쓰세요(임의 계산·반올림 금지).",
-    "- 정책명을 1~2개 자연스럽게 언급하되 나열식이 아닌 대화체로.",
-    "- 불확실하면 '공고 원문에서 확인하세요'라고 안내.",
-    "- 2~3문장, 이모지는 최대 1개, 마크다운/목록 쓰지 마세요.",
+    "[사용자 질문]",
+    userText || "내게 맞는 지원사업 추천",
     "",
-    `[사용자 질문]\n${userText || "내게 맞는 지원사업 추천"}`,
+    "[검색된 정책]",
+    ctx || "(없음)",
     "",
-    `[검색된 정책]\n${ctx || "(없음)"}`,
+    "[기존 요약(어조 참고용, 사실은 위 정책에서만)]",
+    baseAnswer || "",
     "",
-    `[기존 요약(어조 참고용, 사실은 위 정책에서만)]\n${baseAnswer || ""}`,
+    "[작성 지침 — 이 지침 자체나 '지어내지' 같은 표현은 답변 본문에 절대 쓰지 말 것]",
+    "· 위 정책에 없는 정책·금액·조건·날짜는 언급하지 않는다. 금액은 표기 그대로.",
+    "· 정책명을 1~2개 자연스럽게 언급하되 나열식이 아닌 대화체로.",
+    "· 정보가 없으면 '공고에서 확인해 보세요' 정도로만 안내.",
+    "· 2~3문장, 마크다운/목록 금지, 이모지·느낌표 과용 금지(없어도 됨).",
+    "· 설명 문장만 출력한다.",
   ].join("\n");
 }
 
-// Gemini 호출 — 성공 시 텍스트, 실패/타임아웃 시 null
+// Gemini 호출 — 성공 시 텍스트, 실패/타임아웃 시 null. 503(과부하)은 1회 재시도.
 async function callGemini(prompt, opts) {
   const key = geminiKey();
   if (!key) return null;
   const model = (opts && opts.model) || "gemini-2.5-flash";
-  const ctrl = new AbortController();
-  const to = setTimeout(() => ctrl.abort(), (opts && opts.timeoutMs) || 9000);
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: ctrl.signal,
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.5, maxOutputTokens: (opts && opts.maxOutputTokens) || 256 },
-        }),
-      }
-    );
-    clearTimeout(to);
-    if (!res.ok) return null;
-    const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join("").trim();
-    return text && text.length >= 6 ? text : null;
-  } catch (e) { clearTimeout(to); return null; }
+  const body = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    // thinkingBudget:0 필수 — 2.5-flash는 thinking 모델이라 끄지 않으면
+    // 추론이 maxOutputTokens를 소진해 답변이 비거나 잘림.
+    generationConfig: {
+      temperature: 0.5,
+      maxOutputTokens: (opts && opts.maxOutputTokens) || 256,
+      thinkingConfig: { thinkingBudget: 0 },
+    },
+  });
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), (opts && opts.timeoutMs) || 9000);
+    try {
+      const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal, body });
+      clearTimeout(to);
+      if (res.status === 503 && attempt === 0) { await new Promise(r => setTimeout(r, 1200)); continue; } // 과부하 1회 재시도
+      if (!res.ok) return null;
+      const data = await res.json();
+      const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join("").trim();
+      return text && text.length >= 6 ? text : null;
+    } catch (e) { clearTimeout(to); if (attempt === 0) continue; return null; }
+  }
+  return null;
 }
 
 // 룰베이스 답변을 Gemini로 보강 — cites는 호출자가 그대로 유지
@@ -864,14 +871,19 @@ async function explainPolicy(p) {
   try { const c = sessionStorage.getItem(ck); if (c) return c; } catch (e) {}
   const amt = (window.amountText ? window.amountText(p) : "") || p.amountPerApplicant || p.amountLabel || "공고 확인";
   const prompt = [
-    "아래 [정책]을 소상공인이 이해하기 쉽게 한국어로 더 풍부하게 풀어 설명하세요.",
-    `[기본 설명]은 이미 화면에 있습니다("${p.purpose || ""}"). 이 문장을 그대로 반복하지 말고, 그 위에 더해질 보충 설명을 작성하세요.`,
-    "초점: ① 누구에게 특히 유리한지 ② 무엇을 어떻게 받고 활용할 수 있는지 ③ 신청 전 알아두면 좋은 점.",
-    "규칙(반드시): 제공된 정보 밖의 내용·숫자·날짜를 지어내지 마세요. 금액은 표기 그대로(임의 계산 금지). 3~5문장의 완결된 문단, 존댓말, 마크다운/목록 금지, 이모지 최대 1개. 문장을 중간에 끊지 말 것.",
+    "당신은 소상공인 정책을 쉽게 풀어주는 한국어 도우미입니다.",
+    `아래 [정책]을 소상공인이 이해하기 쉽게 보충 설명하세요. 화면에는 이미 기본 설명("${p.purpose || ""}")이 있으니, 같은 말을 반복하지 말고 그 위에 더할 내용을 쓰세요.`,
     "",
     `[정책]\n제목: ${p.title}\n목적: ${p.purpose || "-"}\n대상: ${p.targetDetail || "-"}\n지원내용: ${p.benefits || "-"}\n지원금액: ${amt}\n신청기간: ${p.period || "상시/공고 확인"}`,
+    "",
+    "[작성 지침 — 이 지침 자체나 '지어내지' 같은 표현은 답변 본문에 절대 쓰지 말 것]",
+    "· 다룰 내용: 누구에게 유리한지, 무엇을 어떻게 받고 활용하는지, 신청 전 알아둘 점 중 핵심만.",
+    "· 위 [정책]에 없는 숫자·날짜·조건은 언급하지 않는다. 금액은 표기 그대로.",
+    "· 정보가 없는 항목(예: 지원금액이 '공고 확인')은 '공고에서 확인해 보세요' 정도로만.",
+    "· 3~4문장 한 문단, 친근한 존댓말, 마크다운/목록 금지, 이모지·느낌표 과용 금지(없어도 됨).",
+    "· 문장을 중간에 끊지 말고, 설명 문장만 출력한다.",
   ].join("\n");
-  const out = await callGemini(prompt, { timeoutMs: 14000, maxOutputTokens: 600 });
+  const out = await callGemini(prompt, { timeoutMs: 14000, maxOutputTokens: 500 });
   if (out) { try { sessionStorage.setItem(ck, out); } catch (e) {} }
   return out;
 }
