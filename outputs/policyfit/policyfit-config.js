@@ -864,13 +864,14 @@ async function explainPolicy(p) {
   try { const c = sessionStorage.getItem(ck); if (c) return c; } catch (e) {}
   const amt = (window.amountText ? window.amountText(p) : "") || p.amountPerApplicant || p.amountLabel || "공고 확인";
   const prompt = [
-    "아래 [정책]을 소상공인이 이해하기 쉽게 한국어로 풀어 설명하세요.",
-    "규칙(반드시): 제공된 정보 밖의 내용·숫자·날짜를 지어내지 마세요. 금액은 표기 그대로(임의 계산 금지). 3~4문장, 존댓말, 마크다운/목록 금지, 이모지 최대 1개.",
-    "초점: ① 이 사업이 한마디로 무엇인지 ② 누구에게 특히 유리한지 ③ 무엇을 받을 수 있는지.",
+    "아래 [정책]을 소상공인이 이해하기 쉽게 한국어로 더 풍부하게 풀어 설명하세요.",
+    `[기본 설명]은 이미 화면에 있습니다("${p.purpose || ""}"). 이 문장을 그대로 반복하지 말고, 그 위에 더해질 보충 설명을 작성하세요.`,
+    "초점: ① 누구에게 특히 유리한지 ② 무엇을 어떻게 받고 활용할 수 있는지 ③ 신청 전 알아두면 좋은 점.",
+    "규칙(반드시): 제공된 정보 밖의 내용·숫자·날짜를 지어내지 마세요. 금액은 표기 그대로(임의 계산 금지). 3~5문장의 완결된 문단, 존댓말, 마크다운/목록 금지, 이모지 최대 1개. 문장을 중간에 끊지 말 것.",
     "",
     `[정책]\n제목: ${p.title}\n목적: ${p.purpose || "-"}\n대상: ${p.targetDetail || "-"}\n지원내용: ${p.benefits || "-"}\n지원금액: ${amt}\n신청기간: ${p.period || "상시/공고 확인"}`,
   ].join("\n");
-  const out = await callGemini(prompt, { timeoutMs: 12000, maxOutputTokens: 320 });
+  const out = await callGemini(prompt, { timeoutMs: 14000, maxOutputTokens: 600 });
   if (out) { try { sessionStorage.setItem(ck, out); } catch (e) {} }
   return out;
 }
