@@ -519,6 +519,19 @@ function Results({ answers, onOpenPolicy, onRedo, onDiagnose }) {
 function Detail({ p, onClose }) {
   const [saved, setSaved] = useState(false);
   const haveN = p.prepare.filter(x => x.status === "have").length;
+  // 생성형 "쉬운 설명" — 키 있을 때만, 이 정책 하나만 근거로 (실패/무키 시 미표시)
+  const [aiText, setAiText] = useState(null);
+  const [aiState, setAiState] = useState(window.geminiEnabled && window.geminiEnabled() ? "pending" : "off");
+  useEffect(() => {
+    let alive = true;
+    if (!(window.geminiEnabled && window.geminiEnabled())) { setAiState("off"); return; }
+    setAiState("pending");
+    window.explainPolicy(p).then(out => {
+      if (!alive) return;
+      if (out) { setAiText(out); setAiState("done"); } else setAiState("off");
+    });
+    return () => { alive = false; };
+  }, [p.id]);
   // ESC 닫기 + 배경 스크롤 잠금
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") onClose(); };
@@ -548,7 +561,17 @@ function Detail({ p, onClose }) {
             <DdayPill dday={p.dday} />
             {p.pscore != null && <span className="elig" style={{ background: "var(--accent-soft)", color: "var(--accent-ink)" }}><Icon name="spark" size={14} />매칭도 {p.pscore}</span>}
           </div>
-          <p className="block body" style={{ fontSize: 16.5, color: "var(--ink)", fontWeight: 600, margin: "4px 0 22px" }}>{p.purpose || p.summary}</p>
+          <p className="block body" style={{ fontSize: 16.5, color: "var(--ink)", fontWeight: 600, margin: "4px 0 18px" }}>{p.purpose || p.summary}</p>
+          {/* 생성형 쉬운 설명 — 키 있을 때만 (이 정책 하나만 근거, 환각방지) */}
+          {aiState !== "off" && (
+            <div style={{ margin: "0 0 20px", padding: "13px 15px", background: "var(--accent-soft)", borderRadius: 14, border: "1px solid rgba(49,130,246,.16)" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--accent-ink)", marginBottom: aiState === "done" ? 6 : 0, display: "flex", alignItems: "center", gap: 4 }}>
+                ✨ AI 쉬운 설명
+                {aiState === "pending" && <span style={{ fontWeight: 400, color: "var(--muted)" }}> · 정리하는 중…</span>}
+              </div>
+              {aiState === "done" && <p className="body" style={{ fontSize: 14.5, color: "var(--ink2)", margin: 0 }}>{aiText}</p>}
+            </div>
+          )}
           <div className="stat-grid">
             <div className="stat"><div className="k"><Icon name="won" size={15} />지원 금액{(["explicit_llm", "calculated_llm", "total_only_llm"].includes(p.amountSource) && !/공고 확인|확인 필요|규모 확인/.test(p.amountPerApplicant || p.amountLabel || "")) && <span className="amt-trust" title="공고 원문에서 AI가 확인한 금액"><Icon name="check" size={10} stroke={3} />확인</span>}</div><div className="v">{p.amountPerApplicant || p.amountLabel}</div>{(p.amountSource && p.amountSource.startsWith("calculated") && p.amountTotal && p.amountTargetCount) ? (<div className="vs">총 {p.amountTotal} ÷ 대상 {p.amountTargetCount}</div>) : (p.amountSource && p.amountSource.startsWith("total_only") && p.amountTotal) ? (<div className="vs">총사업비 {p.amountTotal} · 1인 한도는 공고 확인</div>) : (p.amountSub && <div className="vs">{p.amountSub}</div>)}</div>
             <div className="stat"><div className="k"><Icon name="calendar" size={15} />신청 기간</div><div className="v">{p.dday != null ? (p.dday >= 0 ? `D-${p.dday}` : "마감") : "상시"}</div><div className="vs">{p.period}</div></div>

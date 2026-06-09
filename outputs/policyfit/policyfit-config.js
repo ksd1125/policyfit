@@ -839,7 +839,7 @@ async function callGemini(prompt, opts) {
         signal: ctrl.signal,
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.5, maxOutputTokens: 256 },
+          generationConfig: { temperature: 0.5, maxOutputTokens: (opts && opts.maxOutputTokens) || 256 },
         }),
       }
     );
@@ -857,9 +857,27 @@ async function enhanceReply(userText, citedPolicies, baseAnswer) {
   return await callGemini(buildGroundingPrompt(userText, citedPolicies, baseAnswer));
 }
 
+// 정책 상세 — 단일 정책만 근거로 "쉬운 설명" 생성. id별 sessionStorage 캐시(할당량 절약).
+async function explainPolicy(p) {
+  if (!geminiEnabled() || !p) return null;
+  const ck = "pf_ai_explain_" + p.id;
+  try { const c = sessionStorage.getItem(ck); if (c) return c; } catch (e) {}
+  const amt = (window.amountText ? window.amountText(p) : "") || p.amountPerApplicant || p.amountLabel || "공고 확인";
+  const prompt = [
+    "아래 [정책]을 소상공인이 이해하기 쉽게 한국어로 풀어 설명하세요.",
+    "규칙(반드시): 제공된 정보 밖의 내용·숫자·날짜를 지어내지 마세요. 금액은 표기 그대로(임의 계산 금지). 3~4문장, 존댓말, 마크다운/목록 금지, 이모지 최대 1개.",
+    "초점: ① 이 사업이 한마디로 무엇인지 ② 누구에게 특히 유리한지 ③ 무엇을 받을 수 있는지.",
+    "",
+    `[정책]\n제목: ${p.title}\n목적: ${p.purpose || "-"}\n대상: ${p.targetDetail || "-"}\n지원내용: ${p.benefits || "-"}\n지원금액: ${amt}\n신청기간: ${p.period || "상시/공고 확인"}`,
+  ].join("\n");
+  const out = await callGemini(prompt, { timeoutMs: 12000, maxOutputTokens: 320 });
+  if (out) { try { sessionStorage.setItem(ck, out); } catch (e) {} }
+  return out;
+}
+
 /* ── Export to window ── */
 Object.assign(window, {
-  geminiKey, geminiEnabled, buildGroundingPrompt, callGemini, enhanceReply,
+  geminiKey, geminiEnabled, buildGroundingPrompt, callGemini, enhanceReply, explainPolicy,
   USER_TYPES, TYPE_PROFILE, QUESTIONS, CONDLABEL, CAT_ICON, INDUSTRY_MATCH_TABLE, REGION_MATCH_TABLE,
   computeDday, questionsForType, computeMatches, optionCount, parseSeed, composeReply, krw,
   lexicalScores, hybridRank, tokenize, matchIndustry, matchRegion, buildMatchingNote, regionSpecificHit,
