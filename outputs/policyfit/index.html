@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 
 <!-- CSS (디자인 시스템 P1) -->
-<link rel="stylesheet" href="policyfit.css?v=202606090030">
+<link rel="stylesheet" href="policyfit.css?v=202606090950">
 </head>
 <body>
 
@@ -59,6 +59,92 @@
 })();
 </script>
 
+<!-- Gemini API 설정 (선택 — 향후 생성형 해설용. 키는 브라우저 localStorage에만 저장) -->
+<button id="pf-settings-btn" title="Gemini API 설정" aria-label="Gemini API 설정"
+  style="position:fixed;right:14px;bottom:72px;z-index:9000;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,.12);font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center">⚙️</button>
+
+<div id="pf-settings" style="display:none;position:fixed;inset:0;z-index:9100;align-items:center;justify-content:center;background:rgba(17,24,39,.45);font-family:'Pretendard Variable',-apple-system,'Noto Sans KR',sans-serif">
+  <div style="width:min(420px,90vw);max-height:88vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,.2);padding:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="font-size:18px;font-weight:700;color:#111827">Gemini API 설정</div>
+      <button id="pf-settings-close" aria-label="닫기" style="font-size:22px;color:#6B7280;background:none;border:none;cursor:pointer;line-height:1">&times;</button>
+    </div>
+    <p style="font-size:13px;color:#6B7280;line-height:1.6;margin:8px 0 16px">
+      키 없이도 정책 진단은 정상 동작해요(룰베이스). 키를 넣으면 <b>향후 생성형 해설·자연어 요약</b>이 활성화됩니다.
+      키는 <b>이 브라우저에만 저장</b>되고 서버로 전송되지 않아요.
+      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:#3182F6">키 발급 →</a>
+    </p>
+    <label for="pf-gemini-key" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px">Gemini API 키</label>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input id="pf-gemini-key" type="password" autocomplete="off" placeholder="AIza..."
+        style="flex:1;padding:11px 12px;font-size:14px;border:1px solid #D1D5DB;border-radius:12px;outline:none;color:#111827;background:#F7F8FB">
+      <button id="pf-gemini-show" type="button" style="padding:0 12px;font-size:13px;color:#374151;background:#F3F4F6;border:1px solid #E5E7EB;border-radius:12px;cursor:pointer">보기</button>
+    </div>
+    <div id="pf-gemini-status" style="min-height:18px;font-size:12.5px;color:#6B7280;margin-bottom:14px"></div>
+    <div style="display:flex;gap:8px">
+      <button id="pf-gemini-save" style="flex:1;padding:12px;font-size:15px;font-weight:600;color:#fff;background:#3182F6;border:none;border-radius:12px;cursor:pointer">저장</button>
+      <button id="pf-gemini-test" style="padding:12px 14px;font-size:14px;color:#1b5cc4;background:#eaf2fe;border:none;border-radius:12px;cursor:pointer">연결 테스트</button>
+      <button id="pf-gemini-clear" style="padding:12px 14px;font-size:14px;color:#DC2626;background:#fef2f2;border:none;border-radius:12px;cursor:pointer">삭제</button>
+    </div>
+    <p style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:14px">
+      🔗 이 키는 같은 도메인의 <b>대전 상권 AI 챗봇</b>과 자동 공유됩니다(<code>gemini_api_key</code>). 두 서비스를 오가도 한 번만 입력하면 돼요.
+    </p>
+  </div>
+</div>
+<script>
+(function () {
+  var LS = "gemini_api_key";  // 상권챗봇과 동일 키 — 동일 오리진 localStorage 공유
+  var MODEL = "gemini-2.5-flash";
+  var btn = document.getElementById("pf-settings-btn"),
+      modal = document.getElementById("pf-settings"),
+      close = document.getElementById("pf-settings-close"),
+      input = document.getElementById("pf-gemini-key"),
+      show = document.getElementById("pf-gemini-show"),
+      save = document.getElementById("pf-gemini-save"),
+      test = document.getElementById("pf-gemini-test"),
+      clear = document.getElementById("pf-gemini-clear"),
+      status = document.getElementById("pf-gemini-status");
+  function mask(k) { return k.length <= 8 ? "••••" : k.slice(0, 4) + "••••" + k.slice(-4); }
+  function refresh() {
+    var k = localStorage.getItem(LS) || "";
+    if (k) { status.textContent = "저장됨: " + mask(k) + " · 생성형 해설 사용 가능"; status.style.color = "#059669"; }
+    else { status.textContent = "저장된 키 없음 · 현재 룰베이스 모드"; status.style.color = "#6B7280"; }
+  }
+  function open() { input.value = localStorage.getItem(LS) || ""; refresh(); modal.style.display = "flex"; setTimeout(function(){ input.focus(); }, 80); }
+  function hide() { modal.style.display = "none"; }
+  btn.addEventListener("click", open);
+  close.addEventListener("click", hide);
+  modal.addEventListener("click", function (e) { if (e.target === modal) hide(); });
+  show.addEventListener("click", function () {
+    var on = input.type === "password";
+    input.type = on ? "text" : "password"; show.textContent = on ? "숨김" : "보기";
+  });
+  save.addEventListener("click", function () {
+    var v = input.value.trim();
+    if (v) { localStorage.setItem(LS, v); status.textContent = "저장 완료 ✓"; status.style.color = "#059669"; }
+    else { localStorage.removeItem(LS); status.textContent = "빈 값 — 키를 삭제했어요"; status.style.color = "#6B7280"; }
+    setTimeout(refresh, 1200);
+  });
+  clear.addEventListener("click", function () {
+    localStorage.removeItem(LS); input.value = ""; status.textContent = "삭제 완료"; status.style.color = "#6B7280";
+    setTimeout(refresh, 1000);
+  });
+  test.addEventListener("click", function () {
+    var v = input.value.trim() || localStorage.getItem(LS) || "";
+    if (!v) { status.textContent = "키를 먼저 입력하세요"; status.style.color = "#D97706"; return; }
+    status.textContent = "연결 확인 중…"; status.style.color = "#6B7280";
+    fetch("https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent?key=" + encodeURIComponent(v), {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: "ping" }] }] })
+    }).then(function (r) {
+      if (r.ok) { status.textContent = "연결 성공 ✓ 유효한 키예요"; status.style.color = "#059669"; }
+      else if (r.status === 400 || r.status === 403) { status.textContent = "키가 유효하지 않아요 (" + r.status + ")"; status.style.color = "#DC2626"; }
+      else { status.textContent = "응답 오류 (" + r.status + ") — 잠시 후 재시도"; status.style.color = "#D97706"; }
+    }).catch(function () { status.textContent = "네트워크 오류 — 연결을 확인하세요"; status.style.color = "#DC2626"; });
+  });
+})();
+</script>
+
 <div id="root"></div>
 
 <!--
@@ -82,13 +168,13 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- 1. 데이터/설정 (순수 JS — Babel 불필요) -->
-<script src="policyfit-config.js?v=202606090030"></script>
+<script src="policyfit-config.js?v=202606090950"></script>
 
 <!-- 2. UI 컴포넌트 (JSX) -->
-<script type="text/babel" src="policyfit-ui.jsx?v=202606090030" data-type="module"></script>
+<script type="text/babel" src="policyfit-ui.jsx?v=202606090950" data-type="module"></script>
 
 <!-- 3. 앱 화면 + 라우팅 (JSX) -->
-<script type="text/babel" src="policyfit-app.jsx?v=202606090030" data-type="module"></script>
+<script type="text/babel" src="policyfit-app.jsx?v=202606090950" data-type="module"></script>
 
 </body>
 </html>
